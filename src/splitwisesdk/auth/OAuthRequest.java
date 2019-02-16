@@ -16,19 +16,19 @@ public class OAuthRequest {
 		this.oauth_timestamp = String.valueOf(this.getCurrentTimestamp());
 		this.oauth_nonce = String.valueOf(this.getNonce());
 	}
-	private void setConsumerKey(String consumerKey) {
+	protected void setConsumerKey(String consumerKey) {
 		this.oauth_consumer_key = consumerKey;
 	}
 	
-	private void setOauthSignatureMethod(String signatureMethod) {
+	protected void setOauthSignatureMethod(String signatureMethod) {
 		this.oauth_signature_method = signatureMethod;
 	}
 	
-	private String getRequestBody() {
+	protected String getRequestBody() {
 		return getRequestBody(true);
 	}
 	
-	private String getRequestBody(boolean includeSignature) {
+	protected String getRequestBody(boolean includeSignature) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("oauth_consumer_key" + "=" + oauth_consumer_key);
 		sb.append("&");
@@ -47,15 +47,15 @@ public class OAuthRequest {
 		return sb.toString();
 	}
 	
-	private String getRequestHash() {
+	protected String getRequestHash() {
 		return URLEncoder.encode(getRequestBody(false));
 	}
 	
-	private long getCurrentTimestamp() {
+	protected long getCurrentTimestamp() {
 		return System.currentTimeMillis()/1000;
 	}
 	
-	private long getNonce() {
+	protected long getNonce() {
 		return (long)(Math.random() * 100000000);
 	}
 	
