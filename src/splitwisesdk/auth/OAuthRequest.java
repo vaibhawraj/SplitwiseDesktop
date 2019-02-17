@@ -47,6 +47,10 @@ public class OAuthRequest {
 		return sb.toString();
 	}
 	
+	protected void setSignature(String signature) {
+		this.oauth_signature = signature;
+	}
+	
 	protected String getRequestHash() {
 		return URLEncoder.encode(getRequestBody(false));
 	}

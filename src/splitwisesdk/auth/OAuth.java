@@ -1,12 +1,35 @@
+/*
+ * Oauth.java: Handles OAuth authentication
+ */
 package splitwisesdk.auth;
 
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+/*
+ * Following JAR files must be added to class path:
+ * commons-codec-1.11.jar
+ * httpclient-4.5.7.jar
+ * httpcore-4.4.11.jar
+ */
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
+
+import splitwisesdk.Http;
+
 public class OAuth {
-	protected String consumerKey;
-	protected String consumerSecret;
-	protected String tokenSecret;
+	private String consumerKey;
+	private String consumerSecret;
+	private String tokenSecret;
+	private String oauth_token;
+	private String oauth_secret;
 	
-	private String requestTokenUrl;
-	private String accessTokenUrl;
+	protected String requestTokenUrl;
+	protected String accessTokenUrl;
+	protected String authorizeUrl;
 	
 	OAuth(String consumerKey, String consumerSecret) {
 		this.consumerKey = consumerKey;
@@ -14,37 +37,55 @@ public class OAuth {
 		this.tokenSecret = "";
 	}
 	
-	private void signRequest(OAuthRequest req) {
-		
-	}
-	
-	private String getAuthorizationURL() {
+	/*
+	 * getAuthoriationURL : Returns authorization url which is used to get access
+	 * token
+	 */
+	protected String getAuthorizationURL() {
 		String authorizationURL = "";
 		
 		// Generate Request
 		OAuthRequest req = new OAuthRequest();
 		req.setConsumerKey(consumerKey);
 		
-		hmac_sha1_sign(req, requestTokenUrl, consumerSecret, tokenSecret);
+		hmac_sha1_sign(req);
 		
-		//return authorizationURL;
-		return req.getRequestHash();
+		String body = req.getRequestBody();
+		
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Content-Type","application/x-www-form-urlencoded");
+		
+		String response = Http.sendPostRequest(requestTokenUrl, headers, body);
+		
+		String[] rArr = response.split("&");
+		HashMap<String,String> params = new HashMap<String, String>();
+		
+		for(String r : rArr) {
+			params.put(r.split("=")[0], r.split("=")[1]);
+		}
+		oauth_token = params.get("oauth_token");
+		oauth_secret = params.get("oauth_secret");
+		
+		authorizationURL = this.authorizeUrl + "?oauth_token=" + this.oauth_token;
+		return authorizationURL;
 	}
 	
-	private void hmac_sha1_sign(OAuthRequest req, String requestTokenUrl, String consumerSecret, String tokenSecret) {
+	private void hmac_sha1_sign(OAuthRequest req) {
 		req.setOauthSignatureMethod(OAuthRequest.HMAC_SHA1);
 		String method = "POST";
-		String hashedUrl = "";
-	}
-	
-	public static void main(String args[]) {
-		// Testing
-		String consumerKey = "cCFUP5oGYVNJJAF9PlOR2qqBDcnzzEnPx5hofrh4";
-		String consumerSecret = "uwGfeBgdVlx2vAz4HwT3sPQgZ3Ib4PcYeZXyFiE2";
-		
-		OAuth oauth = new OAuth(consumerKey,consumerSecret);
-		System.out.println("Authorization url\n" + oauth.getAuthorizationURL());
-		
+		String hashedUrl = URLEncoder.encode(this.requestTokenUrl);
+		String hashedBody = req.getRequestHash();
+		String signature_base_string = method + "&" + hashedUrl + "&" + hashedBody;
+		String key = consumerSecret + "&" + tokenSecret;
+		String signature = new String(
+				Base64.encodeBase64(
+						new HmacUtils(
+								HmacAlgorithms.HMAC_SHA_1, 
+								key
+								).hmac(signature_base_string)
+						)
+				);
+		req.setSignature(signature);
 	}
 	
 }
