@@ -31,6 +31,8 @@ public class OAuth {
 	protected String accessTokenUrl;
 	protected String authorizeUrl;
 	
+	private static int maxRetries = 3;
+	
 	public OAuth(String consumerKey, String consumerSecret) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
@@ -63,9 +65,20 @@ public class OAuth {
 			String[] rArr = response.split("&");
 			HashMap<String,String> params = new HashMap<String, String>();
 			//System.out.println("Response " + response);
+			if(response.equalsIgnoreCase("Invalid OAuth Request")) {
+				System.out.println(response);
+				if(maxRetries > 0) {
+					maxRetries--;
+					return getAuthorizationURL();
+				} else {
+					System.exit(0);
+				}
+			} else {
+				maxRetries = 3;
+			}
 			for(String r : rArr) {
 				params.put(r.split("=")[0], r.split("=")[1]);
-				System.out.println(r.split("=")[0] + " " + r.split("=")[1]);
+				//System.out.println(r.split("=")[0] + " " + r.split("=")[1]);
 			}
 			oauth_token = params.get("oauth_token");
 			oauth_token_secret = params.get("oauth_token_secret");
@@ -95,9 +108,17 @@ public class OAuth {
 			headers.put("Content-Type","application/x-www-form-urlencoded");
 			
 			response = Http.sendPostRequest(req.getEndpoint(), headers, body);
-			System.out.println("Response: " + response);
+			//System.out.println("Response: " + response);
 			if(response.equalsIgnoreCase("Invalid OAuth Request")) {
-				return "";
+				System.out.println(response);
+				if(maxRetries > 0) {
+					maxRetries--;
+					return getAccessToken();
+				} else {
+					System.exit(0);
+				}
+			} else {
+				maxRetries = 3;
 			}
 			String[] rArr = response.split("&");
 			HashMap<String,String> params = new HashMap<String, String>();
@@ -134,8 +155,16 @@ public class OAuth {
 		this.oauth_token = token;
 	}
 	
+	public String getOauthToken() {
+		return this.oauth_token;
+	}
+	
 	public void setOauthTokenSecret(String token) {
 		this.oauth_token_secret = token;
+	}
+	
+	public String getOauthTokenSecret() {
+		return this.oauth_token_secret;
 	}
 	
 	public void setOauthVerifier(String token) {

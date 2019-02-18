@@ -6,7 +6,10 @@
  */
 
 public class Splitwise {
+	static SplitwiseGUI gui;
 	public static void main(String[] arg) {
 		System.out.println("Ok");
+		gui = new SplitwiseGUI();
+		gui.init();
 	}
 }

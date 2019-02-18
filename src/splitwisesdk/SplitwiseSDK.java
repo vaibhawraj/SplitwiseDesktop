@@ -78,6 +78,14 @@ public class SplitwiseSDK {
 		oauth.setOauthTokenSecret(token);
 	}
 	
+	public String getOauthToken() {
+		return oauth.getOauthToken();
+	}
+	
+	public String getOauthTokenSecret() {
+		return oauth.getOauthTokenSecret();
+	}
+	
 	public void setOauthVerifier(String token) {
 		oauth.setOauthVerifier(token);
 	}
@@ -111,8 +119,8 @@ public class SplitwiseSDK {
 		
 		//Step 3: Set access token and access token secret
 		/**/
-		String oauth_access_token = "v3k8j5fGUYElIFLwqA2Jil3Ab7Iufur571IivH5u";
-		String oauth_access_token_secret = "0ARvrvdU3FByH8PFOOfQLIvu4HZ6CnYlHon8fuNv";
+		String oauth_access_token = "mrOfm5TC9JfLhWDPHvI1A2ZtZWDMVFQvswV9kQ1d";
+		String oauth_access_token_secret = "cU4fvYE8GNjIeYLE0DxW29UCET84BECTUvbipq1o";
 		sdk.setOauthToken(oauth_access_token);
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
 		
