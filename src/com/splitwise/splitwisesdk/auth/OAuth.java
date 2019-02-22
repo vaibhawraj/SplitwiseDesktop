@@ -1,7 +1,7 @@
 /*
  * Oauth.java: Handles OAuth authentication
  */
-package splitwisesdk.auth;
+package com.splitwise.splitwisesdk.auth;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 
-import splitwisesdk.Http;
+import com.splitwise.splitwisesdk.Http;
 
 public class OAuth {
 	private String consumerKey;

@@ -1,4 +1,4 @@
-package splitwisesdk;
+package com.splitwise.splitwisesdk;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -7,8 +7,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import splitwisesdk.auth.OAuth;
-import splitwisesdk.responses.*;
+import com.splitwise.splitwisesdk.auth.OAuth;
+import com.splitwise.splitwisesdk.responses.*;
 
 public class SplitwiseSDK {
 	private static SplitwiseSDK instance = null;
@@ -119,8 +119,8 @@ public class SplitwiseSDK {
 		
 		//Step 3: Set access token and access token secret
 		/**/
-		String oauth_access_token = "mrOfm5TC9JfLhWDPHvI1A2ZtZWDMVFQvswV9kQ1d";
-		String oauth_access_token_secret = "cU4fvYE8GNjIeYLE0DxW29UCET84BECTUvbipq1o";
+		String oauth_access_token = "Pt5xgOcKp8ecHPyEdrY1ixHruFARj3h0QXTv7FpR";
+		String oauth_access_token_secret = "PZ2qHLwFlLWUZAI72xWfoC9opz1cLIfx6rNeyd9L";
 		sdk.setOauthToken(oauth_access_token);
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
 		

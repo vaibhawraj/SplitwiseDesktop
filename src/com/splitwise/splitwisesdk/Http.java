@@ -1,4 +1,4 @@
-package splitwisesdk;
+package com.splitwise.splitwisesdk;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
