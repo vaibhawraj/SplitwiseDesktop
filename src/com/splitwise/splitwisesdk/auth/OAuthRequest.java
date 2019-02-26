@@ -1,4 +1,4 @@
-package splitwisesdk.auth;
+package com.splitwise.splitwisesdk.auth;
 
 import java.net.URLEncoder;
 import java.util.SortedMap;

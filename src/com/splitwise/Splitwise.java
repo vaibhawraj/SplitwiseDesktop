@@ -4,6 +4,7 @@
  * @version		0.1
  * @since   	2019-02-14
  */
+package com.splitwise;
 
 public class Splitwise {
 	static SplitwiseGUI gui;
