@@ -28,6 +28,7 @@ public class User {
 	
 	private void parseJSON() {
 		// Logic to parse JSON
+		//
 	}
 	
 	public String toString() {
