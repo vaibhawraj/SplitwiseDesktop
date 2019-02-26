@@ -58,7 +58,8 @@ public class LoginPanel extends JFXPanel implements ChangeListener{
         			+ "Copy oauth token and oauth_token_secret and Paste it at \n"
         			+ "splitwisesdk.SplitwiseSDK.java in main method, in place of oauth_access_token and oauth_access_token_secret.");
         	SplitwiseSDK.getInstance().getAccessToken();
-        	SplitwiseGUI.getInstance().showDashboard();
+        	
+        	SplitwiseGUI.getInstance().grantLogin();
         }
         if (newValue == Worker.State.SUCCEEDED) {
             //document finished loading

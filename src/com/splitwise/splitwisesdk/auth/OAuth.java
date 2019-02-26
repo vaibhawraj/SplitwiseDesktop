@@ -68,6 +68,7 @@ public class OAuth {
 			if(response.equalsIgnoreCase("Invalid OAuth Request")) {
 				System.out.println(response);
 				if(maxRetries > 0) {
+					System.out.println("Retrying");
 					maxRetries--;
 					return getAuthorizationURL();
 				} else {

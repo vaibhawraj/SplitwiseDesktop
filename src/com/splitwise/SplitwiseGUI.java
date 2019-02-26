@@ -24,15 +24,24 @@ public class SplitwiseGUI{
 		//TODO Add logic to save access token
 		
 		mainFrame.setVisible(true);
-		showLoginPanel();
+		if(!sdk.hasValidAccessToken()) {
+			showLoginPanel();
+		} else {
+			mainFrame.initMainPane();
+		}
 	}
 	
 	public void showLoginPanel() {
-			mainFrame.add(LoginPanel.getInstance());
+			mainFrame.getContentPane().add(LoginPanel.getInstance());
 			String url = sdk.getAuthorizationURL();
 			LoginPanel.getInstance().load(url);
 	}
 	
+	public void grantLogin() {
+		mainFrame.getContentPane().removeAll();
+		mainFrame.initMainPane();
+		mainFrame.repaint();
+	}
 	public void showDashboard() {
 		mainFrame.getContentPane().removeAll();
 		JLabel lbl = new JLabel("oauth_access_token");
