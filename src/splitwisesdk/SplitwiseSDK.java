@@ -1,11 +1,20 @@
 package splitwisesdk;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.json.simple.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import splitwisesdk.auth.OAuth;
 import splitwisesdk.responses.*;
@@ -35,6 +44,8 @@ public class SplitwiseSDK {
 	final private String GET_GROUPS_URL      = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_groups";
 	
 	final private String GET_GROUP_URL       = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_group";
+	
+	//Abhimanyu
 	final private String GET_CURRENCY_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_currencies";
 	final private String GET_CATEGORY_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_categories";
 	final private String GET_EXPENSES_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_expenses";
@@ -93,9 +104,33 @@ public class SplitwiseSDK {
 	public User getCurrentUser() {
 		String response = "";
 		response = oauth.request(GET_CURRENT_USER_URL);
-		
 		return new User(response);
 	}
+		
+	public User getCurrency() {
+		String response = "";
+		response = oauth.request(GET_CURRENCY_URL);
+		return new User(response);
+	}
+	
+	public User getCategory() {
+		String response = "";
+		response = oauth.request(GET_CATEGORY_URL);
+		return new User(response);
+	}
+	
+	public User getExpenses() {
+		String response = "";
+		response = oauth.request(GET_EXPENSES_URL);
+		return new User(response);
+	}
+	
+	public User getExpense() {
+		String response = "";
+		response = oauth.request(GET_EXPENSE_URL);
+		return new User(response);
+	}
+	
 	
 	public static void main(String args[]) {
 		SplitwiseSDK sdk = SplitwiseSDK.getInstance();
@@ -119,13 +154,19 @@ public class SplitwiseSDK {
 		
 		//Step 3: Set access token and access token secret
 		/**/
-		String oauth_access_token = "mrOfm5TC9JfLhWDPHvI1A2ZtZWDMVFQvswV9kQ1d";
-		String oauth_access_token_secret = "cU4fvYE8GNjIeYLE0DxW29UCET84BECTUvbipq1o";
+		String oauth_access_token = "OKzouzKWL8VtPNif9pZSgQrAMDQ4z1CSvKl0oAc5";
+		String oauth_access_token_secret = "dcP4NjGiZIh3GQaYt9Yf2X84xbauUf6nKV8bpZ7c";
 		sdk.setOauthToken(oauth_access_token);
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
 		
-		System.out.println(sdk.getCurrentUser());
-		/**/
+		
+		//System.out.println(sdk.getCurrentUser());
+		User getCategory= sdk.getCategory();
+		
+		//User getCurrObj = sdk.getCurrency();
+				
+		//System.out.println(sdk.getExpenses());
+		//System.out.println(sdk.getExpense());
+			
 	}
-
 }
