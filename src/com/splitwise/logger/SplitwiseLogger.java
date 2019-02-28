@@ -40,8 +40,8 @@ public class SplitwiseLogger {
 
         
         logger.setLevel(Level.INFO);
-        fileTxt = new FileHandler("Logging.txt");
-        fileHTML = new FileHandler("Logging.html");
+        fileTxt = new FileHandler("Logging.log");
+        fileHTML = new FileHandler("Logging.log.html");
 
         // create a TXT formatter
         formatterTxt = new SimpleFormatter();
