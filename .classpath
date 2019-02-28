@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="/Users/vraj/Documents/Academic/COEN270/Project/Splitwise/lib/httpclient-4.5.7.jar"/>
 	<classpathentry kind="lib" path="/Users/vraj/Documents/Academic/COEN270/Project/Splitwise/lib/httpcore-4.4.11.jar"/>
 	<classpathentry kind="lib" path="/Users/vraj/Documents/Academic/COEN270/Project/Splitwise/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/vraj/Documents/Academic/COEN270/Project/Splitwise/lib/json-simple-1.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

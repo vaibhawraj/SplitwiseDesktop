@@ -80,8 +80,8 @@ public class OAuthRequest {
 	}
 	
 	protected void setSignature(String signature) {
-		this.oauth_signature = signature;
-		params.put("oauth_signature",signature);
+		this.oauth_signature = URLEncoder.encode(signature);
+		params.put("oauth_signature",this.oauth_signature);
 	}
 	
 	protected String getRequestHash() {
@@ -94,7 +94,7 @@ public class OAuthRequest {
 	}
 	
 	protected long getNonce() {
-		return (long)(Math.random() * 100000000);
+		return (long)(Math.random() * 1000000) + 1000000;
 	}
 	
 	public String toString() {

@@ -1,10 +1,11 @@
 package com.splitwise.splitwisesdk.responses;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
-public class User {
-	private String jsonText;
-	
+import com.splitwise.splitwisesdk.APIException;
+
+public class User extends Response {
 	public long id;
 	public String first_name;
 	public String last_name;
@@ -21,14 +22,10 @@ public class User {
 	public int notification_count;
 	public NotificationSetting notification;
 	
-	public User(String jsonText) {
-		this.jsonText = jsonText;
-		parseJSON();
-	}
+	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
-	private void parseJSON() {
-		// Logic to parse JSON
-		//
+	public User(String jsonText) throws APIException {
+		super(jsonText);
 	}
 	
 	public String toString() {

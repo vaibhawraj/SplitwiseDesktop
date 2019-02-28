@@ -6,10 +6,28 @@
  */
 package com.splitwise;
 
+import java.io.IOException;
+import java.util.logging.*;
+
+import com.splitwise.logger.SplitwiseLogger;
+
+
 public class Splitwise {
 	static SplitwiseGUI gui;
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	// Initialize Logger
+	private static void setupLogger() {
+		try {
+			SplitwiseLogger.setup();
+		} catch(IOException io) {
+			System.err.println("Unable to setup logger");
+		}
+	}
 	public static void main(String[] arg) {
-		System.out.println("Ok");
+		// Initialize core modules
+		setupLogger();
+		LOGGER.info("Logger test ok");
+		LOGGER.setLevel(Level.FINEST);
 		gui = new SplitwiseGUI();
 		gui.init();
 	}

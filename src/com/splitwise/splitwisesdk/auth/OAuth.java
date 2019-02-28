@@ -6,6 +6,8 @@ package com.splitwise.splitwisesdk.auth;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Following JAR files must be added to class path:
@@ -33,10 +35,13 @@ public class OAuth {
 	
 	private static int maxRetries = 3;
 	
+	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	public OAuth(String consumerKey, String consumerSecret) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.oauth_token_secret = "";
+		LOGGER.setLevel(Level.FINEST);
 	}
 	
 	/*
@@ -46,13 +51,13 @@ public class OAuth {
 	public String getAuthorizationURL() {
 		String authorizationURL = "";
 		
-		if(oauth_token == null) {
+		if(oauth_token == null || oauth_token.length() == 0) {
 			// Generate Request
 			OAuthRequest req = new OAuthRequest();
 			req.setConsumerKey(consumerKey);
 			req.setEndpoint(requestTokenUrl);
 			req.setMethod("POST");
-			
+			LOGGER.finest("Request Token Url" + requestTokenUrl);
 			hmac_sha1_sign(req);
 			
 			String body = req.getRequestBody();
@@ -61,7 +66,7 @@ public class OAuth {
 			headers.put("Content-Type","application/x-www-form-urlencoded");
 			
 			String response = Http.sendPostRequest(req.getEndpoint(), headers, body);
-			//System.out.println("Response :" + response);
+			LOGGER.fine("Response : " + response);
 			String[] rArr = response.split("&");
 			HashMap<String,String> params = new HashMap<String, String>();
 			//System.out.println("Response " + response);
@@ -86,6 +91,7 @@ public class OAuth {
 			//System.out.println("Response: " + response);
 		}
 		authorizationURL = this.authorizeUrl + "?oauth_token=" + this.oauth_token;
+		LOGGER.fine("Authorization Url : " + authorizationURL);
 		return authorizationURL;
 	}
 	

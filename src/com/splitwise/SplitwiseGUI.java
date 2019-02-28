@@ -2,6 +2,8 @@ package com.splitwise;
 
 
 
+import java.util.logging.Logger;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -14,6 +16,8 @@ public class SplitwiseGUI{
 	private static SplitwiseGUI instance;
     private MainFrame mainFrame;
     
+    final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    
 	SplitwiseSDK sdk;
 	SplitwiseGUI() {}
 	public void init() {
@@ -24,20 +28,28 @@ public class SplitwiseGUI{
 		//TODO Add logic to save access token
 		
 		mainFrame.setVisible(true);
+		
+		LOGGER.info("Checking valid access token");
 		if(!sdk.hasValidAccessToken()) {
+			LOGGER.info("Not Has valid access token");
 			showLoginPanel();
+			
 		} else {
+			LOGGER.info("Has valid access token");
 			mainFrame.initMainPane();
+			mainFrame.repaint();
 		}
 	}
 	
 	public void showLoginPanel() {
+			LOGGER.info("Loading login panel");
 			mainFrame.getContentPane().add(LoginPanel.getInstance());
 			String url = sdk.getAuthorizationURL();
 			LoginPanel.getInstance().load(url);
 	}
 	
 	public void grantLogin() {
+		LOGGER.info("Granting Loging");
 		mainFrame.getContentPane().removeAll();
 		mainFrame.initMainPane();
 		mainFrame.repaint();
