@@ -1,14 +1,23 @@
 package com.splitwise.splitwisesdk;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.splitwise.splitwisesdk.auth.OAuth;
 import com.splitwise.splitwisesdk.responses.*;
+
+import com.splitwise.logger.SplitwiseLogger;
 
 public class SplitwiseSDK {
 	private static SplitwiseSDK instance = null;
@@ -16,7 +25,8 @@ public class SplitwiseSDK {
 	// Key
 	private String consumerKey = "cCFUP5oGYVNJJAF9PlOR2qqBDcnzzEnPx5hofrh4";
 	private String consumerSecret = "uwGfeBgdVlx2vAz4HwT3sPQgZ3Ib4PcYeZXyFiE2";
-	private String accessToken = "";
+	
+	private boolean hasValidAccessToken = false;
 	
 	private OAuth oauth;
 	
@@ -46,11 +56,76 @@ public class SplitwiseSDK {
 	final private String CREATE_EXPENSE_URL  = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_expense";
 	final private String CREATE_GROUP_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_group";
 	
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	private SplitwiseSDK() {
 		oauth = new OAuth(consumerKey,consumerSecret);
 		oauth.setRequestTokenURL(this.REQUEST_TOKEN_URL);
 		oauth.setAuthorizationURL(this.AUTHORIZE_URL);
 		oauth.setAccessTokenURL(this.ACCESS_TOKEN_URL);
+		
+		LOGGER.setLevel(Level.FINER);
+		//Load access token
+		if(loadAccessToken()) {
+			if(checkAccessTokenValid()) {
+				hasValidAccessToken = true;
+			}
+		}
+	}
+	
+	private boolean checkAccessTokenValid() {
+		try {
+			User currentUser = getCurrentUser();
+			LOGGER.finer("User Respone " + currentUser.toString());
+		} catch (APIException e) {
+			LOGGER.info("Invalid Access Token");
+			return false;
+		}
+		return true;
+	}
+	private void saveAccessToken() {
+		String oauth_token = oauth.getOauthToken();
+		String oauth_token_secret = oauth.getOauthTokenSecret();
+		
+		String tmpFname = "session.db";
+		try {
+			File f = new File(tmpFname);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+			bw.write(oauth_token + ";" + oauth_token_secret);
+			bw.flush();
+			bw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private boolean loadAccessToken() {
+		LOGGER.info("Loading stored access token");
+		String oauth_token = null;
+		String oauth_token_secret = null;
+		
+		String tmpFname = "session.db";
+		try {
+			File f = new File(tmpFname);
+			if(!f.exists()) return false;
+			BufferedReader br = new BufferedReader(new FileReader(f));
+			String line = br.readLine();
+			if(line.contains(";")) {
+				if(line.split(";").length == 2) {
+					oauth_token = line.split(";")[0];
+					oauth_token_secret = line.split(";")[1];
+				}
+			} else {
+				return false;
+			}
+			br.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(oauth_token + ";" + oauth_token_secret);
+		oauth.setOauthToken(oauth_token);
+		oauth.setOauthTokenSecret(oauth_token_secret);
+		return true;
 	}
 	
 	public static SplitwiseSDK getInstance() {
@@ -61,15 +136,16 @@ public class SplitwiseSDK {
 	}
 
 	public String getAuthorizationURL() {
+		// Clear previous oauth
+		revokeOauth();
 		return oauth.getAuthorizationURL();
 	}
 	
 	public String getAccessToken() {
-		return oauth.getAccessToken();
-	}
-	
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
+		String response = oauth.getAccessToken();
+		// Save Access Token for future use
+		saveAccessToken();
+		return response;
 	}
 	
 	public void setOauthToken(String token) {
@@ -88,11 +164,20 @@ public class SplitwiseSDK {
 		return oauth.getOauthTokenSecret();
 	}
 	
+	public void revokeOauth() {
+		oauth.setOauthToken("");
+		oauth.setOauthTokenSecret("");
+		saveAccessToken();
+	}
+	
 	public void setOauthVerifier(String token) {
 		oauth.setOauthVerifier(token);
 	}
 	
-	public User getCurrentUser() {
+	public boolean hasValidAccessToken() {
+		return hasValidAccessToken;
+	}
+	public User getCurrentUser() throws APIException {
 		String response = "";
 		response = oauth.request(GET_CURRENT_USER_URL);
 		
@@ -125,8 +210,14 @@ public class SplitwiseSDK {
 		String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
 		sdk.setOauthToken(oauth_access_token);
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
-		
-		System.out.println(sdk.getCurrentUser());
+		for(int i=0;i<10;i++) {
+			try {
+					System.out.println(i);
+					Thread.sleep(1000);
+					System.out.println(sdk.getCurrentUser().first_name);
+//					System.out.println(Http.sendGetRequest("http://example.com/", null));
+			} catch(Exception e) {}
+		}
 		/**/
 	}
 

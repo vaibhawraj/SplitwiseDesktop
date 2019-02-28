@@ -1,10 +1,13 @@
 package com.splitwise.splitwisesdk.responses;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
-public class User {
-	private String jsonText;
-	
+import org.json.simple.JSONObject;
+
+import com.splitwise.splitwisesdk.APIException;
+
+public class User extends Response {
 	public long id;
 	public String first_name;
 	public String last_name;
@@ -21,14 +24,18 @@ public class User {
 	public int notification_count;
 	public NotificationSetting notification;
 	
-	public User(String jsonText) {
-		this.jsonText = jsonText;
-		parseJSON();
+	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
+	public User(String jsonText) throws APIException {
+		super(jsonText);
+		fetchValues();
 	}
 	
-	private void parseJSON() {
-		// Logic to parse JSON
-		//
+	public void fetchValues() {
+		JSONObject userJObj = (JSONObject) jsonObj.get("user");
+		this.first_name = (String) userJObj.get("first_name");
+		this.last_name = (String) userJObj.get("last_name");
+		this.email = (String) userJObj.get("email");
 	}
 	
 	public String toString() {
