@@ -3,6 +3,8 @@ package com.splitwise.splitwisesdk.responses;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.json.simple.JSONObject;
+
 import com.splitwise.splitwisesdk.APIException;
 
 public class User extends Response {
@@ -26,6 +28,14 @@ public class User extends Response {
 	
 	public User(String jsonText) throws APIException {
 		super(jsonText);
+		fetchValues();
+	}
+	
+	public void fetchValues() {
+		JSONObject userJObj = (JSONObject) jsonObj.get("user");
+		this.first_name = (String) userJObj.get("first_name");
+		this.last_name = (String) userJObj.get("last_name");
+		this.email = (String) userJObj.get("email");
 	}
 	
 	public String toString() {

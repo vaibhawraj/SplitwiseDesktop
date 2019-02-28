@@ -78,7 +78,7 @@ public class SplitwiseSDK {
 			User currentUser = getCurrentUser();
 			LOGGER.finer("User Respone " + currentUser.toString());
 		} catch (APIException e) {
-			e.printStackTrace();
+			LOGGER.info("Invalid Access Token");
 			return false;
 		}
 		return true;
@@ -214,7 +214,7 @@ public class SplitwiseSDK {
 			try {
 					System.out.println(i);
 					Thread.sleep(1000);
-					System.out.println(sdk.getCurrentUser());
+					System.out.println(sdk.getCurrentUser().first_name);
 //					System.out.println(Http.sendGetRequest("http://example.com/", null));
 			} catch(Exception e) {}
 		}
