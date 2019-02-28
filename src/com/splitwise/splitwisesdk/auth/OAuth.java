@@ -33,8 +33,6 @@ public class OAuth {
 	protected String accessTokenUrl;
 	protected String authorizeUrl;
 	
-	private static int maxRetries = 3;
-	
 	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	public OAuth(String consumerKey, String consumerSecret) {
@@ -72,15 +70,7 @@ public class OAuth {
 			//System.out.println("Response " + response);
 			if(response.equalsIgnoreCase("Invalid OAuth Request")) {
 				System.out.println(response);
-				if(maxRetries > 0) {
-					System.out.println("Retrying");
-					maxRetries--;
-					return getAuthorizationURL();
-				} else {
-					System.exit(0);
-				}
-			} else {
-				maxRetries = 3;
+				System.exit(0);
 			}
 			for(String r : rArr) {
 				params.put(r.split("=")[0], r.split("=")[1]);
@@ -118,14 +108,7 @@ public class OAuth {
 			//System.out.println("Response: " + response);
 			if(response.equalsIgnoreCase("Invalid OAuth Request")) {
 				System.out.println(response);
-				if(maxRetries > 0) {
-					maxRetries--;
-					return getAccessToken();
-				} else {
-					System.exit(0);
-				}
-			} else {
-				maxRetries = 3;
+				System.exit(0);
 			}
 			String[] rArr = response.split("&");
 			HashMap<String,String> params = new HashMap<String, String>();
