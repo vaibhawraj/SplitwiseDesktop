@@ -3,27 +3,24 @@ package com.splitwise.gui;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.border.MatteBorder;
 
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.ShadowBorder;
-
-import javafx.scene.effect.DropShadow;
 
 public class MidPanel  extends CJPanel{
 
 	private int borderLeft = 12;
 	private int borderRight = 12;
+	private DashboardPanel dashboardPanel;
+	
 	MidPanel() {
-		configureComponents();
+		init();
+		showDashboardPanel();
 	}
 	
 	@Override
 	public void initComponents() {
-		// TODO Auto-generated method stub
-		
+		dashboardPanel = new DashboardPanel();
 	}
 
 	@Override
@@ -37,13 +34,26 @@ public class MidPanel  extends CJPanel{
 
 	@Override
 	public void computeSize() {
-		// TODO Auto-generated method stub
+		dashboardPanel.setSize(getSize().width - borderLeft - borderRight,getSize().height);
 		
 	}
 
 	@Override
 	public void computePlacement() {
-		// TODO Auto-generated method stub
+		dashboardPanel.setLocation(borderLeft,0);
+		
+	}
+	
+	public void showDashboardPanel() {
+		this.removeAll();
+		add(dashboardPanel);
+	}
+	
+	public void showActivityPanel() {
+		
+	}
+	
+	public void showExpensePanel() {
 		
 	}
 	

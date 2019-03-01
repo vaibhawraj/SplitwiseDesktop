@@ -10,7 +10,9 @@ public class DefaultTheme {
 			fromHex("#48be9d"),
 			fromHex("#999999"),
 			fromHex("#cccccc"),
-			fromHex("#f6f6f6")
+			fromHex("#f6f6f6"),
+			fromHex("#dddddd"),
+			fromHex("#333333")
 	};
 	static HashMap<String, Color> colorMap = new HashMap<String, Color>();
 	
@@ -32,7 +34,12 @@ public class DefaultTheme {
 		colorMap.put("OptionForeground",colorPalette[3]);
 		colorMap.put("OptionSeparatorForeground", colorPalette[4]);
 		colorMap.put("OptionSeparatorBackground", colorPalette[5]);
-		colorMap.put("OptionSeparatorBorder", colorPalette[1]);
+		colorMap.put("OptionSeparatorBorder", colorPalette[6]);
+		
+		// Mid Panel
+		colorMap.put("PageHeaderBackground", colorPalette[1]);
+		colorMap.put("PageHeaderBorder", colorPalette[6]);
+		colorMap.put("PageHeaderForeground", colorPalette[7]);
 	}
 	
 	public static Color getColor(String name) {

@@ -1,5 +1,7 @@
 package com.splitwise.gui;
 
+import java.awt.event.ComponentListener;
+
 import javax.swing.JPanel;
 
 import com.splitwise.gui.custom.CJPanel;
@@ -13,8 +15,7 @@ public class MainContentPanel extends CJPanel {
 	private int contentWidth = 980;
 	
 	MainContentPanel() {
-		configureComponents();
-		initComponents();
+		init();
 	}
 	@Override
 	public void initComponents() {

@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import com.splitwise.gui.LeftPanel;
+import com.splitwise.gui.MainFrame;
 import com.splitwise.gui.theme.DefaultTheme;
 
 public class OptionItem extends CJPanel{
@@ -100,7 +101,18 @@ public class OptionItem extends CJPanel{
 	public void setSelected(boolean value) {
 		if(this.isSelected != value) {
 			this.isSelected = value;
-			repaint();
+			if(isSelected) {
+				textLabel.setFont(new Font("Helvetica Neue",Font.BOLD, 16));
+				textLabel.setForeground(DefaultTheme.getColor("OptionSelectedColor"));
+			} else {
+				textLabel.setFont(font);
+				textLabel.setForeground(DefaultTheme.getColor("OptionForeground"));
+			}
+			computeSize();
+			computePlacement();
+			//this.getParent().revalidate();
+			//this.repaint();
+			//MainFrame.getInstance().repaint();
 		}
 	}
 	

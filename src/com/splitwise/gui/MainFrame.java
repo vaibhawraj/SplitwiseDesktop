@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,7 +16,7 @@ import com.splitwise.gui.theme.DefaultTheme;
 
 import java.util.logging.*;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements ComponentListener{
 	private static MainFrame instance;
 	private HeaderPanel headerPanel;
 	private MainContentPanel mainContentPanel;
@@ -56,6 +58,8 @@ public class MainFrame extends JFrame {
 		
 		getContentPane().setLayout(null);
 		getContentPane().add(defaultPanel);
+		
+		addComponentListener(this);
 	}
 	
 	public void initMainPane() {
@@ -138,5 +142,30 @@ public class MainFrame extends JFrame {
 		//computeSize();
 		//computePlacement();
 		super.paint(g);
+		LOGGER.info("Main Frame Paint event triggered");
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		LOGGER.info("Main Frame resized event triggered");
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
