@@ -52,10 +52,12 @@ public class SplitwiseGUI{
 	
 	public void showLoginPanel() {
 			LOGGER.info("Loading login panel");
+			mainFrame.removeAll();
 			mainFrame.getContentPane().add(LoginPanel.getInstance());
+			mainFrame.repaint();
 			String url = sdk.getAuthorizationURL();
 			LoginPanel.getInstance().load(url);
-			mainFrame.repaint();
+			
 	}
 	
 	public void grantLogin() {
