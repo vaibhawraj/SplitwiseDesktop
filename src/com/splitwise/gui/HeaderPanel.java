@@ -11,11 +11,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomImage;
-import com.splitwise.gui.custom.PanelInterface;
 import com.splitwise.gui.theme.DefaultTheme;
 
-public class HeaderPanel extends JPanel implements PanelInterface {
+public class HeaderPanel extends CJPanel {
 
 	private int height = 30;
 	private String splitwiseLogoFilename = "assets/Splitwise.png";
@@ -32,11 +32,8 @@ public class HeaderPanel extends JPanel implements PanelInterface {
 	private JLabel usernameLabel;
 	private CustomImage image;
 	
-	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	
 	HeaderPanel() {
-		configureComponents();
-		initComponents();
+		init();
 	}
 	
 	@Override

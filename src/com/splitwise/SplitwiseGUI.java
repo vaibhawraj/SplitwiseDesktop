@@ -23,22 +23,31 @@ public class SplitwiseGUI{
 	public void init() {
 		
 		instance = this;
-		sdk = SplitwiseSDK.getInstance();
 		mainFrame = MainFrame.getInstance();
-		//TODO Add logic to save access token
 		
 		mainFrame.setVisible(true);
+		mainFrame.showDefaultPane();
 		
-		LOGGER.info("Checking valid access token");
-		if(!sdk.hasValidAccessToken()) {
-			LOGGER.info("Not Has valid access token");
-			showLoginPanel();
-			
-		} else {
-			LOGGER.info("Has valid access token");
-			mainFrame.initMainPane();
-			mainFrame.repaint();
-		}
+		// Default action is to first login
+		login();
+	}
+	
+	public void login() {
+		// Since login requires asynchronous call to web server
+		new Thread(){
+			public void run() {
+				LOGGER.info("Checking valid access token");
+				sdk = SplitwiseSDK.getInstance();
+				if(!sdk.hasValidAccessToken()) {
+					LOGGER.info("Not Has valid access token");
+					showLoginPanel();
+					
+				} else {
+					LOGGER.info("Has valid access token");
+					grantLogin();	
+				}
+			}
+		}.start();
 	}
 	
 	public void showLoginPanel() {
@@ -46,14 +55,17 @@ public class SplitwiseGUI{
 			mainFrame.getContentPane().add(LoginPanel.getInstance());
 			String url = sdk.getAuthorizationURL();
 			LoginPanel.getInstance().load(url);
+			mainFrame.repaint();
 	}
 	
 	public void grantLogin() {
 		LOGGER.info("Granting Loging");
-		mainFrame.getContentPane().removeAll();
-		mainFrame.initMainPane();
+		// TODO show loading screen
+		// TODO fetch data from the server on separate thread
+		mainFrame.showMainPane();;
 		mainFrame.repaint();
 	}
+	
 	public void showDashboard() {
 		mainFrame.getContentPane().removeAll();
 		JLabel lbl = new JLabel("oauth_access_token");
