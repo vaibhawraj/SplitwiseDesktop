@@ -1,9 +1,11 @@
 package com.splitwise.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -14,7 +16,7 @@ import com.splitwise.gui.custom.CustomImage;
 import com.splitwise.gui.custom.FlexibleLabel;
 import com.splitwise.gui.theme.DefaultTheme;
 
-public class DashboardPanel extends CJPanel {
+public class ExpensePanel extends CJPanel {
 	private PageHeader pageHeader;
 	private JPanel defaultPanel;
 	private JPanel defaultTextPanel;
@@ -26,15 +28,15 @@ public class DashboardPanel extends CJPanel {
 	//DefaultPanel
 	private Insets defaultPanelPadding = new Insets(30, 45, 10, 15);
 	private int defaultPanelHeight = 294;
-	private Dimension personLabelDimension = new Dimension(120,234);
-	DashboardPanel() {
+	private Dimension personLabelDimension = new Dimension(150,274);
+	ExpensePanel() {
 		init();
 		showDefaultPanel();
 	}
 	
 	@Override
 	public void initComponents() {
-		pageHeader = new PageHeader("Dashboard");
+		pageHeader = new PageHeader("All expenses");
 		defaultPanel = new JPanel();
 		
 		initDefaultPanel();
@@ -54,11 +56,10 @@ public class DashboardPanel extends CJPanel {
 		defaultTextPanel.setLayout(null);
 		defaultTextPanel.setOpaque(false);
 		
-		personLabel = new JLabel((new CustomImage("assets/SplitwisePerson.png")).setSize(personLabelDimension).getImageIcon());
+		personLabel = new JLabel((new CustomImage("assets/EmptyTable.png")).setSize(personLabelDimension).getImageIcon());
 		
-		defaultPanelTitle = new FlexibleLabel("Welcome to Splitwise!");
-		defaultPanelSubText = new FlexibleLabel("Splitwise helps you split bills with friends.\n\n" + 
-				"Click “Add a bill” above to get started");
+		defaultPanelTitle = new FlexibleLabel("You have not added any expenses yet");
+		defaultPanelSubText = new FlexibleLabel("To add a new expense, click the orange “Add a bill” button.");
 		
 		defaultPanelTitle.setHorizontalAlignment(SwingConstants.LEFT);
 		defaultPanelSubText.setHorizontalAlignment(SwingConstants.LEFT);
@@ -88,6 +89,11 @@ public class DashboardPanel extends CJPanel {
 	
 	public void hideDefaultPanel() {
 		defaultPanel.setVisible(false);
+	}
+	
+	public void setHeader(String text) {
+		pageHeader.setHeader(text);
+		this.repaint();
 	}
 
 	@Override
@@ -124,4 +130,3 @@ public class DashboardPanel extends CJPanel {
 	}
 
 }
-

@@ -5,6 +5,7 @@ package com.splitwise;
 import java.util.logging.Logger;
 
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 
 import com.splitwise.gui.LoginPanel;
@@ -25,8 +26,8 @@ public class SplitwiseGUI{
 		instance = this;
 		mainFrame = MainFrame.getInstance();
 		
-		mainFrame.setVisible(true);
 		mainFrame.showDefaultPane();
+		mainFrame.setVisible(true);
 		
 		// Default action is to first login
 		login();
@@ -51,49 +52,40 @@ public class SplitwiseGUI{
 	}
 	
 	public void showLoginPanel() {
+			try {
+				Thread.sleep(2000);
+			} catch(Exception e) {}
 			LOGGER.info("Loading login panel");
-			mainFrame.removeAll();
-			mainFrame.getContentPane().add(LoginPanel.getInstance());
-			mainFrame.repaint();
+			LoginPanel lp = LoginPanel.getInstance();
 			String url = sdk.getAuthorizationURL();
-			LoginPanel.getInstance().load(url);
+			lp.load(url);
+			lp.setVisible(false);			
 			
+			mainFrame.getContentPane().add(lp);
+			mainFrame.repaint();
 	}
 	
 	public void grantLogin() {
 		LOGGER.info("Granting Loging");
 		// TODO show loading screen
 		// TODO fetch data from the server on separate thread
-		mainFrame.showMainPane();;
+		mainFrame.showMainPane();
 		mainFrame.repaint();
 	}
 	
 	public void showDashboard() {
-		mainFrame.getContentPane().removeAll();
-		JLabel lbl = new JLabel("oauth_access_token");
-    	JTextField jtl = new JTextField();
-    	jtl.setText(SplitwiseSDK.getInstance().getOauthToken());
-    	
-    	jtl.setSize(jtl.getPreferredSize());
-    	lbl.setSize(lbl.getPreferredSize());
-    	lbl.setLocation(10, 10);
-    	jtl.setLocation(lbl.getPreferredSize().width + 10 + 10, 10);
-    	
-    	JLabel lbl2 = new JLabel("oauth_access_token_secret");
-    	JTextField jtl2 = new JTextField();
-    	jtl2.setText(SplitwiseSDK.getInstance().getOauthTokenSecret());
-    	
-    	jtl2.setSize(jtl2.getPreferredSize());
-    	lbl2.setSize(lbl2.getPreferredSize());
-    	lbl2.setLocation(10, 40);
-    	jtl2.setLocation(lbl2.getPreferredSize().width + 10 + 10, 40);
-    	mainFrame.getContentPane().setLayout(null);
-    	mainFrame.getContentPane().add(lbl);
-    	mainFrame.getContentPane().add(jtl);
-    	mainFrame.getContentPane().add(lbl2);
-    	mainFrame.getContentPane().add(jtl2);
-    	mainFrame.repaint();
-		
+		// Do All necessary activity before loading Dashboard
+		mainFrame.showDashboard();
+	}
+	
+	public void showAllExpenses() {
+		// Do All necessary activity before loading All Expenses
+		mainFrame.showAllExpenses();
+	}
+	
+	public void showRecentActivity() {
+		// Do All necessary activity before loading Recent Activity
+		mainFrame.showRecentActivity();
 	}
 	
 	public static SplitwiseGUI getInstance() {

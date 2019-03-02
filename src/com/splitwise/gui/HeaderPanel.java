@@ -55,6 +55,7 @@ public class HeaderPanel extends CJPanel {
 	@Override
 	public void configureComponents() {
 		// TODO Auto-generated method stub
+		setLayout(null);
 		setBackground(DefaultTheme.getColor("headerPanelBackground"));
 		setSize(getSize().width,this.height);
 		

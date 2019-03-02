@@ -37,6 +37,8 @@ public class OptionItem extends CJPanel{
 	private JLabel icon;
 	private Font font;
 	
+	// Callback
+	private Callback callback;
 	public static String MESSAGE = "MESSAGE";
 	public static String HEADER = "HEADER";
 	public static String OPTION = "OPTION";
@@ -63,6 +65,11 @@ public class OptionItem extends CJPanel{
 	
 	public OptionItem(String text) {
 		this(text, OPTION);
+	}
+	
+	public OptionItem(String text, Callback callback) {
+		this(text);
+		this.callback = callback;
 	}
 
 	@Override
@@ -111,7 +118,7 @@ public class OptionItem extends CJPanel{
 			computeSize();
 			computePlacement();
 			//this.getParent().revalidate();
-			//this.repaint();
+			this.repaint();
 			//MainFrame.getInstance().repaint();
 		}
 	}
@@ -137,6 +144,9 @@ public class OptionItem extends CJPanel{
 						if(oi != that) {
 							oi.setSelected(false);
 							lp.setSelectedItem(that);
+							if(callback != null) {
+								callback.callback();
+							}
 						}
 					} else {
 						LOGGER.info("null" + " -> " + that.text);
@@ -186,5 +196,14 @@ public class OptionItem extends CJPanel{
 	}
 	public boolean isSeparator() {
 		return isSeparator;
+	}
+	
+	public void clickAction() {
+		if(callback != null) {
+			callback.callback();
+		}
+	}
+	public static interface Callback {
+		public void callback();
 	}
 }

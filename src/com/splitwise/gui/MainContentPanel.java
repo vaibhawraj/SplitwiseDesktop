@@ -47,6 +47,21 @@ public class MainContentPanel extends CJPanel {
 		leftPanel.computeSize();
 		rightPanel.setSize(rightPanel.getSize().width, getSize().height);
 	}
+	
+	public void showDashboard() {
+		midPanel.showDashboardPanel();
+		repaint();
+	}
+	
+	public void showAllExpenses() {
+		midPanel.showExpensePanel();
+		repaint();
+	}
+	
+	public void showRecentActivity() {
+		midPanel.showRecentActivityPanel();
+		repaint();
+	}
 
 	@Override
 	public void computePlacement() {

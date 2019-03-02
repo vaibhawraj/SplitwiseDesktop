@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import com.splitwise.SplitwiseGUI;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.OptionItem;
 
@@ -30,6 +31,14 @@ public class LeftPanel extends CJPanel{
 	
 	LeftPanel() {
 		this.init();
+		// Default Selection - Execute Later
+		(new Thread() {
+			public void run() {
+				links.get(0).setSelected(true);
+				selectedItem = links.get(0);
+				links.get(0).clickAction();
+			}
+		}).start();
 	}
 	
 	@Override
@@ -37,9 +46,9 @@ public class LeftPanel extends CJPanel{
 		// TODO Auto-generated method stub
 		links = new ArrayList<OptionItem>();
 		
-		links.add(new OptionItem("Dashboard"));
-		links.add(new OptionItem("Recent activity"));
-		links.add(new OptionItem("All expenses"));
+		links.add(new OptionItem("Dashboard",() -> SplitwiseGUI.getInstance().showDashboard()));
+		links.add(new OptionItem("Recent activity", () -> SplitwiseGUI.getInstance().showRecentActivity()));
+		links.add(new OptionItem("All expenses", () -> SplitwiseGUI.getInstance().showAllExpenses()));
 		
 		groupsHeader = new OptionItem("Groups", OptionItem.HEADER);
 		
@@ -115,7 +124,14 @@ public class LeftPanel extends CJPanel{
 	}
 	
 	public void setSelectedItem(OptionItem oi) {
-		this.selectedItem = oi;
+		if(oi != this.selectedItem) { // To avoid multiple click on same options
+			this.selectedItem = oi;
+			processSelectedOption(oi);
+		}
+	}
+	
+	public void processSelectedOption(OptionItem oi) {
+		
 	}
 
 }

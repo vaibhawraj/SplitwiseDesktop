@@ -3,12 +3,14 @@ package com.splitwise.gui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 import com.splitwise.gui.custom.CustomImage;
@@ -23,20 +25,22 @@ public class MainFrame extends JFrame implements ComponentListener{
 	private JLabel splitwiseLogo;
 	private CustomImage splitwiseLogoImage;
 	private JPanel defaultPanel;
+	private LayoutManager defaultLayoutManager;
+	private JLayeredPane layeredPane;
 	
 	private String splitwiseLogoFilename = "assets/SplitwiseLogo.png";
 	
 	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
-	private MainFrame() {
+	public MainFrame() {
 		configureComponents();
 		initComponents();
 		computeSize();
 		computePlacement();
 		
-		LOGGER.finest("Size of Content Pane" + getContentPane().getSize());
-		LOGGER.finest("Size of Default Pane" + defaultPanel.getSize());
-		LOGGER.setLevel(Level.FINEST);
+		//LOGGER.finest("Size of Content Pane" + getContentPane().getSize());
+		//LOGGER.finest("Size of Default Pane" + defaultPanel.getSize());
+		//LOGGER.setLevel(Level.FINEST);
 	}
 	
 	public static MainFrame getInstance() {
@@ -46,6 +50,8 @@ public class MainFrame extends JFrame implements ComponentListener{
 		return instance;
 	}
 	private void initComponents() {
+		layeredPane = getLayeredPane();
+		
 		defaultPanel = new JPanel();
 		defaultPanel.setLayout(null);
 		defaultPanel.setBackground(DefaultTheme.getColor("mainFrameBackground"));
@@ -56,8 +62,8 @@ public class MainFrame extends JFrame implements ComponentListener{
 		defaultPanel.add(splitwiseLogo);
 		computeSize();
 		
-		getContentPane().setLayout(null);
-		getContentPane().add(defaultPanel);
+		//getContentPane().setLayout(null);
+		//getContentPane().add(defaultPanel);
 		
 		addComponentListener(this);
 	}
@@ -74,6 +80,8 @@ public class MainFrame extends JFrame implements ComponentListener{
 		
 		computeSize();
 		computePlacement();
+		
+		revalidate();
 	}
 	
 	public void showMainPane() {
@@ -91,18 +99,37 @@ public class MainFrame extends JFrame implements ComponentListener{
 		getContentPane().add(defaultPanel);
 	}
 	
+	public void showDashboard() {
+		this.mainContentPanel.showDashboard();
+	}
+	public void showAllExpenses() {
+		this.mainContentPanel.showAllExpenses();
+		repaint();
+	}
+	
+	public void showRecentActivity() {
+		this.mainContentPanel.showRecentActivity();
+		repaint();
+	}
+	public LayoutManager getDefaultLayoutManager() {
+		return this.defaultLayoutManager;
+	}
+	
 	private void configureComponents() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize((int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
-		setBackground(DefaultTheme.getColor("mainFrameBackground"));
+		getContentPane().setBackground(DefaultTheme.getColor("mainFrameBackground"));
+		defaultLayoutManager = getContentPane().getLayout();
 	}
 	private void computeSize() {
 		
 		getContentPane().setSize(getSize());
 		Dimension contentPanelDimension = getContentPane().getSize();
 		
-		defaultPanel.setSize(contentPanelDimension);
-		splitwiseLogo.setSize(200,200);
+		if(defaultPanel != null) {
+			defaultPanel.setSize(contentPanelDimension);
+			splitwiseLogo.setSize(200,200);
+		}
 		
 		LOGGER.finest("Content Panel size " + contentPanelDimension);
 		if(headerPanel != null) {
@@ -120,11 +147,13 @@ public class MainFrame extends JFrame implements ComponentListener{
 	
 	private void computePlacement() {
 		
-		defaultPanel.setLocation(0, 0);
-		splitwiseLogo.setLocation(
-				(defaultPanel.getSize().width - splitwiseLogo.getSize().width)/2,
-				(defaultPanel.getSize().height - splitwiseLogo.getSize().height)/2
-				);
+		if(defaultPanel != null) {
+			defaultPanel.setLocation(0, 0);
+			splitwiseLogo.setLocation(
+					(defaultPanel.getSize().width - splitwiseLogo.getSize().width)/2,
+					(defaultPanel.getSize().height - splitwiseLogo.getSize().height)/2
+					);
+		}
 		
 		
 		if(headerPanel != null) {
@@ -138,17 +167,19 @@ public class MainFrame extends JFrame implements ComponentListener{
 		}
 	}
 	
-	public void paint(Graphics g) {
+	/*public void paint(Graphics g) {
 		//computeSize();
 		//computePlacement();
 		super.paint(g);
 		LOGGER.info("Main Frame Paint event triggered");
-	}
+	}*/
 
 	@Override
 	public void componentResized(ComponentEvent e) {
 		// TODO Auto-generated method stub
 		LOGGER.info("Main Frame resized event triggered");
+		LOGGER.info("Content Pane Size" + getContentPane().getSize());
+		getContentPane().revalidate();
 	}
 
 	@Override

@@ -53,6 +53,16 @@ public class PageHeader extends CJPanel {
 		
 	}
 	
+	public int getPaddingRight() {
+		return this.paddingRight;
+	}
+	
+	public void setHeader(String text) {
+		this.text = text;
+		headerLabel.setText(text);
+		headerLabel.repaint();
+	}
+	
 	public void paint(Graphics g) {
 		super.paint(g);
 		g.setColor(DefaultTheme.getColor("PageHeaderBorder"));
