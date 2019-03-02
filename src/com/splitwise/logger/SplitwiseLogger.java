@@ -75,6 +75,8 @@ public class SplitwiseLogger {
             buf.append("\t<td>");
             buf.append(calcDate(rec.getMillis()));
             buf.append("</td>\n");
+            buf.append("<td>" + rec.getSourceClassName() + "</td>\n");
+            buf.append("<td>" + rec.getSourceMethodName() + "</td>\n");
             buf.append("\t<td>");
             buf.append(formatMessage(rec));
             buf.append("</td>\n");
@@ -84,7 +86,7 @@ public class SplitwiseLogger {
         }
 
         private String calcDate(long millisecs) {
-            SimpleDateFormat date_format = new SimpleDateFormat("MMM dd,yyyy HH:mm");
+            SimpleDateFormat date_format = new SimpleDateFormat("MMddyyHHmm");
             Date resultdate = new Date(millisecs);
             return date_format.format(resultdate);
         }
@@ -98,6 +100,7 @@ public class SplitwiseLogger {
                 + "td { font:normal 10pt Tahoma; }\n"
                 + "h1 {font:normal 11pt Tahoma;}\n"
                 + "</style>\n"
+                + "<meta http-equiv=\"refresh\" content=\"2\"/>"
                 + "</head>\n"
                 + "<body>\n"
                 + "<h1>" + (new Date()) + "</h1>\n"
@@ -105,6 +108,8 @@ public class SplitwiseLogger {
                 + "<tr align=\"left\">\n"
                 + "\t<th style=\"width:10%\">Loglevel</th>\n"
                 + "\t<th style=\"width:15%\">Time</th>\n"
+                + "\t<th style=\"width:15%\">Class</th>\n"
+                + "\t<th style=\"width:15%\">Method</th>\n"
                 + "\t<th style=\"width:75%\">Log Message</th>\n"
                 + "</tr>\n";
           }

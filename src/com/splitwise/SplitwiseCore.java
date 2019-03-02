@@ -7,7 +7,7 @@ import com.splitwise.core.People;
 
 import java.util.ArrayList;
 
-public class SplitWiseCore {
+public class SplitwiseCore {
     private LedgerManager ledger = new LedgerManager();
     private People currentUser = new People();
     private ArrayList<People> friends = new ArrayList<>(); // list of friends

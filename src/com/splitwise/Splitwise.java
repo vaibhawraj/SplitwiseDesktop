@@ -9,6 +9,7 @@ package com.splitwise;
 import java.io.IOException;
 import java.util.logging.*;
 
+import com.splitwise.gui.MainFrame;
 import com.splitwise.logger.SplitwiseLogger;
 
 

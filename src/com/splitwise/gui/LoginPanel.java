@@ -2,6 +2,8 @@ package com.splitwise.gui;
 
 
 
+import java.util.logging.Logger;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -20,8 +22,11 @@ import com.splitwise.SplitwiseGUI;
 
 public class LoginPanel extends JFXPanel implements ChangeListener{
 	private static LoginPanel instance;
-	
+	private String url;
 	private WebView webView;
+	
+	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	private LoginPanel() {
 		Platform.runLater(() -> {
 		webView = new WebView();
@@ -40,6 +45,7 @@ public class LoginPanel extends JFXPanel implements ChangeListener{
 	
 	public void load(String url) {
 		Platform.runLater(() -> {
+			this.url = url;
 			webView.getEngine().load(url);
 		});
 	}
@@ -61,8 +67,12 @@ public class LoginPanel extends JFXPanel implements ChangeListener{
         	
         	SplitwiseGUI.getInstance().grantLogin();
         }
-        if (newValue == Worker.State.SUCCEEDED) {
-            //document finished loading
+        if (newValue == Worker.State.SUCCEEDED && location.equals("https://secure.splitwise.com/login")) {
+        	setSize(this.getParent().getSize());
+        	this.setVisible(true);
+            this.getParent().getComponent(0).setVisible(false);
+            LOGGER.info("Showing LoginPanel" + this.getLocation() + " Size: " + this.getSize() +  "Parent Size" + this.getParent().getSize());
+            this.getParent().repaint();
         }
 	
 	}

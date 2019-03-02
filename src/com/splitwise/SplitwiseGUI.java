@@ -5,6 +5,7 @@ package com.splitwise;
 import java.util.logging.Logger;
 
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 
 import com.splitwise.gui.LoginPanel;
@@ -23,63 +24,68 @@ public class SplitwiseGUI{
 	public void init() {
 		
 		instance = this;
-		sdk = SplitwiseSDK.getInstance();
 		mainFrame = MainFrame.getInstance();
-		//TODO Add logic to save access token
 		
+		mainFrame.showDefaultPane();
 		mainFrame.setVisible(true);
 		
-		LOGGER.info("Checking valid access token");
-		if(!sdk.hasValidAccessToken()) {
-			LOGGER.info("Not Has valid access token");
-			showLoginPanel();
-			
-		} else {
-			LOGGER.info("Has valid access token");
-			mainFrame.initMainPane();
-			mainFrame.repaint();
-		}
+		// Default action is to first login
+		login();
+	}
+	
+	public void login() {
+		// Since login requires asynchronous call to web server
+		new Thread(){
+			public void run() {
+				LOGGER.info("Checking valid access token");
+				sdk = SplitwiseSDK.getInstance();
+				if(!sdk.hasValidAccessToken()) {
+					LOGGER.info("Not Has valid access token");
+					showLoginPanel();
+					
+				} else {
+					LOGGER.info("Has valid access token");
+					grantLogin();	
+				}
+			}
+		}.start();
 	}
 	
 	public void showLoginPanel() {
+			try {
+				Thread.sleep(2000);
+			} catch(Exception e) {}
 			LOGGER.info("Loading login panel");
-			mainFrame.getContentPane().add(LoginPanel.getInstance());
+			LoginPanel lp = LoginPanel.getInstance();
 			String url = sdk.getAuthorizationURL();
-			LoginPanel.getInstance().load(url);
+			lp.load(url);
+			lp.setVisible(false);			
+			
+			mainFrame.getContentPane().add(lp);
+			mainFrame.repaint();
 	}
 	
 	public void grantLogin() {
 		LOGGER.info("Granting Loging");
-		mainFrame.getContentPane().removeAll();
-		mainFrame.initMainPane();
+		// TODO show loading screen
+		// TODO fetch data from the server on separate thread
+		mainFrame.showMainPane();
 		mainFrame.repaint();
 	}
+	
 	public void showDashboard() {
-		mainFrame.getContentPane().removeAll();
-		JLabel lbl = new JLabel("oauth_access_token");
-    	JTextField jtl = new JTextField();
-    	jtl.setText(SplitwiseSDK.getInstance().getOauthToken());
-    	
-    	jtl.setSize(jtl.getPreferredSize());
-    	lbl.setSize(lbl.getPreferredSize());
-    	lbl.setLocation(10, 10);
-    	jtl.setLocation(lbl.getPreferredSize().width + 10 + 10, 10);
-    	
-    	JLabel lbl2 = new JLabel("oauth_access_token_secret");
-    	JTextField jtl2 = new JTextField();
-    	jtl2.setText(SplitwiseSDK.getInstance().getOauthTokenSecret());
-    	
-    	jtl2.setSize(jtl2.getPreferredSize());
-    	lbl2.setSize(lbl2.getPreferredSize());
-    	lbl2.setLocation(10, 40);
-    	jtl2.setLocation(lbl2.getPreferredSize().width + 10 + 10, 40);
-    	mainFrame.getContentPane().setLayout(null);
-    	mainFrame.getContentPane().add(lbl);
-    	mainFrame.getContentPane().add(jtl);
-    	mainFrame.getContentPane().add(lbl2);
-    	mainFrame.getContentPane().add(jtl2);
-    	mainFrame.repaint();
-		
+		// Do All necessary activity before loading Dashboard
+		mainFrame.showDashboard();
+	}
+	
+	public void showAllExpenses() {
+		// Do All necessary activity before loading All Expenses
+		mainFrame.showAllExpenses();
+	}
+	
+	public void showRecentActivity() {
+		// Do All necessary activity before loading Recent Activity
+		mainFrame.showRecentActivity();
 	}
 	
 	public static SplitwiseGUI getInstance() {

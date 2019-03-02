@@ -187,8 +187,8 @@ public class SplitwiseSDK {
 	public static void main(String args[]) {
 		SplitwiseSDK sdk = SplitwiseSDK.getInstance();
 		// Step 1: Execute and set oauth_token, oauth_token_secret from output.Get authorization url
-		//System.out.println("Set oauth_token and oauth_token_secret in program");
-		//System.out.println("Go to url: " + sdk.getAuthorizationURL());
+		System.out.println("Set oauth_token and oauth_token_secret in program");
+		System.out.println("Go to url: " + sdk.getAuthorizationURL());
 		// Comment above lines
 		
 		// Step 2: Uncomment below, On the browser, after clicking on authorize copy oauth_verifier and paste it below
@@ -206,7 +206,7 @@ public class SplitwiseSDK {
 		
 		//Step 3: Set access token and access token secret
 		/**/
-		String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
+		/*String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
 		String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
 		sdk.setOauthToken(oauth_access_token);
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
@@ -217,7 +217,7 @@ public class SplitwiseSDK {
 					System.out.println(sdk.getCurrentUser().first_name);
 //					System.out.println(Http.sendGetRequest("http://example.com/", null));
 			} catch(Exception e) {}
-		}
+		}*/
 		/**/
 	}
 
