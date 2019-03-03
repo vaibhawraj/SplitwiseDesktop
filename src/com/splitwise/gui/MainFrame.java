@@ -245,8 +245,8 @@ public class MainFrame extends JFrame implements ComponentListener{
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
 				LOGGER.info("Mouse Clicked on backdrop");
-				backdrop = null;
 				layeredPane.remove(backdrop);
+				backdrop = null;
 				layeredPane.repaint();
 			}
 

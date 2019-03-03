@@ -1,10 +1,22 @@
 package com.splitwise.gui.custom;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.logging.Logger;
+
 import javax.swing.JTextArea;
 
 public class FlexibleLabel extends JTextArea {
 	private int rows = 1;
 	private int cols = 10;
+	private String placeholder = "";
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	public FlexibleLabel(int rows, int cols) {
 		super(rows,cols);
@@ -20,6 +32,10 @@ public class FlexibleLabel extends JTextArea {
 		setText(text);
 		init();
 	}
+	public FlexibleLabel() {
+		this("");
+	}
+
 	private void init() {
 		configureComponent();
 	}
@@ -37,5 +53,25 @@ public class FlexibleLabel extends JTextArea {
 	}
 	public void setVerticalAlignment(int alignment) {
 		this.setAlignmentY(alignment);
+	}
+	
+	public void setPlaceholder(String text) {
+		this.placeholder = text;
+	}
+
+	public void paintComponent(final Graphics g) {
+		super.paintComponent(g);
+		
+		if(this.placeholder == null || this.placeholder.length() == 0 || getText().length() > 0) {
+			return;
+		}
+		
+		final Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(
+            RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(getDisabledTextColor());
+        g2.drawString(placeholder, getInsets().left, g.getFontMetrics()
+            .getMaxAscent() + getInsets().top);
 	}
 }

@@ -32,7 +32,8 @@ public class DashboardPanel extends CJPanel {
 	private Dimension personLabelDimension = new Dimension(120,234);
 	DashboardPanel() {
 		init();
-		showSummaryPanel();
+		//showSummaryPanel();
+		this.showDefaultPanel();
 	}
 	
 	@Override

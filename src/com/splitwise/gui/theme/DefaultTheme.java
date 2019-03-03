@@ -16,7 +16,8 @@ public class DefaultTheme {
 			fromHex("#ff652f"), //8
 			new Color(0,0,0,(int)(0.1*255)), //9
 			new Color(0,0,0,(int)(0.25*255)), //10
-			fromHex("#ff5216")
+			fromHex("#ff5216"),
+			fromHex("#5cc5a7")
 	};
 	static HashMap<String, Color> colorMap = new HashMap<String, Color>();
 	
@@ -57,6 +58,10 @@ public class DefaultTheme {
 		colorMap.put("ButtonOrangeBorderTop", colorPalette[9]);
 		colorMap.put("ButtonOrangeBorderBottom", colorPalette[10]);
 		colorMap.put("ButtonOrangeHighlight", colorPalette[11]);
+		
+		// Model
+		colorMap.put("ModelHeaderBackground", colorPalette[12]);
+		colorMap.put("ModelHeaderForeground", colorPalette[1]);
 	}
 	
 	public static Color getColor(String name) {
