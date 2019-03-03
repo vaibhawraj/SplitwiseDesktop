@@ -6,11 +6,13 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.splitwise.gui.custom.OptionItem.Callback;
 import com.splitwise.gui.theme.DefaultTheme;
 
 public class CustomButton extends JPanel {
@@ -19,6 +21,14 @@ public class CustomButton extends JPanel {
 	
 	boolean isHighlighted;
 	boolean isPressed;
+	private Callback callback;
+	
+	final public static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
+	public static interface Callback {
+		public void callback();
+	}
+	
 	public CustomButton(String text) {
 		this.text = text;
 		this.isHighlighted = false;
@@ -49,7 +59,10 @@ public class CustomButton extends JPanel {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
+				LOGGER.info("Add Bill Button Clicked");
+				if(callback!=null) {
+					callback.callback();
+				}
 				
 			}
 
@@ -128,6 +141,9 @@ public class CustomButton extends JPanel {
 			g.translate(0, 1);
 		}
 		super.paint(g);
-		
+	}
+	
+	public void addCallback(Callback callback) {
+		this.callback = callback;
 	}
 }

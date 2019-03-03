@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.splitwise.SplitwiseGUI;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomButton;
 import com.splitwise.gui.custom.CustomImage;
@@ -45,6 +46,7 @@ public class DashboardPanel extends CJPanel {
 		summaryPanel.setVisible(false);
 		
 		addBillButton = new CustomButton("Add a Bill");
+		addBillButton.addCallback(()-> showAddBill());
 		
 		pageHeader.add(addBillButton);
 		add(defaultPanel);
@@ -52,6 +54,11 @@ public class DashboardPanel extends CJPanel {
 		add(summaryPanel);
 	}
 	
+	private void showAddBill() {
+		LOGGER.info("Add Bill Button on Dashboard Clicked");
+		SplitwiseGUI.getInstance().showAddBill();
+	}
+
 	public void initDefaultPanel() {
 		defaultPanel.setLayout(null);
 		defaultPanel.setOpaque(false);

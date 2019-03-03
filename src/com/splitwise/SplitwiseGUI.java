@@ -25,18 +25,25 @@ public class SplitwiseGUI{
 		
 		instance = this;
 		mainFrame = MainFrame.getInstance();
-		
-		mainFrame.showDefaultPane();
+		LOGGER.info("Has PAINT Fired");
+		//mainFrame.showDefaultPane();
+		LOGGER.info("Has PAINT Fired");
 		mainFrame.setVisible(true);
+		LOGGER.info("Has PAINT Fired");
 		
 		// Default action is to first login
-		login();
+		//login();
 	}
 	
 	public void login() {
 		// Since login requires asynchronous call to web server
 		new Thread(){
 			public void run() {
+				try {
+					Thread.sleep(2000);
+				} catch(Exception e) {
+					
+				}
 				LOGGER.info("Checking valid access token");
 				sdk = SplitwiseSDK.getInstance();
 				if(!sdk.hasValidAccessToken()) {
@@ -45,7 +52,7 @@ public class SplitwiseGUI{
 					
 				} else {
 					LOGGER.info("Has valid access token");
-					grantLogin();	
+					//grantLogin();	
 				}
 			}
 		}.start();
@@ -90,5 +97,8 @@ public class SplitwiseGUI{
 	
 	public static SplitwiseGUI getInstance() {
 		return instance;
+	}
+	public void showAddBill() {
+		mainFrame.showAddBill();
 	}
 }

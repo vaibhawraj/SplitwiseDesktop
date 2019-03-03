@@ -1,12 +1,15 @@
 package com.splitwise.gui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,6 +30,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 	private JPanel defaultPanel;
 	private LayoutManager defaultLayoutManager;
 	private JLayeredPane layeredPane;
+	private JPanel backdrop;
 	
 	private String splitwiseLogoFilename = "assets/SplitwiseLogo.png";
 	
@@ -35,9 +39,10 @@ public class MainFrame extends JFrame implements ComponentListener{
 	public MainFrame() {
 		configureComponents();
 		initComponents();
-		computeSize();
-		computePlacement();
+		//computeSize();
+		//computePlacement();
 		
+		validate();
 		//LOGGER.finest("Size of Content Pane" + getContentPane().getSize());
 		//LOGGER.finest("Size of Default Pane" + defaultPanel.getSize());
 		//LOGGER.setLevel(Level.FINEST);
@@ -50,7 +55,9 @@ public class MainFrame extends JFrame implements ComponentListener{
 		return instance;
 	}
 	private void initComponents() {
-		layeredPane = getLayeredPane();
+		JLabel h = new JLabel("Hello Worldf");
+		add(h);
+		/*layeredPane = new JLayeredPane();
 		
 		defaultPanel = new JPanel();
 		defaultPanel.setLayout(null);
@@ -60,17 +67,21 @@ public class MainFrame extends JFrame implements ComponentListener{
 		splitwiseLogo = new JLabel(splitwiseLogoImage.setSize(200,200).getImageIcon());
 		
 		defaultPanel.add(splitwiseLogo);
-		computeSize();
 		
-		//getContentPane().setLayout(null);
+		getContentPane().setLayout(null);
 		//getContentPane().add(defaultPanel);
 		
-		addComponentListener(this);
+		getContentPane().add(layeredPane);
+		layeredPane.setBackground(DefaultTheme.getColor("mainFrameBackground"));
+		layeredPane.setOpaque(true);
+		layeredPane.add(defaultPanel);
+		
+		addComponentListener(this);*/
 	}
 	
 	public void initMainPane() {
 		LOGGER.info("Initializing Main Page");
-		getContentPane().setLayout(null);
+		//getContentPane().setLayout(null);
 		
 		//Initialize Header Panel
 		headerPanel = new HeaderPanel();
@@ -81,24 +92,24 @@ public class MainFrame extends JFrame implements ComponentListener{
 		computeSize();
 		computePlacement();
 		
-		revalidate();
+		//revalidate();
 	}
 	
 	public void showMainPane() {
 		if(headerPanel == null && mainContentPanel == null) {
 			initMainPane();
 		}
-		getContentPane().removeAll();
-		getContentPane().add(headerPanel);
-		getContentPane().add(mainContentPanel);
+		layeredPane.removeAll();
+		layeredPane.add(headerPanel,-100);
+		layeredPane.add(mainContentPanel,-100);
 		
-		showAllExpenses();
+		showDashboard();
 	}
 	
 	public void showDefaultPane() {
-		getContentPane().removeAll();
-		getContentPane().setLayout(null);
-		getContentPane().add(defaultPanel);
+		layeredPane.removeAll();
+		layeredPane.setLayout(null);
+		layeredPane.add(defaultPanel);
 	}
 	
 	public void showDashboard() {
@@ -120,20 +131,22 @@ public class MainFrame extends JFrame implements ComponentListener{
 	private void configureComponents() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize((int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
-		getContentPane().setBackground(DefaultTheme.getColor("mainFrameBackground"));
-		defaultLayoutManager = getContentPane().getLayout();
+		LOGGER.info("Dimension " + getSize());
+		//getLayeredPane().setBackground(DefaultTheme.getColor("mainFrameBackground"));
+		defaultLayoutManager = getLayeredPane().getLayout();
 	}
+	
 	private void computeSize() {
-		
 		getContentPane().setSize(getSize());
-		Dimension contentPanelDimension = getContentPane().getSize();
+		layeredPane.setSize(getSize());
+		Dimension contentPanelDimension = layeredPane.getSize();
 		
 		if(defaultPanel != null) {
-			defaultPanel.setSize(contentPanelDimension);
+			defaultPanel.setSize(getSize());
 			splitwiseLogo.setSize(200,200);
+			LOGGER.info("Default Pane " + contentPanelDimension);
 		}
 		
-		LOGGER.finest("Content Panel size " + contentPanelDimension);
 		if(headerPanel != null) {
 			headerPanel.setSize(contentPanelDimension.width,headerPanel.getSize().height);
 			LOGGER.finest("Header Panel size " + headerPanel.getSize());
@@ -145,10 +158,14 @@ public class MainFrame extends JFrame implements ComponentListener{
 			LOGGER.finest("Main Content Panel size " + mainContentPanel.getSize());
 			mainContentPanel.computeSize();
 		}
+		
+		if(backdrop != null) {
+			backdrop.setSize(contentPanelDimension);
+		}
 	}
 	
 	private void computePlacement() {
-		
+		layeredPane.setLocation(0,0);
 		if(defaultPanel != null) {
 			defaultPanel.setLocation(0, 0);
 			splitwiseLogo.setLocation(
@@ -167,6 +184,10 @@ public class MainFrame extends JFrame implements ComponentListener{
 			mainContentPanel.setLocation(0, headerPanel.getSize().height);
 			mainContentPanel.computePlacement();
 		}
+		
+		if(backdrop != null) {
+			backdrop.setLocation(0,0);
+		}
 	}
 	
 	/*public void paint(Graphics g) {
@@ -180,8 +201,10 @@ public class MainFrame extends JFrame implements ComponentListener{
 	public void componentResized(ComponentEvent e) {
 		// TODO Auto-generated method stub
 		LOGGER.info("Main Frame resized event triggered");
-		LOGGER.info("Content Pane Size" + getContentPane().getSize());
-		getContentPane().revalidate();
+		LOGGER.info("Content Pane Size" + getLayeredPane().getSize());
+		computeSize();
+		computePlacement();
+		/*getContentPane().revalidate();*/
 	}
 
 	@Override
@@ -200,5 +223,66 @@ public class MainFrame extends JFrame implements ComponentListener{
 	public void componentHidden(ComponentEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void showAddBill() {
+		backdrop = new JPanel();
+		backdrop.setLayout(null);
+		backdrop.setBackground(new Color(200,0,0,10));
+		
+		AddBillModel adb = new AddBillModel();
+		
+		backdrop.add(adb);
+		backdrop.setSize(getContentPane().getSize());
+		backdrop.setLocation(0,0);
+		
+		layeredPane.add(backdrop,10000);
+		
+		adb.setSize(adb.getPreferredSize());
+		adb.setLocation((getContentPane().getSize().width - adb.getSize().width)/2,
+				(getContentPane().getSize().height - adb.getSize().height)/2);
+		
+		layeredPane.moveToFront(backdrop);
+		
+		backdrop.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				LOGGER.info("Mouse Clicked on backdrop");
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+
+		this.repaint();
+		
+	}
+	
+	public void paint(Graphics g) {
+		LOGGER.info("Paint fired");
 	}
 }
