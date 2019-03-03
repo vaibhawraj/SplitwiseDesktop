@@ -30,7 +30,8 @@ public class MainFrame extends JFrame implements ComponentListener{
 	private JPanel defaultPanel;
 	private LayoutManager defaultLayoutManager;
 	private JLayeredPane layeredPane;
-	private JPanel backdrop;
+	public JPanel backdrop;
+	
 	
 	private String splitwiseLogoFilename = "assets/SplitwiseLogo.png";
 	
@@ -39,10 +40,9 @@ public class MainFrame extends JFrame implements ComponentListener{
 	public MainFrame() {
 		configureComponents();
 		initComponents();
-		//computeSize();
-		//computePlacement();
+		computeSize();
+		computePlacement();
 		
-		validate();
 		//LOGGER.finest("Size of Content Pane" + getContentPane().getSize());
 		//LOGGER.finest("Size of Default Pane" + defaultPanel.getSize());
 		//LOGGER.setLevel(Level.FINEST);
@@ -55,9 +55,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 		return instance;
 	}
 	private void initComponents() {
-		JLabel h = new JLabel("Hello Worldf");
-		add(h);
-		/*layeredPane = new JLayeredPane();
+		layeredPane = new JLayeredPane();
 		
 		defaultPanel = new JPanel();
 		defaultPanel.setLayout(null);
@@ -74,9 +72,8 @@ public class MainFrame extends JFrame implements ComponentListener{
 		getContentPane().add(layeredPane);
 		layeredPane.setBackground(DefaultTheme.getColor("mainFrameBackground"));
 		layeredPane.setOpaque(true);
-		layeredPane.add(defaultPanel);
 		
-		addComponentListener(this);*/
+		addComponentListener(this);
 	}
 	
 	public void initMainPane() {
@@ -100,8 +97,8 @@ public class MainFrame extends JFrame implements ComponentListener{
 			initMainPane();
 		}
 		layeredPane.removeAll();
-		layeredPane.add(headerPanel,-100);
-		layeredPane.add(mainContentPanel,-100);
+		layeredPane.add(headerPanel,0);
+		layeredPane.add(mainContentPanel,0);
 		
 		showDashboard();
 	}
@@ -131,15 +128,14 @@ public class MainFrame extends JFrame implements ComponentListener{
 	private void configureComponents() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize((int)(Toolkit.getDefaultToolkit().getScreenSize().getWidth()), (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight()));
-		LOGGER.info("Dimension " + getSize());
-		//getLayeredPane().setBackground(DefaultTheme.getColor("mainFrameBackground"));
+		getLayeredPane().setBackground(DefaultTheme.getColor("mainFrameBackground"));
 		defaultLayoutManager = getLayeredPane().getLayout();
 	}
 	
 	private void computeSize() {
 		getContentPane().setSize(getSize());
 		layeredPane.setSize(getSize());
-		Dimension contentPanelDimension = layeredPane.getSize();
+		Dimension contentPanelDimension = getLayeredPane().getSize();
 		
 		if(defaultPanel != null) {
 			defaultPanel.setSize(getSize());
@@ -204,7 +200,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 		LOGGER.info("Content Pane Size" + getLayeredPane().getSize());
 		computeSize();
 		computePlacement();
-		/*getContentPane().revalidate();*/
+		getContentPane().revalidate();
 	}
 
 	@Override
@@ -228,14 +224,13 @@ public class MainFrame extends JFrame implements ComponentListener{
 	public void showAddBill() {
 		backdrop = new JPanel();
 		backdrop.setLayout(null);
-		backdrop.setBackground(new Color(200,0,0,10));
+		backdrop.setBackground(new Color(0,0,0,100));
+		backdrop.setSize(getContentPane().getSize());
+		backdrop.setLocation(0,0);
 		
 		AddBillModel adb = new AddBillModel();
 		
 		backdrop.add(adb);
-		backdrop.setSize(getContentPane().getSize());
-		backdrop.setLocation(0,0);
-		
 		layeredPane.add(backdrop,10000);
 		
 		adb.setSize(adb.getPreferredSize());
@@ -250,6 +245,9 @@ public class MainFrame extends JFrame implements ComponentListener{
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
 				LOGGER.info("Mouse Clicked on backdrop");
+				backdrop = null;
+				layeredPane.remove(backdrop);
+				layeredPane.repaint();
 			}
 
 			@Override
@@ -278,11 +276,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 			
 		});
 
-		this.repaint();
+		repaint();
 		
-	}
-	
-	public void paint(Graphics g) {
-		LOGGER.info("Paint fired");
 	}
 }

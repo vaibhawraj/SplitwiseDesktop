@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.splitwise.gui.MainFrame;
 import com.splitwise.gui.custom.OptionItem.Callback;
 import com.splitwise.gui.theme.DefaultTheme;
 
@@ -60,6 +61,10 @@ public class CustomButton extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				LOGGER.info("Add Bill Button Clicked");
+				CustomButton cb = (CustomButton)e.getSource();
+				cb.isPressed = false;
+				cb.isHighlighted = false;
+				cb.repaint();
 				if(callback!=null) {
 					callback.callback();
 				}
@@ -97,10 +102,12 @@ public class CustomButton extends JPanel {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				if( e.getSource() instanceof CustomButton ) {
-					CustomButton cb = (CustomButton)e.getSource();
-					cb.isHighlighted = false;
-					cb.repaint();
+				if(MainFrame.getInstance().backdrop == null) {
+					if( e.getSource() instanceof CustomButton ) {
+						CustomButton cb = (CustomButton)e.getSource();
+						cb.isHighlighted = false;
+						cb.repaint();
+					}
 				}
 			}
 			

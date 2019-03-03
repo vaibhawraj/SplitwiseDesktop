@@ -2,6 +2,7 @@ package com.splitwise.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 
 import javax.swing.BorderFactory;
 
@@ -24,8 +25,8 @@ public class AddBillModel extends CJPanel {
 
 	@Override
 	public void configureComponents() {
-		setBackground(Color.white);
-		setOpaque(true);
+		//setBackground(Color.white);
+		setOpaque(false);
 		setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
 	}
@@ -48,6 +49,13 @@ public class AddBillModel extends CJPanel {
 	
 	public Dimension getPreferredSize() {
 		return new Dimension(preferredWidth, preferredHeight);
+	}
+	
+	public void paint(Graphics g) {
+		super.paint(g);
+		g.setColor(Color.WHITE);
+		g.fillRoundRect(0, 0, getSize().width, getSize().height, 10, 10);
+		super.paintChildren(g);
 	}
 
 }

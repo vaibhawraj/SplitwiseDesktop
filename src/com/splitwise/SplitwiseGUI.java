@@ -25,14 +25,11 @@ public class SplitwiseGUI{
 		
 		instance = this;
 		mainFrame = MainFrame.getInstance();
-		LOGGER.info("Has PAINT Fired");
-		//mainFrame.showDefaultPane();
-		LOGGER.info("Has PAINT Fired");
+		mainFrame.showDefaultPane();
 		mainFrame.setVisible(true);
-		LOGGER.info("Has PAINT Fired");
 		
 		// Default action is to first login
-		//login();
+		login();
 	}
 	
 	public void login() {
@@ -52,7 +49,7 @@ public class SplitwiseGUI{
 					
 				} else {
 					LOGGER.info("Has valid access token");
-					//grantLogin();	
+					grantLogin();	
 				}
 			}
 		}.start();
