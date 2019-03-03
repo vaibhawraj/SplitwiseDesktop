@@ -31,14 +31,10 @@ public class LeftPanel extends CJPanel{
 	
 	LeftPanel() {
 		this.init();
-		// Default Selection - Execute Later
-		(new Thread() {
-			public void run() {
-				links.get(0).setSelected(true);
-				selectedItem = links.get(0);
-				links.get(0).clickAction();
-			}
-		}).start();
+		
+		links.get(0).setSelected(true);
+		selectedItem = links.get(0);
+		
 	}
 	
 	@Override
@@ -126,12 +122,7 @@ public class LeftPanel extends CJPanel{
 	public void setSelectedItem(OptionItem oi) {
 		if(oi != this.selectedItem) { // To avoid multiple click on same options
 			this.selectedItem = oi;
-			processSelectedOption(oi);
 		}
-	}
-	
-	public void processSelectedOption(OptionItem oi) {
-		
 	}
 
 }

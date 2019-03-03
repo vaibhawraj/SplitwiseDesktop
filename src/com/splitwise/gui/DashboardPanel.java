@@ -23,13 +23,15 @@ public class DashboardPanel extends CJPanel {
 	private FlexibleLabel defaultPanelSubText;
 	private CustomButton addBillButton;
 	
+	private SummaryPanel summaryPanel;
+	
 	//DefaultPanel
 	private Insets defaultPanelPadding = new Insets(30, 45, 10, 15);
 	private int defaultPanelHeight = 294;
 	private Dimension personLabelDimension = new Dimension(120,234);
 	DashboardPanel() {
 		init();
-		showDefaultPanel();
+		showSummaryPanel();
 	}
 	
 	@Override
@@ -39,16 +41,21 @@ public class DashboardPanel extends CJPanel {
 		
 		initDefaultPanel();
 		
+		summaryPanel = new SummaryPanel();
+		summaryPanel.setVisible(false);
+		
 		addBillButton = new CustomButton("Add a Bill");
 		
 		pageHeader.add(addBillButton);
 		add(defaultPanel);
 		add(pageHeader);
+		add(summaryPanel);
 	}
 	
 	public void initDefaultPanel() {
 		defaultPanel.setLayout(null);
 		defaultPanel.setOpaque(false);
+		defaultPanel.setVisible(false);
 		
 		defaultTextPanel = new JPanel();
 		defaultTextPanel.setLayout(null);
@@ -82,19 +89,23 @@ public class DashboardPanel extends CJPanel {
 		defaultPanel.add(defaultTextPanel);
 	}
 	
+	public void hideAll() {
+		defaultPanel.setVisible(false);
+		summaryPanel.setVisible(false);
+	}
+	
 	public void showDefaultPanel() {
+		hideAll();
 		defaultPanel.setVisible(true);
 	}
 	
-	public void hideDefaultPanel() {
-		defaultPanel.setVisible(false);
+	public void showSummaryPanel() {
+		hideAll();
+		summaryPanel.setVisible(true);
 	}
 
 	@Override
-	public void configureComponents() {
-		setLayout(null);
-		setOpaque(false);
-	}
+	public void configureComponents() {}
 
 	@Override
 	public void computeSize() {
@@ -107,6 +118,8 @@ public class DashboardPanel extends CJPanel {
 		
 		defaultPanelTitle.setSize(defaultTextPanel.getSize().width, defaultPanelTitle.getPreferredSize().height);
 		defaultPanelSubText.setSize(defaultTextPanel.getSize().width,defaultPanelSubText.getPreferredSize().height);
+		
+		summaryPanel.setSize(getSize().width, summaryPanel.getPreferredHeight());
 	}
 
 	@Override
@@ -121,6 +134,8 @@ public class DashboardPanel extends CJPanel {
 		defaultPanelTitle.setLocation(0,0);
 		defaultPanelSubText.setLocation(0
 				, defaultPanelTitle.getLocation().y + defaultPanelTitle.getSize().height + 20);
+		
+		summaryPanel.setLocation(0,pageHeader.getSize().height);
 	}
 
 }

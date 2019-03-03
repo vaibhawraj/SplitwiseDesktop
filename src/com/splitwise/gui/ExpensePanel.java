@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -13,6 +15,7 @@ import javax.swing.SwingConstants;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomButton;
 import com.splitwise.gui.custom.CustomImage;
+import com.splitwise.gui.custom.ExpenseItem;
 import com.splitwise.gui.custom.FlexibleLabel;
 import com.splitwise.gui.theme.DefaultTheme;
 
@@ -24,14 +27,20 @@ public class ExpensePanel extends CJPanel {
 	private FlexibleLabel defaultPanelTitle;
 	private FlexibleLabel defaultPanelSubText;
 	private CustomButton addBillButton;
+	private List<ExpenseItem> expenseList;
 	
 	//DefaultPanel
 	private Insets defaultPanelPadding = new Insets(30, 45, 10, 15);
 	private int defaultPanelHeight = 294;
 	private Dimension personLabelDimension = new Dimension(150,274);
 	ExpensePanel() {
+		expenseList = new ArrayList<ExpenseItem>();
 		init();
-		showDefaultPanel();
+		//showDefaultPanel();
+		addItem(new ExpenseItem("02","MAR","Sandesh", "$25.20", "", "Lyft for De Anza", "TL 513"));
+		addItem(new ExpenseItem("02","MAR","You", "$25.20", "$25.20", "Bananas", "TL 513"));
+		addItem(new ExpenseItem("02","MAR","Perry", "$25.20", "$15.20", "Vegetable Oil", "TL 513"));
+		addItem(new ExpenseItem("02","MAR","Abhishek", "$25.20", "$15.20", "Vegetable Oil", ""));
 	}
 	
 	@Override
@@ -51,6 +60,7 @@ public class ExpensePanel extends CJPanel {
 	public void initDefaultPanel() {
 		defaultPanel.setLayout(null);
 		defaultPanel.setOpaque(false);
+		defaultPanel.setVisible(false);
 		
 		defaultTextPanel = new JPanel();
 		defaultTextPanel.setLayout(null);
@@ -83,12 +93,18 @@ public class ExpensePanel extends CJPanel {
 		defaultPanel.add(defaultTextPanel);
 	}
 	
+	public void hideAll() {
+		defaultPanel.setVisible(false);
+	}
 	public void showDefaultPanel() {
+		hideAll();
 		defaultPanel.setVisible(true);
 	}
 	
-	public void hideDefaultPanel() {
-		defaultPanel.setVisible(false);
+	public void addItem(ExpenseItem ei) {
+		expenseList.add(ei);
+		add(ei);
+		this.repaint();
 	}
 	
 	public void setHeader(String text) {
@@ -113,6 +129,10 @@ public class ExpensePanel extends CJPanel {
 		
 		defaultPanelTitle.setSize(defaultTextPanel.getSize().width, defaultPanelTitle.getPreferredSize().height);
 		defaultPanelSubText.setSize(defaultTextPanel.getSize().width,defaultPanelSubText.getPreferredSize().height);
+		
+		for(ExpenseItem ei : expenseList) {
+			ei.setSize(getSize().width, ei.getPreferredHeight());
+		}
 	}
 
 	@Override
@@ -127,6 +147,12 @@ public class ExpensePanel extends CJPanel {
 		defaultPanelTitle.setLocation(0,0);
 		defaultPanelSubText.setLocation(0
 				, defaultPanelTitle.getLocation().y + defaultPanelTitle.getSize().height + 20);
+		
+		int relative_y = pageHeader.getSize().height;
+		for(ExpenseItem ei : expenseList) {
+			ei.setLocation(0, relative_y);
+			relative_y += ei.getHeight();
+		}
 	}
 
 }

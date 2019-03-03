@@ -79,8 +79,8 @@ public class MidPanel  extends CJPanel{
 	public void paint(Graphics g) {
 		super.paint(g);
 		g.setColor(new Color(204,204,204)); //Border Color
-		g.fillRect(borderLeft, 0, 1, getSize().height);
-		g.fillRect(getSize().width-borderRight-1, 0, 1, getSize().height);
+		g.fillRect(borderLeft-1, 0, 1, getSize().height);
+		g.fillRect(getSize().width-borderRight, 0, 1, getSize().height);
 		super.paintChildren(g);
 		
 	}

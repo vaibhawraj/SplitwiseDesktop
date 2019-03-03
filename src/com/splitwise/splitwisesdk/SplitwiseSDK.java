@@ -52,6 +52,7 @@ public class SplitwiseSDK {
 	final private String GET_EXPENSES_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_expenses";
 	final private String GET_EXPENSE_URL     = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_expense";
 	
+	final private String GET_ACTIVITY_URL 	= SPLITWISE_BASE_URL + "api/" + SPLITWISE_VERSION+"/get_notifications";
 	
 	final private String CREATE_EXPENSE_URL  = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_expense";
 	final private String CREATE_GROUP_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_group";
@@ -184,11 +185,25 @@ public class SplitwiseSDK {
 		return new User(response);
 	}
 	
+	public String getActivities() throws APIException {
+		String response = "";
+		response = oauth.request(GET_ACTIVITY_URL);
+		
+		return response;
+	}
+	
+	public String getExpenses() throws APIException {
+		String response = "";
+		response = oauth.request(GET_EXPENSES_URL);
+		
+		return response;
+	}
+	
 	public static void main(String args[]) {
 		SplitwiseSDK sdk = SplitwiseSDK.getInstance();
 		// Step 1: Execute and set oauth_token, oauth_token_secret from output.Get authorization url
-		System.out.println("Set oauth_token and oauth_token_secret in program");
-		System.out.println("Go to url: " + sdk.getAuthorizationURL());
+		// System.out.println("Set oauth_token and oauth_token_secret in program");
+		// System.out.println("Go to url: " + sdk.getAuthorizationURL());
 		// Comment above lines
 		
 		// Step 2: Uncomment below, On the browser, after clicking on authorize copy oauth_verifier and paste it below
@@ -206,18 +221,19 @@ public class SplitwiseSDK {
 		
 		//Step 3: Set access token and access token secret
 		/**/
-		/*String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
+		String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
 		String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
 		sdk.setOauthToken(oauth_access_token);
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
-		for(int i=0;i<10;i++) {
-			try {
-					System.out.println(i);
-					Thread.sleep(1000);
-					System.out.println(sdk.getCurrentUser().first_name);
-//					System.out.println(Http.sendGetRequest("http://example.com/", null));
-			} catch(Exception e) {}
-		}*/
+		
+		try {
+			System.out.println(sdk.getExpenses());
+		} catch (APIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//			
+		
 		/**/
 	}
 

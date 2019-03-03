@@ -48,6 +48,8 @@ public class DefaultTheme {
 		// Foreground
 		colorMap.put("PrimaryForeground",colorPalette[7]);
 		colorMap.put("SecondaryForeground",colorPalette[3]);
+		colorMap.put("PositiveForeground",colorPalette[0]);
+		colorMap.put("NegativeForeground",colorPalette[8]);
 		
 		// Custom Button
 		colorMap.put("ButtonOrange", colorPalette[8]);

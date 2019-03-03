@@ -58,6 +58,7 @@ public class HeaderPanel extends CJPanel {
 		setLayout(null);
 		setBackground(DefaultTheme.getColor("headerPanelBackground"));
 		setSize(getSize().width,this.height);
+		setOpaque(true);
 		
 		// Configure Border
 		Border matteBorder = BorderFactory.createMatteBorder(0,0,bottomBorderPixel,1,DefaultTheme.getColor("headerPanelBorderColor"));

@@ -91,6 +91,8 @@ public class MainFrame extends JFrame implements ComponentListener{
 		getContentPane().removeAll();
 		getContentPane().add(headerPanel);
 		getContentPane().add(mainContentPanel);
+		
+		showAllExpenses();
 	}
 	
 	public void showDefaultPane() {

@@ -39,6 +39,7 @@ public class PageHeader extends CJPanel {
 		setLayout(null);
 		setBackground(DefaultTheme.getColor("PageHeaderBackground"));
 		setSize(getSize().width, height);
+		setOpaque(true);
 	}
 
 	@Override
