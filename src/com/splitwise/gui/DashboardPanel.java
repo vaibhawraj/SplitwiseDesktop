@@ -49,7 +49,7 @@ public class DashboardPanel extends CJPanel {
 		addBillButton = new CustomButton("Add a Bill");
 		addBillButton.addCallback(()-> showAddBill());
 		
-		pageHeader.add(addBillButton);
+		//pageHeader.add(addBillButton);
 		add(defaultPanel);
 		add(pageHeader);
 		add(summaryPanel);
@@ -57,7 +57,7 @@ public class DashboardPanel extends CJPanel {
 	
 	private void showAddBill() {
 		LOGGER.info("Add Bill Button on Dashboard Clicked");
-		SplitwiseGUI.getInstance().showAddBill();
+		SplitwiseGUI.getInstance().showAddBill(null);
 	}
 
 	public void initDefaultPanel() {

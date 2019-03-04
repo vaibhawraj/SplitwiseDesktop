@@ -28,6 +28,7 @@ public class Http {
 	public static String sendPostRequest(String url, Map<String,String> headers, String body) {
 		String responseText = "";
 		HttpPost request = new HttpPost(url);
+		//HttpPost request = new HttpPost("http://localhost:8000/");
 		try {
 			
 			for(Map.Entry<String, String> header : headers.entrySet()) {
@@ -35,7 +36,7 @@ public class Http {
 			}
 			
 			request.setEntity(new StringEntity(body));
-	
+			System.out.println(request.toString());
 			HttpResponse response = client.execute(request);
 			BufferedReader rd = new BufferedReader(
 					new InputStreamReader(response.getEntity().getContent()));

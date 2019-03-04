@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 
+import com.splitwise.gui.AddBillModel;
 import com.splitwise.gui.LoginPanel;
 import com.splitwise.gui.MainFrame;
 import com.splitwise.splitwisesdk.SplitwiseSDK;
@@ -89,8 +90,9 @@ public class SplitwiseGUI{
 	public static SplitwiseGUI getInstance() {
 		return instance;
 	}
-	public void showAddBill() {
-		mainFrame.showAddBill();
+	
+	public void showAddBill(AddBillModel.Callback saveCallback) {
+		mainFrame.showAddBill(saveCallback);
 	}
 	public void showExpenses(long friendId) {
 		SplitwiseCore.getInstance().setFilterByGroupId(0);

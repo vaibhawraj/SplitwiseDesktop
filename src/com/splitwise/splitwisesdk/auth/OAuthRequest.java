@@ -29,6 +29,8 @@ public class OAuthRequest {
 		
 		params.put("oauth_timestamp",this.oauth_timestamp);
 		params.put("oauth_nonce",this.oauth_nonce);
+		//params.put("oauth_timestamp","1551691368");
+		//params.put("oauth_nonce","42199551");
 	}
 	protected void setConsumerKey(String consumerKey) {
 		this.oauth_consumer_key = consumerKey;
@@ -71,11 +73,17 @@ public class OAuthRequest {
 	
 	protected String getRequestBody() {
 		StringBuilder sb = new StringBuilder();
+		params.put("oauth_version",oauth_version);
+		boolean isFirst = true;
 		for(String key : params.keySet()) {
+			if(isFirst) {
+				isFirst = false;
+			} else {
+				sb.append("&");
+			}
 			sb.append(key + "=" + params.get(key));
-			sb.append("&");
 		}
-		sb.append("oauth_version" + "=" + oauth_version);
+		//sb.append("oauth_version" + "=" + oauth_version);
 		return sb.toString();
 	}
 	

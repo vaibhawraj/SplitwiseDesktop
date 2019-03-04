@@ -9,11 +9,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.codec.binary.Base64;
 
 import com.splitwise.splitwisesdk.auth.OAuth;
 import com.splitwise.splitwisesdk.responses.*;
@@ -230,6 +234,23 @@ public class SplitwiseSDK {
 		return response;
 	}
 	
+	public ExpenseResponse createExpense(Map<String,String> parameters) throws APIException {
+		/*
+		req.setParameter("cost","10");
+		req.setParameter("description","Testing");
+		req.setParameter("users__0__owed_share","2.00");
+		req.setParameter("users__0__paid_share","10.00");
+		req.setParameter("users__0__user_id","9801405");
+		req.setParameter("users__1__owed_share","8.00");
+		req.setParameter("users__1__paid_share","0.00");
+		req.setParameter("users__1__user_id","10092046");
+		 */
+		String response = "";
+		response = oauth.requestPost(this.CREATE_EXPENSE_URL, parameters);
+		LOGGER.info(response);
+		return ExpenseResponse.parseExpensesList(response).get(0);
+	}
+	
 	public static void main(String args[]) {
 		SplitwiseSDK sdk = SplitwiseSDK.getInstance();
 		// Step 1: Execute and set oauth_token, oauth_token_secret from output.Get authorization url
@@ -252,17 +273,31 @@ public class SplitwiseSDK {
 		
 		//Step 3: Set access token and access token secret
 		/**/
-		String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
-		String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
+		//String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
+		String oauth_access_token = "CmXVaOyOsG5h9IToAUoVN2whq7uTfpquKb9ANwEe";
+		//String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
+		String oauth_access_token_secret = "OtbQ6gUYGCafnMzSKVft8gszYxq6VmTYNO4qovsJ";
+		
 		sdk.setOauthToken(oauth_access_token);
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
 		
 		try {
-			System.out.println(sdk.getActivities());
-		} catch (APIException e) {
+			//System.out.println(sdk.getCurrentUser());
+			Map<String,String> req = new HashMap<String,String>();
+			req.put("cost","10");
+			req.put("description","Testing Bill");
+			req.put("users__0__owed_share","2.00");
+			req.put("users__0__paid_share","10.00");
+			req.put("users__0__user_id","21598322");
+			req.put("users__1__owed_share","8.00");
+			req.put("users__1__paid_share","0.00");
+			req.put("users__1__user_id","21694899");
+			System.out.println(sdk.createExpense(req));
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println(new String(Base64.encodeBase64(" ".getBytes())));
 //			
 		
 		/**/
