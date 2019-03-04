@@ -23,6 +23,10 @@ public class CustomButton extends JPanel {
 	boolean isHighlighted;
 	boolean isPressed;
 	private Callback callback;
+	private String theme = "Orange";
+	public static String GREYTHEME = "Grey";
+	public static String GREENTHEME = "Green";
+	public boolean hasBackdropBug = true;
 	
 	final public static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -46,13 +50,19 @@ public class CustomButton extends JPanel {
 		buttonLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		buttonLabel.setVerticalAlignment(SwingConstants.CENTER);
 		buttonLabel.setFont(new Font("Helvetica Neue",Font.PLAIN,15));
-		buttonLabel.setForeground(DefaultTheme.getColor("ButtonOrangeForeground"));
+		buttonLabel.setForeground(DefaultTheme.getColor("Button"+theme+"Foreground"));
 		buttonLabel.setSize(buttonLabel.getPreferredSize().width + 28, buttonLabel.getPreferredSize().height + 18);
 		this.setSize(buttonLabel.getSize());
 		this.setLayout(null);
 		this.setOpaque(false);
 		this.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		add(buttonLabel);
+	}
+	
+	public void setTheme(String theme) {
+		this.theme = theme;
+		buttonLabel.setForeground(DefaultTheme.getColor("Button"+theme+"Foreground"));
+		this.repaint();
 	}
 	
 	public void addListeners() {
@@ -102,7 +112,7 @@ public class CustomButton extends JPanel {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				if(MainFrame.getInstance().backdrop == null) {
+				if(MainFrame.getInstance().backdrop == null || !hasBackdropBug) {
 					if( e.getSource() instanceof CustomButton ) {
 						CustomButton cb = (CustomButton)e.getSource();
 						cb.isHighlighted = false;
@@ -117,25 +127,25 @@ public class CustomButton extends JPanel {
 	public void paint(Graphics g) {
 		
 		if(isPressed) {
-			g.setColor(DefaultTheme.getColor("ButtonOrangeBorderBottom"));
+			g.setColor(DefaultTheme.getColor("Button"+theme+"BorderBottom"));
 		} else {
-			g.setColor(DefaultTheme.getColor("ButtonOrange"));
+			g.setColor(DefaultTheme.getColor("Button"+theme));
 			g.fillRoundRect(0, 0, getSize().width, getSize().height, 10, 10);
-			g.setColor(DefaultTheme.getColor("ButtonOrangeBorderTop"));
+			g.setColor(DefaultTheme.getColor("Button"+theme+"BorderTop"));
 			g.fillRoundRect(0, 0, getSize().width, getSize().height-1, 10, 10);
 		}
 		
 		if(isPressed) {
-			g.setColor(DefaultTheme.getColor("ButtonOrangeBorderTop"));
+			g.setColor(DefaultTheme.getColor("Button"+theme+"BorderTop"));
 		} else {
-			g.setColor(DefaultTheme.getColor("ButtonOrangeBorderBottom"));
+			g.setColor(DefaultTheme.getColor("Button"+theme+"BorderBottom"));
 		}
 		g.fillRoundRect(0, 1, getSize().width, getSize().height-1, 10, 10);
 		
 		if(isHighlighted) {
-			g.setColor(DefaultTheme.getColor("ButtonOrangeHighlight"));
+			g.setColor(DefaultTheme.getColor("Button"+theme+"Highlight"));
 		} else {
-			g.setColor(DefaultTheme.getColor("ButtonOrange"));
+			g.setColor(DefaultTheme.getColor("Button"+theme));
 		}
 		
 		if(isPressed) {

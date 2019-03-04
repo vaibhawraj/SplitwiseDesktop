@@ -124,7 +124,7 @@ public class ExpenseItem extends CJPanel {
 
 	@Override
 	public void configureComponents() {
-		monthLabel.setFont(new Font("Helvetica Neue",Font.PLAIN,10));
+		monthLabel.setFont(new Font("Helvetica Neue",Font.PLAIN,14));
 		dateLabel.setFont(new Font("Helvetica Neue",Font.PLAIN,20));
 		descriptionLabel.setFont(new Font("Helvetica Neue",Font.PLAIN,16));
 		groupLabel.setFont(new Font("Helvetica Neue",Font.PLAIN,10));

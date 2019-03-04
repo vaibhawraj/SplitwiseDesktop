@@ -4,14 +4,20 @@ import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import com.splitwise.SplitwiseCore;
 import com.splitwise.SplitwiseGUI;
+import com.splitwise.core.Group;
+import com.splitwise.core.People;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.OptionItem;
+
+
 
 public class LeftPanel extends CJPanel{
 
@@ -49,10 +55,23 @@ public class LeftPanel extends CJPanel{
 		groupsHeader = new OptionItem("Groups", OptionItem.HEADER);
 		
 		groups = new ArrayList<OptionItem>();
+		for(Group group : SplitwiseCore.getInstance().getCurrentUser().getGroups()) {
+			Date today = new Date(System.currentTimeMillis());
+			today.setMonth(today.getMonth() - 1);
+			if(group.getId() != 0 && group.getUpdatedAt().after(today))
+				groups.add(new OptionItem(group.getName()));
+		}
+		
 		
 		friendsHeader = new OptionItem("Friends", OptionItem.HEADER);
 		
 		friends = new ArrayList<OptionItem>();
+		for(People friend : SplitwiseCore.getInstance().getCurrentUser().getFriends()) {
+			Date today = new Date(System.currentTimeMillis());
+			today.setMonth(today.getMonth() - 1);
+			if(friend.getUpdatedAt().after(today))
+				friends.add(new OptionItem(friend.getName()));
+		}
 		
 		packComponents();
 	}

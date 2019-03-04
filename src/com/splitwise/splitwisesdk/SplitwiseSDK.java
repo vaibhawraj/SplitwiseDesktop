@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -178,11 +179,26 @@ public class SplitwiseSDK {
 	public boolean hasValidAccessToken() {
 		return hasValidAccessToken;
 	}
+	
 	public User getCurrentUser() throws APIException {
 		String response = "";
 		response = oauth.request(GET_CURRENT_USER_URL);
 		
 		return new User(response);
+	}
+	
+	public List<Friend> getFriends() throws APIException {
+		String response = "";
+		response = oauth.request(this.GET_FRIENDS_URL);
+		LOGGER.info(response);
+		return Friend.parseFriendsList(response);
+	}
+	
+	public List<GroupResponse> getGroups() throws APIException {
+		String response = "";
+		response = oauth.request(this.GET_GROUPS_URL);
+		//LOGGER.info(response);
+		return GroupResponse.parseGroupList(response);
 	}
 	
 	public String getActivities() throws APIException {
@@ -192,11 +208,11 @@ public class SplitwiseSDK {
 		return response;
 	}
 	
-	public String getExpenses() throws APIException {
+	public List<ExpenseResponse> getExpenses() throws APIException {
 		String response = "";
 		response = oauth.request(GET_EXPENSES_URL);
-		
-		return response;
+		LOGGER.info(response);
+		return ExpenseResponse.parseExpensesList(response);
 	}
 	
 	public static void main(String args[]) {

@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 
 import com.splitwise.gui.custom.CustomImage;
 import com.splitwise.gui.theme.DefaultTheme;
+import com.splitwise.splitwisesdk.SplitwiseSDK;
 
 import java.util.logging.*;
 
@@ -72,6 +73,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 		getContentPane().add(layeredPane);
 		layeredPane.setBackground(DefaultTheme.getColor("mainFrameBackground"));
 		layeredPane.setOpaque(true);
+		layeredPane.add(defaultPanel,JLayeredPane.DEFAULT_LAYER);
 		
 		addComponentListener(this);
 	}
@@ -92,6 +94,16 @@ public class MainFrame extends JFrame implements ComponentListener{
 		//revalidate();
 	}
 	
+	public void showLoginPane() {
+		LoginPanel lp = LoginPanel.getInstance();
+		String url = SplitwiseSDK.getInstance().getAuthorizationURL();
+		lp.load(url);
+		lp.setVisible(false);
+		lp.setLocation(0, 0);
+		lp.setSize(layeredPane.getSize());
+		layeredPane.add(lp, JLayeredPane.POPUP_LAYER);
+		repaint();
+	}
 	public void showMainPane() {
 		if(headerPanel == null && mainContentPanel == null) {
 			initMainPane();
@@ -104,9 +116,11 @@ public class MainFrame extends JFrame implements ComponentListener{
 	}
 	
 	public void showDefaultPane() {
-		layeredPane.removeAll();
-		layeredPane.setLayout(null);
-		layeredPane.add(defaultPanel);
+		for(Component comp : layeredPane.getComponentsInLayer(JLayeredPane.POPUP_LAYER)) {
+			layeredPane.remove(comp);
+			LOGGER.fine("Removing " + comp.getClass().getCanonicalName());
+		}
+		layeredPane.moveToFront(defaultPanel);
 	}
 	
 	public void showDashboard() {
@@ -245,9 +259,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
 				LOGGER.info("Mouse Clicked on backdrop");
-				layeredPane.remove(backdrop);
-				backdrop = null;
-				layeredPane.repaint();
+				hideBackdrop();
 			}
 
 			@Override
@@ -278,5 +290,11 @@ public class MainFrame extends JFrame implements ComponentListener{
 
 		repaint();
 		
+	}
+	
+	public void hideBackdrop() {
+		layeredPane.remove(backdrop);
+		backdrop = null;
+		layeredPane.repaint();
 	}
 }

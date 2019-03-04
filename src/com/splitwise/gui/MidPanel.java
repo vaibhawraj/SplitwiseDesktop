@@ -73,6 +73,7 @@ public class MidPanel  extends CJPanel{
 	
 	public void showExpensePanel() {
 		this.hideAll();
+		expensePanel.showExpenseList();
 		expensePanel.setVisible(true);
 	}
 	

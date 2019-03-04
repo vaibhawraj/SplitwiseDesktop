@@ -16,8 +16,12 @@ public class DefaultTheme {
 			fromHex("#ff652f"), //8
 			new Color(0,0,0,(int)(0.1*255)), //9
 			new Color(0,0,0,(int)(0.25*255)), //10
-			fromHex("#ff5216"),
-			fromHex("#5cc5a7")
+			fromHex("#ff5216"), //11
+			fromHex("#5cc5a7"), //12
+			fromHex("#e9e9e9"), //13
+			fromHex("#41b795"), //14
+			fromHex("#F38E56"), //15
+			fromHex("#101010")
 	};
 	static HashMap<String, Color> colorMap = new HashMap<String, Color>();
 	
@@ -59,9 +63,26 @@ public class DefaultTheme {
 		colorMap.put("ButtonOrangeBorderBottom", colorPalette[10]);
 		colorMap.put("ButtonOrangeHighlight", colorPalette[11]);
 		
+		colorMap.put("ButtonGrey", colorPalette[5]);
+		colorMap.put("ButtonGreyForeground", colorPalette[7]);
+		colorMap.put("ButtonGreyBorderTop", colorPalette[9]);
+		colorMap.put("ButtonGreyBorderBottom", colorPalette[10]);
+		colorMap.put("ButtonGreyHighlight", colorPalette[13]);
+		
+		colorMap.put("ButtonGreen", colorPalette[12]);
+		colorMap.put("ButtonGreenForeground", colorPalette[1]);
+		colorMap.put("ButtonGreenBorderTop", colorPalette[9]);
+		colorMap.put("ButtonGreenBorderBottom", colorPalette[10]);
+		colorMap.put("ButtonGreenHighlight", colorPalette[14]);
+		
 		// Model
 		colorMap.put("ModelHeaderBackground", colorPalette[12]);
 		colorMap.put("ModelHeaderForeground", colorPalette[1]);
+		
+		//ScrollBar
+		colorMap.put("scrollBarColor", colorPalette[15]);
+		colorMap.put("scrollBorderColor", colorPalette[16]);
+		
 	}
 	
 	public static Color getColor(String name) {

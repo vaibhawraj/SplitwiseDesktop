@@ -7,14 +7,17 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.JLayeredPane;
 
 import com.splitwise.gui.custom.CJPanel;
+import com.splitwise.gui.custom.CustomButton;
 import com.splitwise.gui.custom.FlexibleLabel;
 import com.splitwise.gui.theme.DefaultTheme;
 
@@ -25,6 +28,7 @@ public class AddBillModel extends CJPanel {
 	
 	private int headerPanelHeight = 39;
 	private int paddingLeft = 10;
+	private int paddingTop = 20;
 	
 	private JPanel headerPanel;
 	private JLabel headerText;
@@ -37,6 +41,16 @@ public class AddBillModel extends CJPanel {
 	private JLayeredPane body;
 	private FlexibleLabel description;
 	private FlexibleLabel amount;
+	private JLabel humanSummary;
+	private JLabel details;
+	private String splitAmount;
+	private JLabel date;
+	private String dateStr;
+	private JLabel dollarSymbol;
+	
+	private JPanel buttonPanel;
+	private CustomButton cancelButton;
+	private CustomButton saveButton;
 	
 	public AddBillModel() {
 		init();
@@ -73,9 +87,59 @@ public class AddBillModel extends CJPanel {
 		
 		description = new FlexibleLabel();
 		description.setPlaceholder("Enter a description");
+		description.setEditable(true);
+		description.setRows(1);
+		description.setFont(new Font("Helvetica Neue",Font.PLAIN, 20));
 		
+		dollarSymbol = new JLabel("$");
+		dollarSymbol.setFont(new Font("Helvetica Neue",Font.PLAIN, 30));
 		
+		amount = new FlexibleLabel();
+		amount.setPlaceholder("0.00");
+		amount.setEditable(true);
+		amount.setRows(1);
+		amount.setFont(new Font("Helvetica Neue",Font.PLAIN, 36));
 		
+		humanSummary = new JLabel("<html>Paid by <font color=\"#5cc5a7\">You</font> and split <font color=\"#5cc5a7\">equally</font>.</html>");
+		details = new JLabel("($0.00/person)");
+		dateStr = calcDate(System.currentTimeMillis());
+		date = new JLabel(dateStr) {
+			public void paint(Graphics g) {
+				g.setColor(DefaultTheme.getColor("PageHeaderBackground"));
+				g.fillRoundRect(0, 0, getSize().width, getSize().height, getSize().height, getSize().height);
+				g.setColor(DefaultTheme.getColor("PageHeaderBorder"));
+				g.drawRoundRect(0, 0, getSize().width, getSize().height, getSize().height, getSize().height);
+				super.paint(g);
+			}
+		};
+		date.setHorizontalAlignment(SwingConstants.CENTER);
+		date.setVerticalAlignment(SwingConstants.CENTER);
+		date.setForeground(DefaultTheme.getColor("PrimaryForeground"));
+		
+		buttonPanel = new JPanel();
+		buttonPanel.setLayout(null);
+		buttonPanel.setOpaque(false);
+		
+		saveButton = new CustomButton("Save");
+		saveButton.setTheme(CustomButton.GREENTHEME);
+		saveButton.hasBackdropBug = false;
+		cancelButton = new CustomButton("Cancel");
+		cancelButton.addCallback(()-> MainFrame.getInstance().hideBackdrop());
+		cancelButton.setTheme(CustomButton.GREYTHEME);
+		cancelButton.hasBackdropBug = false;
+		
+		buttonPanel.add(saveButton);
+		buttonPanel.add(cancelButton);
+		
+		body.add(description,JLayeredPane.DEFAULT_LAYER);
+		body.add(amount,JLayeredPane.DEFAULT_LAYER);
+		body.add(dollarSymbol, JLayeredPane.DEFAULT_LAYER);
+		body.add(humanSummary,JLayeredPane.DEFAULT_LAYER);
+		body.add(details,JLayeredPane.DEFAULT_LAYER);
+		body.add(date,JLayeredPane.DEFAULT_LAYER);
+		body.add(buttonPanel, JLayeredPane.DEFAULT_LAYER);
+		
+		add(body);
 		add(inputFieldPanel);
 		add(headerPanel);
 	}
@@ -104,7 +168,14 @@ public class AddBillModel extends CJPanel {
 		inputFieldPanel.setSize(getSize().width, inputFieldLabel.getPreferredSize().height + inputFieldPanel.getInsets().bottom + inputFieldPanel.getInsets().top);
 		
 		// Body Width & Height
-		body.setSize(getSize().width, getPreferredHeight(body));
+		description.setSize(183, 31);
+		amount.setSize(128, 44);
+		dollarSymbol.setSize(dollarSymbol.getPreferredSize());
+		details.setSize(details.getPreferredSize());
+		humanSummary.setSize(humanSummary.getPreferredSize());
+		date.setSize(140, date.getPreferredSize().height + 10);
+		buttonPanel.setSize(getSize().width, 55);
+		body.setSize(getSize().width, 260);
 	}
 
 	@Override
@@ -116,7 +187,38 @@ public class AddBillModel extends CJPanel {
 		inputFieldLabel.setLocation(insets.left, insets.top);
 		inputArea.setLocation(insets.left + inputFieldLabel.getSize().width + paddingLeft, insets.top);
 		
-		body.setLocation(0, inputFieldPanel.getY() + inputFieldPanel.getSize().height);
+		body.setLocation(0, inputFieldPanel.getY() + inputFieldPanel.getSize().height + paddingTop);
+		
+		int paddingBetween = 10;
+		int relative_x = (body.getSize().width - description.getSize().width)/2;
+		int relative_y = 0;
+		description.setLocation(relative_x, relative_y);
+		
+		relative_x = (body.getSize().width - (amount.getSize().width - dollarSymbol.getSize().width - 3) )/2;
+		relative_y = description.getY() + description.getSize().height + paddingBetween;
+		amount.setLocation(relative_x, relative_y);
+		
+		relative_x = amount.getX() - dollarSymbol.getSize().width - 3;
+		relative_y = relative_y + (amount.getSize().height - dollarSymbol.getSize().height)/2;
+		dollarSymbol.setLocation(relative_x, relative_y);
+		
+		relative_x = (body.getSize().width - humanSummary.getSize().width)/2;
+		relative_y = amount.getY() + amount.getSize().height + paddingBetween + paddingBetween;
+		humanSummary.setLocation(relative_x, relative_y);
+		
+		relative_x = (body.getSize().width - details.getSize().width)/2;
+		relative_y = humanSummary.getY() + humanSummary.getSize().height + paddingBetween;
+		details.setLocation(relative_x, relative_y);
+		
+		relative_x = (body.getSize().width - date.getSize().width)/2;
+		relative_y = details.getY() + details.getSize().height + paddingBetween + paddingBetween;
+		date.setLocation(relative_x, relative_y);
+		
+		relative_y = relative_y + date.getSize().height + paddingBetween;
+		buttonPanel.setLocation(0,relative_y);
+		
+		saveButton.setLocation(getSize().width - paddingLeft - saveButton.getWidth(), (buttonPanel.getSize().height - saveButton.getSize().height)/2);
+		cancelButton.setLocation(saveButton.getX() - paddingLeft - cancelButton.getWidth(), (buttonPanel.getSize().height - cancelButton.getSize().height)/2);
 		preferredHeight = body.getY() + body.getSize().height;
 	}
 	
@@ -142,6 +244,26 @@ public class AddBillModel extends CJPanel {
 		int y = inputFieldPanel.getY() + inputFieldPanel.getSize().height;
 		g.drawLine(0, y, getSize().width, y);
 		
+		// Border for description
+		g.translate(body.getX(), body.getY());
+		g.setColor(DefaultTheme.getColor("PageHeaderBorder"));
+		int x1 = description.getX();
+		int x2 = description.getX() + description.getSize().width;
+		y = description.getY() + description.getSize().height;
+		g.drawLine(x1, y, x2, y);
+		
+		x1 = dollarSymbol.getX();
+		x2 = amount.getX() + amount.getSize().width;
+		y = amount.getY() + amount.getSize().height;
+		g.drawLine(x1, y, x2, y);
+		
+		x1 = 0;
+		x2 = getSize().width;
+		y = date.getY() + date.getSize().height + 10;
+		g.drawLine(x1, y, x2, y);
+		
+		g.translate(-body.getX(), -body.getY());
+		
 		super.paint(g);
 	}
 	
@@ -155,4 +277,9 @@ public class AddBillModel extends CJPanel {
 		return height;
 	}
 
+	private String calcDate(long millisecs) {
+        SimpleDateFormat date_format = new SimpleDateFormat("MMM dd,yyyy");
+        Date resultdate = new Date(millisecs);
+        return date_format.format(resultdate);
+    }
 }

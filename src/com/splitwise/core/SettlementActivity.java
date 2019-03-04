@@ -1,7 +1,7 @@
 package com.splitwise.core;
 
 public class SettlementActivity extends Activity {
-    private Expense expense = new Expense();
+    private Expense expense;
 
 
     @Override
