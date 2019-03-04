@@ -131,6 +131,15 @@ public class MainFrame extends JFrame implements ComponentListener{
 		repaint();
 	}
 	
+	public void showFriendExpenses(long friendId) {
+		this.mainContentPanel.showFriendExpenses(friendId);
+		repaint();
+	}
+	public void showGroupExpenses(long groupId) {
+		this.mainContentPanel.showGroupExpenses(groupId);
+		repaint();
+	}
+	
 	public void showRecentActivity() {
 		this.mainContentPanel.showRecentActivity();
 		repaint();
@@ -297,4 +306,6 @@ public class MainFrame extends JFrame implements ComponentListener{
 		backdrop = null;
 		layeredPane.repaint();
 	}
+
+	
 }

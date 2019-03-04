@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.splitwise.SplitwiseCore;
+import com.splitwise.core.People;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.OptionItem;
 import com.splitwise.gui.custom.SummaryListItem;
@@ -36,13 +38,6 @@ public class SummaryPanel extends CJPanel {
 	
 	SummaryPanel() {
 		init();
-		
-		youOweList.addItem(new SummaryListItem("Harsh Tripathi", "$8.32",SummaryListItem.OWE));
-		youOweList.addItem(new SummaryListItem("Pooja Ghogh", "$4.35",SummaryListItem.OWE));
-		youOweList.addItem(new SummaryListItem("Abhimanyu Chowdhary", "$56.32",SummaryListItem.OWE));
-		
-		youOwedList.addItem(new SummaryListItem("Harsh Tripathi", "$8.32",SummaryListItem.OWED));
-		youOwedList.addItem(new SummaryListItem("Pooja Ghogh", "$4.35",SummaryListItem.OWED));
 	}
 	@Override
 	public void initComponents() {
@@ -71,6 +66,38 @@ public class SummaryPanel extends CJPanel {
 		add(headerPanel);
 		add(youOweList);
 		add(youOwedList);
+	}
+	
+	public void showSummary() {
+		People currentUser = SplitwiseCore.getInstance().getCurrentUser();
+		Float balance = currentUser.getNetAmount();
+		LOGGER.info("Net Balance " + Math.abs(balance));
+		totalBalance.setSecondayText(((balance<0)?"-$":"$") + Math.abs(balance));
+		totalBalance.setPositive(balance >= 0);
+		
+		youOwe.setSecondayText("-$" + currentUser.getTotalNegativeBalance());
+		youOwed.setSecondayText("$" + currentUser.getTotalPositiveBalance());
+		
+		youOweList.removeAll();
+		for(People people : currentUser.getOweList()) {
+			LOGGER.info("Owe List" + people.getName() + people.getNetAmount());
+			youOweList.addItem(new SummaryListItem(people.getName(), "$" + Math.abs(people.getNetAmount()),SummaryListItem.OWE));
+		}
+		
+		youOwedList.removeAll();
+		for(People people : currentUser.getOwedList()) {
+			LOGGER.info("Owed List" + people.getName() + people.getNetAmount());
+			youOwedList.addItem(new SummaryListItem(people.getName(), "$" + Math.abs(people.getNetAmount()),SummaryListItem.OWED));
+		}
+		youOweList.computeSize();
+		youOweList.computePlacement();
+		
+		youOwedList.computeSize();
+		youOwedList.computePlacement();
+		computeSize();
+		computePlacement();
+		
+		this.repaint();
 	}
 	
 	private void initHeaderPanel() {
@@ -232,6 +259,14 @@ public class SummaryPanel extends CJPanel {
 			return this.preferredHeight;
 		}
 		
+		public void removeAll() {
+			for(SummaryListItem sil : itemList) {
+				super.remove(sil);
+			}
+			itemList.clear();
+			computeSize();
+			computePlacement();
+		}
 		public void addItem(SummaryListItem item) {
 			itemList.add(item);
 			add(item);
@@ -249,6 +284,7 @@ public class SummaryPanel extends CJPanel {
 			
 			for(SummaryListItem sil : itemList) {
 				sil.setSize(getSize().width, sil.getPreferredHeight());
+				sil.computeSize();
 			}
 		}
 
@@ -260,6 +296,7 @@ public class SummaryPanel extends CJPanel {
 			
 			for(SummaryListItem sil : itemList) {
 				sil.setLocation(0, preferredHeight);
+				sil.computePlacement();
 				preferredHeight += sil.getHeight();
 			}
 		}

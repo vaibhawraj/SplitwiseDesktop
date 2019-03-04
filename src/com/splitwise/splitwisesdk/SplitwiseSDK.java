@@ -44,6 +44,7 @@ public class SplitwiseSDK {
 	final private String GET_CURRENT_USER_URL= SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_current_user";
 	final private String GET_USER_URL        = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_user";
 	final private String GET_FRIENDS_URL     = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_friends";
+	final private String GET_FRIEND_URL     = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_friend";
 	final private String GET_GROUPS_URL      = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_groups";
 	final private String GET_GROUP_URL       = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_group";
 	
@@ -205,7 +206,8 @@ public class SplitwiseSDK {
 		String response = "";
 		response = oauth.request(GET_ACTIVITY_URL);
 		
-		return response;
+		//return ActivityResponse.parseActivityList(response);
+		return null;
 	}
 	
 	public List<ExpenseResponse> getExpenses() throws APIException {
@@ -213,6 +215,20 @@ public class SplitwiseSDK {
 		response = oauth.request(GET_EXPENSES_URL);
 		LOGGER.info(response);
 		return ExpenseResponse.parseExpensesList(response);
+	}
+	
+	public String getGroup() throws APIException {
+		String response = "";
+		response = oauth.request(this.GET_GROUP_URL);
+		LOGGER.info(response);
+		return response;
+	}
+	
+	public String getFriend() throws APIException {
+		String response = "";
+		response = oauth.request(this.GET_FRIEND_URL);
+		LOGGER.info(response);
+		return response;
 	}
 	
 	public static void main(String args[]) {
@@ -243,7 +259,7 @@ public class SplitwiseSDK {
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
 		
 		try {
-			System.out.println(sdk.getExpenses());
+			System.out.println(sdk.getFriends());
 		} catch (APIException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

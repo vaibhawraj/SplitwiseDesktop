@@ -62,6 +62,7 @@ public class MidPanel  extends CJPanel{
 	}
 	public void showDashboardPanel() {
 		this.hideAll();
+		dashboardPanel.showPanel();
 		dashboardPanel.setVisible(true);
 	}
 	
@@ -73,6 +74,7 @@ public class MidPanel  extends CJPanel{
 	
 	public void showExpensePanel() {
 		this.hideAll();
+		expensePanel.setDefaultHeader();
 		expensePanel.showExpenseList();
 		expensePanel.setVisible(true);
 	}
@@ -84,6 +86,20 @@ public class MidPanel  extends CJPanel{
 		g.fillRect(getSize().width-borderRight, 0, 1, getSize().height);
 		super.paintChildren(g);
 		
+	}
+
+	public void showFriendExpensePanel(long friendId) {
+		this.hideAll();
+		expensePanel.setFriendId(friendId);
+		expensePanel.showExpenseList();
+		expensePanel.setVisible(true);
+	}
+
+	public void showGroupExpensePanel(long groupId) {
+		this.hideAll();
+		expensePanel.setGroupId(groupId);
+		expensePanel.showExpenseList();
+		expensePanel.setVisible(true);
 	}
 
 }

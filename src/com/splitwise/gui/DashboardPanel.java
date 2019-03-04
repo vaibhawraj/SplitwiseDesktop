@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.splitwise.SplitwiseCore;
 import com.splitwise.SplitwiseGUI;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomButton;
@@ -32,8 +33,7 @@ public class DashboardPanel extends CJPanel {
 	private Dimension personLabelDimension = new Dimension(120,234);
 	DashboardPanel() {
 		init();
-		//showSummaryPanel();
-		this.showDefaultPanel();
+		//this.showDefaultPanel();
 	}
 	
 	@Override
@@ -105,11 +105,25 @@ public class DashboardPanel extends CJPanel {
 	public void showDefaultPanel() {
 		hideAll();
 		defaultPanel.setVisible(true);
+		//LOGGER.info("DealerPanel " + defaultPanel.getBounds() + "");
+		this.repaint();
 	}
 	
 	public void showSummaryPanel() {
 		hideAll();
+		summaryPanel.showSummary();
 		summaryPanel.setVisible(true);
+		//computeSize();
+		//computePlacement();
+		this.repaint();
+	}
+	
+	public void showPanel() {
+		if(SplitwiseCore.getInstance().getCurrentUser().getFriends().size() > 0) {
+			showSummaryPanel();
+		} else {
+			showDefaultPanel();
+		}
 	}
 
 	@Override

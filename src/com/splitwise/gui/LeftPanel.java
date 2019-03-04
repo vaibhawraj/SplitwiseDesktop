@@ -48,9 +48,9 @@ public class LeftPanel extends CJPanel{
 		// TODO Auto-generated method stub
 		links = new ArrayList<OptionItem>();
 		
-		links.add(new OptionItem("Dashboard",() -> SplitwiseGUI.getInstance().showDashboard()));
-		links.add(new OptionItem("Recent activity", () -> SplitwiseGUI.getInstance().showRecentActivity()));
-		links.add(new OptionItem("All expenses", () -> SplitwiseGUI.getInstance().showAllExpenses()));
+		links.add(new OptionItem("Dashboard",(OptionItem oi) -> SplitwiseGUI.getInstance().showDashboard()));
+		links.add(new OptionItem("Recent activity", (OptionItem oi) -> SplitwiseGUI.getInstance().showRecentActivity()));
+		links.add(new OptionItem("All expenses", (OptionItem oi) -> SplitwiseGUI.getInstance().showAllExpenses()));
 		
 		groupsHeader = new OptionItem("Groups", OptionItem.HEADER);
 		
@@ -58,8 +58,12 @@ public class LeftPanel extends CJPanel{
 		for(Group group : SplitwiseCore.getInstance().getCurrentUser().getGroups()) {
 			Date today = new Date(System.currentTimeMillis());
 			today.setMonth(today.getMonth() - 1);
-			if(group.getId() != 0 && group.getUpdatedAt().after(today))
-				groups.add(new OptionItem(group.getName()));
+			if(group.getId() != 0 && group.getUpdatedAt().after(today)) {
+				OptionItem oi = new OptionItem(group.getName());
+				oi.setGroupId(group.getId());
+				oi.setCallback((OptionItem o) -> showGroupsExpense(o));
+				groups.add(oi);
+			}
 		}
 		
 		
@@ -69,13 +73,31 @@ public class LeftPanel extends CJPanel{
 		for(People friend : SplitwiseCore.getInstance().getCurrentUser().getFriends()) {
 			Date today = new Date(System.currentTimeMillis());
 			today.setMonth(today.getMonth() - 1);
-			if(friend.getUpdatedAt().after(today))
-				friends.add(new OptionItem(friend.getName()));
+			if(friend.getUpdatedAt().after(today)) {
+				OptionItem oi = new OptionItem(friend.getName());
+				oi.setFriendId(friend.getId());
+				oi.setCallback((OptionItem o) -> showFriendsExpense(o));
+				friends.add(oi);
+			}
 		}
 		
 		packComponents();
 	}
 	
+	private void showFriendsExpense(OptionItem o) {
+		long id = o.getFriendId();
+		LOGGER.info("Option Item Selected for " + o.getText() + " with id " + o.getFriendId());
+		SplitwiseGUI.getInstance().showExpenses(o.getFriendId());
+		
+	}
+
+	private void showGroupsExpense(OptionItem oi) {
+		long id = oi.getGroupId();
+		LOGGER.info("Option Item Selected for " + oi.getText() + " with id " + oi.getGroupId());
+		SplitwiseGUI.getInstance().showGroupExpenses(oi.getGroupId());
+		
+	}
+
 	public void packComponents() {
 		this.removeAll();
 		

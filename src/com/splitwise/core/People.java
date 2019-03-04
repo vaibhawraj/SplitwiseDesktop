@@ -2,6 +2,7 @@ package com.splitwise.core;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import com.splitwise.splitwisesdk.responses.Friend;
 import com.splitwise.splitwisesdk.responses.User;
@@ -11,11 +12,15 @@ public class People {
     protected String last_name;
     protected String name;
     protected long id;
-    private Float balance_amount;
-    private Float userBalance;
+    private float net_balance;
+    private float total_negative_balance;// Only for current User
+    private float total_positive_balance;// Only for current User
+    private ArrayList<People> oweList = new ArrayList<>();
+    private ArrayList<People> owedList = new ArrayList<>();
     private ArrayList<People> friends = new ArrayList<>();
     protected ArrayList<Group> groups = new ArrayList<>();
-    private Date updated_at;
+    private Date updated_at;// Only for friends
+    final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     public People(User user) {
 		this.name = user.first_name + ((user.last_name!= null && user.last_name.length() > 0)?(" " + user.last_name):"");
@@ -30,6 +35,7 @@ public class People {
 		this.last_name = friend.last_name;
 		this.id = friend.id;
 		this.updated_at = friend.updated_at;
+		this.net_balance = friend.balance_amount;
     }
 
 	public ArrayList<Group> getGroups() {
@@ -45,25 +51,41 @@ public class People {
     }
 
     //friends balance getter/ setter
-    public Float getBalance_amount() {
-        return balance_amount;
-    }
-
-    public void setBalance_amount(Float balance_amount) {
-        this.balance_amount = balance_amount;
+    public Float getNetAmount() {
+        return (Float)(Math.round(this.net_balance * 100.0f)/100.0f);
     }
 
     //user balance getter/setter
-    public Float getUserBalance() {
-        return userBalance;
+    public Float getTotalNegativeBalance() {
+        return (Float)(Math.round(Math.abs(this.total_negative_balance)*100.0f)/100.0f);
     }
-
-    public void setUserBalance(Float userBalance) {
-        this.userBalance = userBalance;
+    
+    public Float getTotalPositiveBalance() {
+        return (Float)(Math.round(Math.abs(this.total_positive_balance)*100.0f)/100.0f);
     }
-
+    
+    public void addFriend(People people) {
+    	if(people.net_balance < 0) {
+    		this.total_negative_balance += people.net_balance;
+    		oweList.add(people);
+    	} else if(people.net_balance > 0) {
+    		this.total_positive_balance += people.net_balance;
+    		owedList.add(people);
+    	}
+    	//LOGGER.info(people + "");
+    	this.net_balance += people.net_balance;
+    	friends.add(people);
+    }
+    
     public ArrayList<People> getFriends() {
         return friends;
+    }
+    
+    public ArrayList<People> getOweList() {
+        return oweList;
+    }
+    public ArrayList<People> getOwedList() {
+        return owedList;
     }
 
     public People getFriend(long id) {

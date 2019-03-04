@@ -29,9 +29,9 @@ public class SummaryListItem extends CJPanel {
 		init();
 		personNameText.setText(friendName);
 		if(whoOwe == 0) {
-			amountText.setText("you owe " + amount);
+			amountText.setText("<html>you owe <strong>" + amount + "</strong></html>");
 		} else {
-			amountText.setText("owes you " + amount);
+			amountText.setText("<html>owes you <strong>" + amount + "</strong></html>");
 		}
 		
 		addListener();
@@ -60,7 +60,7 @@ public class SummaryListItem extends CJPanel {
 	@Override
 	public void computeSize() {
 		personNameText.setSize(personNameText.getPreferredSize());
-		amountText.setSize(personNameText.getPreferredSize());
+		amountText.setSize(amountText.getPreferredSize());
 	}
 
 	@Override

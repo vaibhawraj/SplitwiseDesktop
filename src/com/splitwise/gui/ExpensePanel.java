@@ -46,6 +46,9 @@ public class ExpensePanel extends CJPanel {
 	private Insets defaultPanelPadding = new Insets(30, 45, 10, 15);
 	private int defaultPanelHeight = 294;
 	private Dimension personLabelDimension = new Dimension(150,274);
+	private long friendId;
+	private long groupId;
+	
 	ExpensePanel() {
 		expenseList = new ArrayList<ExpenseItem>();
 		init();
@@ -149,6 +152,8 @@ public class ExpensePanel extends CJPanel {
 		} else {
 			scrollPane.setVisible(true);
 			SplitwiseCore core = SplitwiseCore.getInstance();
+			expenseList.clear();
+			listPanel.removeAll();
 			for(Expense expense : core.getExpenses()) {
 				String _date = ((expense.getUpdatedAt().getDate()>9)?"":"0") + expense.getUpdatedAt().getDate();
 				String _month = Month.of(expense.getUpdatedAt().getMonth() + 1).getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
@@ -240,6 +245,28 @@ public class ExpensePanel extends CJPanel {
 		}
 		listPanel.setLocation(0, 0);
 		scrollPane.setLocation(0, pageHeader.getSize().height);
+	}
+
+	public void setFriendId(long friendId) {
+		this.friendId = friendId;
+		pageHeader.setHeader(SplitwiseCore.getInstance().getCurrentUser().getFriend(friendId).getName());
+		pageHeader.computeSize();
+		pageHeader.computePlacement();
+	}
+	
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
+		pageHeader.setHeader(SplitwiseCore.getInstance().getCurrentUser().getGroup(groupId).getName());
+		pageHeader.computeSize();
+		pageHeader.computePlacement();
+	}
+
+	public void setDefaultHeader() {
+		this.groupId = 0;
+		this.friendId = 0;
+		pageHeader.setHeader("All Expenses");
+		pageHeader.computeSize();
+		pageHeader.computePlacement();
 	}
 
 }

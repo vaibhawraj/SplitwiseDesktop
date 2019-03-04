@@ -76,7 +76,7 @@ public class ExpenseResponse extends Response {
 		ArrayList<ExpenseResponse> expenseList = new ArrayList<ExpenseResponse>();
 		for(int i = 0; i< expenses.size(); i++) {
 			JSONObject expenseObj = (JSONObject) expenses.get(i);
-			LOGGER.info(expenseObj.toJSONString());
+			//LOGGER.info(expenseObj.toJSONString());
 			expenseList.add(new ExpenseResponse(expenseObj));
 		}
 		return expenseList;

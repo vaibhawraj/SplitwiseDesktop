@@ -76,6 +76,8 @@ public class SplitwiseGUI{
 	
 	public void showAllExpenses() {
 		// Do All necessary activity before loading All Expenses
+		SplitwiseCore.getInstance().setFilterByFriendId(0);
+		SplitwiseCore.getInstance().setFilterByGroupId(0);
 		mainFrame.showAllExpenses();
 	}
 	
@@ -89,5 +91,16 @@ public class SplitwiseGUI{
 	}
 	public void showAddBill() {
 		mainFrame.showAddBill();
+	}
+	public void showExpenses(long friendId) {
+		SplitwiseCore.getInstance().setFilterByGroupId(0);
+		SplitwiseCore.getInstance().setFilterByFriendId(friendId);
+		mainFrame.showFriendExpenses(friendId);
+		
+	}
+	public void showGroupExpenses(long groupId) {
+		SplitwiseCore.getInstance().setFilterByFriendId(0);
+		SplitwiseCore.getInstance().setFilterByGroupId(groupId);
+		mainFrame.showGroupExpenses(groupId);
 	}
 }

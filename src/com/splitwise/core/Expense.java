@@ -2,7 +2,10 @@ package com.splitwise.core;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import com.splitwise.splitwisesdk.responses.ExpenseResponse;
 import com.splitwise.splitwisesdk.responses.ExpenseResponse.ExpenseUser;
@@ -16,6 +19,9 @@ public class Expense {
 	public long created_by_id;
 	public float cost;
 	public List<ExpenseRatio> expenseRatio;
+	public Set<String> users;
+	
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     public Expense(ExpenseResponse expense) {
     	this.id = expense.id;
@@ -26,8 +32,10 @@ public class Expense {
     	this.cost = expense.cost;
     	this.created_date = expense.created_date;
     	expenseRatio = new ArrayList<ExpenseRatio>();
+    	users = new HashSet<String>();
     	for(ExpenseResponse.ExpenseUser eu : expense.expenseUsers) {
     		expenseRatio.add(new ExpenseRatio(eu));
+    		users.add(eu.id + "");
     	}
     }
     

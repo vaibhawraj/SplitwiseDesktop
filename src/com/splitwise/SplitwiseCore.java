@@ -2,6 +2,7 @@ package com.splitwise;
 
 import com.splitwise.core.Activity;
 import com.splitwise.core.Expense;
+import com.splitwise.core.ExpenseRatio;
 import com.splitwise.core.Group;
 import com.splitwise.core.LedgerManager;
 import com.splitwise.core.People;
@@ -26,6 +27,7 @@ public class SplitwiseCore {
     private ArrayList<Group> groups = new ArrayList<>(); //list of groups
     private ArrayList<Activity> activities = new ArrayList<>();
     private ArrayList<Expense> expenses = new ArrayList<>();
+    
     private Callback callback;
     final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     
@@ -74,7 +76,25 @@ public class SplitwiseCore {
     }
     
     public List<Expense> getExpenses() {
-    	return expenses;
+    	List<Expense> retList = new ArrayList<Expense>();
+    	if(this.userId == 0 && this.groupId == 0) {
+    		return expenses;
+    	} else if(this.userId != 0){
+    		LOGGER.info("Filter by User Id " + this.userId);
+    		for(Expense expense : expenses) {
+    			if(expense.users.contains("" + this.userId)) {
+    				retList.add(expense);
+    			}
+    		}
+    	} else if(this.groupId != 0){
+    		LOGGER.info("Filter by Group Id " + this.groupId);
+    		for(Expense expense : expenses) {
+    			if(expense.getGroupId() == this.groupId) {
+    				retList.add(expense);
+    			}
+    		}
+    	}
+    	return retList;
     }
     
     public void fetchUser() {
@@ -95,7 +115,7 @@ public class SplitwiseCore {
     	LOGGER.info("Fetching Friends");
     	try {
 			for(Friend friend : SplitwiseSDK.getInstance().getFriends()) {
-				currentUser.getFriends().add(new People(friend));
+				currentUser.addFriend(new People(friend));
 				//LOGGER.info("Fetched Friend " + friend.id);
 			}
 			Collections.sort(currentUser.getFriends(), (f1,f2)->f1.getName().compareTo(f2.getName()));
@@ -149,6 +169,15 @@ public class SplitwiseCore {
     static interface Callback {
     	public void callback();
     }
+
+	public void setFilterByFriendId(long friendId) {
+		this.userId = friendId;
+	}
+
+	public void setFilterByGroupId(long groupId) {
+		this.groupId = groupId;
+		
+	}
 
 	
 }

@@ -20,6 +20,7 @@ public class Friend extends Response {
 	public String first_name;
 	public String last_name;
 	public Date updated_at;
+	public float balance_amount;
 	
 	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -37,6 +38,19 @@ public class Friend extends Response {
 		this.first_name = (String) jsonObj.get("first_name");
 		this.last_name = (String) jsonObj.get("last_name");
 		this.id = (long) jsonObj.get("id");
+		
+		JSONArray balances = (JSONArray) jsonObj.get("balance");
+		for(int i=0;i<balances.size();i++) {
+			JSONObject entry = (JSONObject) balances.get(i);
+			if (entry.get("amount") instanceof Float) {
+				this.balance_amount = (Float)entry.get("amount");;
+			} else if (entry.get("amount") instanceof Long) {
+				Long value = (Long)entry.get("amount");
+				this.balance_amount = value.floatValue();
+			} else if (entry.get("amount") instanceof String) {
+				this.balance_amount = Float.parseFloat((String)entry.get("amount"));
+			}
+		}
 		
 		DateFormat m_ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		

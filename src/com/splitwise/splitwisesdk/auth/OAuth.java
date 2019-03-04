@@ -135,6 +135,7 @@ public class OAuth {
 		req.setEndpoint(endpoint);
 		req.setMethod("GET");
 		req.setOauthBodyHash(body_hash);
+		req.setParameter("id","5092932");
 		hmac_sha1_sign(req);
 		
 		response = Http.sendGetRequest(req.getEndpoint() + "?" + req.getRequestBody(), new HashMap<String,String>());

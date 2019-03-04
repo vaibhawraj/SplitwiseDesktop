@@ -58,6 +58,16 @@ public class MainContentPanel extends CJPanel {
 		repaint();
 	}
 	
+	public void showFriendExpenses(long friendId) {
+		midPanel.showFriendExpensePanel(friendId);
+		repaint();
+	}
+	
+	public void showGroupExpenses(long groupId) {
+		midPanel.showGroupExpensePanel(groupId);
+		repaint();
+	}
+	
 	public void showRecentActivity() {
 		midPanel.showRecentActivityPanel();
 		repaint();
@@ -65,12 +75,12 @@ public class MainContentPanel extends CJPanel {
 
 	@Override
 	public void computePlacement() {
-		// TODO Auto-generated method stub
 		midPanel.setLocation((getSize().width - midPanel.getSize().width)/2,0);
 		leftPanel.setLocation(midPanel.getLocation().x - leftPanel.getSize().width,0);
 		leftPanel.computePlacement();
 		rightPanel.setLocation(midPanel.getLocation().x + midPanel.getSize().width,0);
 		
 	}
+	
 
 }
