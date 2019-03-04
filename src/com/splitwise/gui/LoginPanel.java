@@ -70,7 +70,6 @@ public class LoginPanel extends JFXPanel implements ChangeListener{
         if (newValue == Worker.State.SUCCEEDED && location.equals("https://secure.splitwise.com/login")) {
         	setSize(this.getParent().getSize());
         	this.setVisible(true);
-            this.getParent().getComponent(0).setVisible(false);
             LOGGER.info("Showing LoginPanel" + this.getLocation() + " Size: " + this.getSize() +  "Parent Size" + this.getParent().getSize());
             this.getParent().repaint();
         }

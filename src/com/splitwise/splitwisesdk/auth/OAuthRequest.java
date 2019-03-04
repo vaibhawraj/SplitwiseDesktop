@@ -100,4 +100,7 @@ public class OAuthRequest {
 	public String toString() {
 		return getRequestBody().replace("&", "\n");
 	}
+	public void setParameter(String string, String string2) {
+		params.put(string,string2);
+	}
 }

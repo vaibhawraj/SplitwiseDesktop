@@ -18,14 +18,13 @@ public class SplitwiseGUI{
     private MainFrame mainFrame;
     
     final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    
+    SplitwiseCore core;
 	SplitwiseSDK sdk;
 	SplitwiseGUI() {}
 	public void init() {
 		
 		instance = this;
 		mainFrame = MainFrame.getInstance();
-		
 		mainFrame.showDefaultPane();
 		mainFrame.setVisible(true);
 		
@@ -42,7 +41,6 @@ public class SplitwiseGUI{
 				if(!sdk.hasValidAccessToken()) {
 					LOGGER.info("Not Has valid access token");
 					showLoginPanel();
-					
 				} else {
 					LOGGER.info("Has valid access token");
 					grantLogin();	
@@ -52,24 +50,22 @@ public class SplitwiseGUI{
 	}
 	
 	public void showLoginPanel() {
-			try {
-				Thread.sleep(2000);
-			} catch(Exception e) {}
 			LOGGER.info("Loading login panel");
-			LoginPanel lp = LoginPanel.getInstance();
-			String url = sdk.getAuthorizationURL();
-			lp.load(url);
-			lp.setVisible(false);			
-			
-			mainFrame.getContentPane().add(lp);
-			mainFrame.repaint();
+			mainFrame.showLoginPane();
 	}
 	
 	public void grantLogin() {
 		LOGGER.info("Granting Loging");
-		// TODO show loading screen
-		// TODO fetch data from the server on separate thread
-		mainFrame.showMainPane();
+		mainFrame.showDefaultPane();
+		//Fetch data from the server on separate thread
+		new Thread() {
+			public void run() {
+				LOGGER.info("Initializing Core");
+				core = SplitwiseCore.getInstance();
+				core.setCallback(()->mainFrame.showMainPane());
+				core.initialize();
+			}
+		}.start();
 		mainFrame.repaint();
 	}
 	
@@ -80,6 +76,8 @@ public class SplitwiseGUI{
 	
 	public void showAllExpenses() {
 		// Do All necessary activity before loading All Expenses
+		SplitwiseCore.getInstance().setFilterByFriendId(0);
+		SplitwiseCore.getInstance().setFilterByGroupId(0);
 		mainFrame.showAllExpenses();
 	}
 	
@@ -90,5 +88,19 @@ public class SplitwiseGUI{
 	
 	public static SplitwiseGUI getInstance() {
 		return instance;
+	}
+	public void showAddBill() {
+		mainFrame.showAddBill();
+	}
+	public void showExpenses(long friendId) {
+		SplitwiseCore.getInstance().setFilterByGroupId(0);
+		SplitwiseCore.getInstance().setFilterByFriendId(friendId);
+		mainFrame.showFriendExpenses(friendId);
+		
+	}
+	public void showGroupExpenses(long groupId) {
+		SplitwiseCore.getInstance().setFilterByFriendId(0);
+		SplitwiseCore.getInstance().setFilterByGroupId(groupId);
+		mainFrame.showGroupExpenses(groupId);
 	}
 }

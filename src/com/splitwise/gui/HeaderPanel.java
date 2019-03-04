@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import com.splitwise.SplitwiseCore;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomImage;
 import com.splitwise.gui.theme.DefaultTheme;
@@ -41,8 +42,9 @@ public class HeaderPanel extends CJPanel {
 	public void initComponents() {
 		image = new CustomImage(splitwiseLogoFilename);
 		headerText = new JLabel(image.getImageIcon());
-		usernameLabel = new JLabel("Vaibhaw");
-
+		usernameLabel = new JLabel("");
+		usernameLabel.setText(SplitwiseCore.getInstance().getCurrentUser().getName());
+		
 		usernameLabel.setForeground(DefaultTheme.getColor("headerPanelForeground"));
 		usernameLabel.setFont(headerFont);
 		computeSize();
@@ -58,6 +60,7 @@ public class HeaderPanel extends CJPanel {
 		setLayout(null);
 		setBackground(DefaultTheme.getColor("headerPanelBackground"));
 		setSize(getSize().width,this.height);
+		setOpaque(true);
 		
 		// Configure Border
 		Border matteBorder = BorderFactory.createMatteBorder(0,0,bottomBorderPixel,1,DefaultTheme.getColor("headerPanelBorderColor"));

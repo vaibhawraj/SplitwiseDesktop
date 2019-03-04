@@ -62,27 +62,45 @@ public class MidPanel  extends CJPanel{
 	}
 	public void showDashboardPanel() {
 		this.hideAll();
+		dashboardPanel.showPanel();
 		dashboardPanel.setVisible(true);
 	}
 	
 	public void showRecentActivityPanel() {
 		this.hideAll();
+		recentActivityPanel.showActivities();
 		recentActivityPanel.setVisible(true);
 	}
 	
 	
 	public void showExpensePanel() {
 		this.hideAll();
+		expensePanel.setDefaultHeader();
+		expensePanel.showExpenseList();
 		expensePanel.setVisible(true);
 	}
 	
 	public void paint(Graphics g) {
 		super.paint(g);
 		g.setColor(new Color(204,204,204)); //Border Color
-		g.fillRect(borderLeft, 0, 1, getSize().height);
-		g.fillRect(getSize().width-borderRight-1, 0, 1, getSize().height);
+		g.fillRect(borderLeft-1, 0, 1, getSize().height);
+		g.fillRect(getSize().width-borderRight, 0, 1, getSize().height);
 		super.paintChildren(g);
 		
+	}
+
+	public void showFriendExpensePanel(long friendId) {
+		this.hideAll();
+		expensePanel.setFriendId(friendId);
+		expensePanel.showExpenseList();
+		expensePanel.setVisible(true);
+	}
+
+	public void showGroupExpensePanel(long groupId) {
+		this.hideAll();
+		expensePanel.setGroupId(groupId);
+		expensePanel.showExpenseList();
+		expensePanel.setVisible(true);
 	}
 
 }

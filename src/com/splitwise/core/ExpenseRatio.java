@@ -1,43 +1,34 @@
 package com.splitwise.core;
 
+import com.splitwise.splitwisesdk.responses.ExpenseResponse;
+
 public class ExpenseRatio {
 
-
-    private People creditor;
-    private People debitor ;
-    private   float amount;
-    private float portion;
-
-    public People getCreditor() {
-        return creditor;
-    }
-
-    public void setCreditor(People creditor) {
-        this.creditor = creditor;
-    }
-
-    public People getDebitor() {
-        return debitor;
-    }
-
-    public void setDebitor(People debitor) {
-        this.debitor = debitor;
-    }
-
-
-    public float getAmount() {
-        return amount;
-    }
-
-    public void setAmount(float amount) {
-        this.amount = amount;
-    }
-
-    public float getPortion() {
-        return portion;
-    }
-
-    public void setPortion(float portion) {
-        this.portion = portion;
-    }
+	private long id;
+	private float paid_share;
+	private float owed_share;
+	private float net_balance;
+	
+	public ExpenseRatio(ExpenseResponse.ExpenseUser eu) {
+		this.id = eu.id;
+		this.paid_share = eu.paid_share;
+		this.owed_share = eu.owed_share;
+		this.net_balance = eu.net_balance;
+	}
+	
+	public long getId() {
+		return this.id;
+	}
+	
+	public float getPaidShare() {
+		return this.paid_share;
+	}
+	
+	public float getOwedShare() {
+		return this.owed_share;
+	}
+	
+	public float getNetBalance() {
+		return this.net_balance;
+	}
 }

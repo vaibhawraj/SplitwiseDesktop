@@ -1,14 +1,25 @@
 package com.splitwise.core;
 
 import java.util.ArrayList;
+import java.util.Date;
+
+import com.splitwise.splitwisesdk.responses.GroupResponse;
 
 public class Group {
 
-        private String groupId;
+        private long id;
+        private String name;
+        private Date updated_at;
         private ArrayList<GroupMember> members = new  ArrayList<>();
         private ArrayList<Expense> expenses = new ArrayList<>();
 
-        //doubt - won't the parameter passed for addGroupMember will be (People people)?
+        public Group(GroupResponse group) {
+			this.id = group.id;
+			this.name = group.name;
+			this.updated_at = group.updated_at;
+		}
+
+		//doubt - won't the parameter passed for addGroupMember will be (People people)?
         public boolean addGroupMember(GroupMember groupMember) {
            // members.add(groupMember);
             for (int i = 0; i < members.size(); i++) {
@@ -32,7 +43,8 @@ public class Group {
 
 
         public boolean addPeople(People people) {
-            return addGroupMember(new GroupMember(people,groupId));
+//            return addGroupMember(new GroupMember(people,id));
+        	return false;
         }
 
         public boolean removeGroupMember(GroupMember groupMember) {
@@ -61,5 +73,16 @@ public class Group {
 
     }
 
+	public String getName() {
+		return name;
+	}
+
+	public long getId() {
+		return id;
+	}
+	
+	public Date getUpdatedAt() {
+		return this.updated_at;
+	}
 
 }

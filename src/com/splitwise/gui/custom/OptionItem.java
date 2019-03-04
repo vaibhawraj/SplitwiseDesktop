@@ -43,6 +43,8 @@ public class OptionItem extends CJPanel{
 	public static String HEADER = "HEADER";
 	public static String OPTION = "OPTION";
 	
+	private long id; //Id for friend or group
+	
 	public OptionItem(String text, String type) {
 		this.text = text;
 		fontSize = 16;
@@ -70,6 +72,29 @@ public class OptionItem extends CJPanel{
 	public OptionItem(String text, Callback callback) {
 		this(text);
 		this.callback = callback;
+	}
+	
+	public void setCallback(Callback callback) {
+		this.callback = callback;
+	}
+	
+	public long getFriendId() {
+		return this.id;
+	}
+	
+	public long getGroupId() {
+		return this.id;
+	}
+	
+	public void setFriendId(long id) {
+		this.id = id;
+	}
+	public void setGroupId(long id) {
+		this.id = id;
+	}
+	
+	public String getText() {
+		return this.text;
 	}
 
 	@Override
@@ -145,7 +170,7 @@ public class OptionItem extends CJPanel{
 							oi.setSelected(false);
 							lp.setSelectedItem(that);
 							if(callback != null) {
-								callback.callback();
+								callback.callback(that);
 							}
 						}
 					} else {
@@ -200,10 +225,10 @@ public class OptionItem extends CJPanel{
 	
 	public void clickAction() {
 		if(callback != null) {
-			callback.callback();
+			callback.callback(this);
 		}
 	}
 	public static interface Callback {
-		public void callback();
+		public void callback(OptionItem oi);
 	}
 }

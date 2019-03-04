@@ -32,20 +32,23 @@ public class SplitwiseLogger {
 
         // suppress the logging output to the console
         Logger rootLogger = Logger.getLogger("");
+        Handler console = rootLogger.getHandlers()[0];
         rootLogger.getHandlers()[0].setLevel(Level.FINEST);
         /*Handler[] handlers = rootLogger.getHandlers();
         if (handlers[0] instanceof ConsoleHandler) {
             rootLogger.removeHandler(handlers[0]);
         }*/
+        
+        console.setFormatter(new MyConsoleFormatter());
 
         
         logger.setLevel(Level.INFO);
         fileTxt = new FileHandler("Logging.log");
         fileHTML = new FileHandler("Logging.log.html");
-
+        
         // create a TXT formatter
         formatterTxt = new SimpleFormatter();
-        fileTxt.setFormatter(formatterTxt);
+        fileTxt.setFormatter(new MyConsoleFormatter());
         logger.addHandler(fileTxt);
         
         // create an HTML formatter
@@ -118,6 +121,47 @@ public class SplitwiseLogger {
         // formatter is closed
         public String getTail(Handler h) {
             return "</table>\n</body>\n</html>";
+        }
+    }
+    
+    static class MyConsoleFormatter extends Formatter {
+        // this method is called for every log records
+        public String format(LogRecord rec) {
+            StringBuffer buf = new StringBuffer(1000);
+            
+            buf.append(calcDate(rec.getMillis()));
+            buf.append(" ");
+            buf.append("[" + rec.getSourceClassName() +" " + rec.getSourceMethodName() + " " + Thread.currentThread().getName() + "] ");
+            for(int i=buf.toString().length();i<100;i++) {
+            	buf.append(" ");
+            }
+            if(rec.getMessage().length() > 100) {
+            	buf.append("\n");
+            	buf.append(rec.getMessage());
+            	buf.append("\n");
+            } else {
+            	buf.append(rec.getMessage());
+            }
+            
+            buf.append("\n");
+
+            return buf.toString();
+        }
+        
+        public String getHead(Handler h) {
+        	StringBuffer buf = new StringBuffer(1000);
+        	buf.append("\n\n");
+        	for(int i=buf.toString().length();i<200;i++) {
+            	buf.append("=");
+            }
+        	buf.append("\n");
+        	return buf.toString();
+        }
+
+        private String calcDate(long millisecs) {
+            SimpleDateFormat date_format = new SimpleDateFormat("MMddyyHHmm");
+            Date resultdate = new Date(millisecs);
+            return date_format.format(resultdate);
         }
     }
 

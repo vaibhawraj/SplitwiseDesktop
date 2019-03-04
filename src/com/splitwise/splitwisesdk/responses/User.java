@@ -36,6 +36,7 @@ public class User extends Response {
 		this.first_name = (String) userJObj.get("first_name");
 		this.last_name = (String) userJObj.get("last_name");
 		this.email = (String) userJObj.get("email");
+		this.id = (long) userJObj.get("id");
 	}
 	
 	public String toString() {

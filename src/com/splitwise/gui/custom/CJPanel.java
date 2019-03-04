@@ -14,6 +14,7 @@ public abstract class CJPanel extends JPanel {
 	public CJPanel() {
 		defaultLayoutManager = getLayout();
 		setLayout(null);
+		setOpaque(false);
 	}
 	
 	public void setSize(int width, int height) {

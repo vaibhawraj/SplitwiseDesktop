@@ -1,77 +1,38 @@
 package com.splitwise.core;
 
+import java.util.Date;
+
+import com.splitwise.splitwisesdk.responses.ActivityResponse;
+
 public class Activity {
-    private boolean isPositive; // doubt
-    private String message;
-    private String category;
-    private String subMessage;
-    private String date;
-    private String activityType;
-    private static String EXPENSE_ACTIVITY = "EXPENSE_ACTIVITY";
-    private static String SETTLEMENT_ACTIVITY = "SETTLEMENT_ACTIVITY";
+	private long id;
+	private long type;
+	private String content;
+	private long created_by_id;
+	private long source_id;
+	private String source_type;
+	private Date created_date;
 
-    public void setPositive(boolean positive) {
-        isPositive = positive;
+    public Activity(ActivityResponse activity) {
+    	this.id = activity.id;
+    	this.type = activity.type;
+    	this.content = activity.content;
+    	this.created_by_id = activity.created_by_id;
+    	this.source_id = activity.source_id;
+    	this.source_type = activity.source_type;
+    	this.created_date = activity.created_date;
     }
-
-    public String getMessage() {
-        return message;
+    
+    public long getId() {
+    	return this.id;
     }
-
-    public void setMessage(String message) {
-        this.message = message;
+    
+    public String getContent() {
+    	return this.content;
     }
-
-    public String getCategory() {
-        return category;
+    
+    public Date getCreatedDate() {
+    	return this.created_date;
     }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getSubMessage() {
-        return subMessage;
-    }
-
-    public void setSubMessage(String subMessage) {
-        this.subMessage = subMessage;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getActivityType() {
-        return activityType;
-    }
-
-    public void setActivityType(String activityType) {
-        this.activityType = activityType;
-    }
-
-    public static String getExpenseActivity() {
-        return EXPENSE_ACTIVITY;
-    }
-
-    public static void setExpenseActivity(String expenseActivity) {
-        EXPENSE_ACTIVITY = expenseActivity;
-    }
-
-    public static String getSettlementActivity() {
-        return SETTLEMENT_ACTIVITY;
-    }
-
-    public static void setSettlementActivity(String settlementActivity) {
-        SETTLEMENT_ACTIVITY = settlementActivity;
-    }
-
-    //doubt whether getPositive = getter of isPositive
-    public boolean isPositive() {
-        return isPositive;
-    }
+    
 }

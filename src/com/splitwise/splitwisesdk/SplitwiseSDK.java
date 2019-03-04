@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,6 +44,7 @@ public class SplitwiseSDK {
 	final private String GET_CURRENT_USER_URL= SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_current_user";
 	final private String GET_USER_URL        = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_user";
 	final private String GET_FRIENDS_URL     = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_friends";
+	final private String GET_FRIEND_URL     = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_friend";
 	final private String GET_GROUPS_URL      = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_groups";
 	final private String GET_GROUP_URL       = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_group";
 	
@@ -52,6 +54,7 @@ public class SplitwiseSDK {
 	final private String GET_EXPENSES_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_expenses";
 	final private String GET_EXPENSE_URL     = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/get_expense";
 	
+	final private String GET_ACTIVITY_URL 	= SPLITWISE_BASE_URL + "api/" + SPLITWISE_VERSION+"/get_notifications";
 	
 	final private String CREATE_EXPENSE_URL  = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_expense";
 	final private String CREATE_GROUP_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_group";
@@ -177,6 +180,7 @@ public class SplitwiseSDK {
 	public boolean hasValidAccessToken() {
 		return hasValidAccessToken;
 	}
+	
 	public User getCurrentUser() throws APIException {
 		String response = "";
 		response = oauth.request(GET_CURRENT_USER_URL);
@@ -184,11 +188,53 @@ public class SplitwiseSDK {
 		return new User(response);
 	}
 	
+	public List<Friend> getFriends() throws APIException {
+		String response = "";
+		response = oauth.request(this.GET_FRIENDS_URL);
+		//LOGGER.info(response);
+		return Friend.parseFriendsList(response);
+	}
+	
+	public List<GroupResponse> getGroups() throws APIException {
+		String response = "";
+		response = oauth.request(this.GET_GROUPS_URL);
+		//LOGGER.info(response);
+		return GroupResponse.parseGroupList(response);
+	}
+	
+	public List<ActivityResponse> getActivities() throws APIException {
+		String response = "";
+		response = oauth.request(GET_ACTIVITY_URL);
+		LOGGER.info("Activity " + response);
+		return ActivityResponse.parseActivityList(response);
+	}
+	
+	public List<ExpenseResponse> getExpenses() throws APIException {
+		String response = "";
+		response = oauth.request(GET_EXPENSES_URL);
+		//LOGGER.info(response);
+		return ExpenseResponse.parseExpensesList(response);
+	}
+	
+	public String getGroup() throws APIException {
+		String response = "";
+		response = oauth.request(this.GET_GROUP_URL);
+		LOGGER.info(response);
+		return response;
+	}
+	
+	public String getFriend() throws APIException {
+		String response = "";
+		response = oauth.request(this.GET_FRIEND_URL);
+		LOGGER.info(response);
+		return response;
+	}
+	
 	public static void main(String args[]) {
 		SplitwiseSDK sdk = SplitwiseSDK.getInstance();
 		// Step 1: Execute and set oauth_token, oauth_token_secret from output.Get authorization url
-		System.out.println("Set oauth_token and oauth_token_secret in program");
-		System.out.println("Go to url: " + sdk.getAuthorizationURL());
+		// System.out.println("Set oauth_token and oauth_token_secret in program");
+		// System.out.println("Go to url: " + sdk.getAuthorizationURL());
 		// Comment above lines
 		
 		// Step 2: Uncomment below, On the browser, after clicking on authorize copy oauth_verifier and paste it below
@@ -206,18 +252,19 @@ public class SplitwiseSDK {
 		
 		//Step 3: Set access token and access token secret
 		/**/
-		/*String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
+		String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
 		String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
 		sdk.setOauthToken(oauth_access_token);
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
-		for(int i=0;i<10;i++) {
-			try {
-					System.out.println(i);
-					Thread.sleep(1000);
-					System.out.println(sdk.getCurrentUser().first_name);
-//					System.out.println(Http.sendGetRequest("http://example.com/", null));
-			} catch(Exception e) {}
-		}*/
+		
+		try {
+			System.out.println(sdk.getActivities());
+		} catch (APIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//			
+		
 		/**/
 	}
 

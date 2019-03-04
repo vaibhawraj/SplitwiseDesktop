@@ -8,6 +8,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.splitwise.SplitwiseCore;
+import com.splitwise.SplitwiseGUI;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomButton;
 import com.splitwise.gui.custom.CustomImage;
@@ -23,13 +25,15 @@ public class DashboardPanel extends CJPanel {
 	private FlexibleLabel defaultPanelSubText;
 	private CustomButton addBillButton;
 	
+	private SummaryPanel summaryPanel;
+	
 	//DefaultPanel
 	private Insets defaultPanelPadding = new Insets(30, 45, 10, 15);
 	private int defaultPanelHeight = 294;
 	private Dimension personLabelDimension = new Dimension(120,234);
 	DashboardPanel() {
 		init();
-		showDefaultPanel();
+		//this.showDefaultPanel();
 	}
 	
 	@Override
@@ -39,16 +43,27 @@ public class DashboardPanel extends CJPanel {
 		
 		initDefaultPanel();
 		
+		summaryPanel = new SummaryPanel();
+		summaryPanel.setVisible(false);
+		
 		addBillButton = new CustomButton("Add a Bill");
+		addBillButton.addCallback(()-> showAddBill());
 		
 		pageHeader.add(addBillButton);
 		add(defaultPanel);
 		add(pageHeader);
+		add(summaryPanel);
 	}
 	
+	private void showAddBill() {
+		LOGGER.info("Add Bill Button on Dashboard Clicked");
+		SplitwiseGUI.getInstance().showAddBill();
+	}
+
 	public void initDefaultPanel() {
 		defaultPanel.setLayout(null);
 		defaultPanel.setOpaque(false);
+		defaultPanel.setVisible(false);
 		
 		defaultTextPanel = new JPanel();
 		defaultTextPanel.setLayout(null);
@@ -82,19 +97,37 @@ public class DashboardPanel extends CJPanel {
 		defaultPanel.add(defaultTextPanel);
 	}
 	
-	public void showDefaultPanel() {
-		defaultPanel.setVisible(true);
+	public void hideAll() {
+		defaultPanel.setVisible(false);
+		summaryPanel.setVisible(false);
 	}
 	
-	public void hideDefaultPanel() {
-		defaultPanel.setVisible(false);
+	public void showDefaultPanel() {
+		hideAll();
+		defaultPanel.setVisible(true);
+		//LOGGER.info("DealerPanel " + defaultPanel.getBounds() + "");
+		this.repaint();
+	}
+	
+	public void showSummaryPanel() {
+		hideAll();
+		summaryPanel.showSummary();
+		summaryPanel.setVisible(true);
+		//computeSize();
+		//computePlacement();
+		this.repaint();
+	}
+	
+	public void showPanel() {
+		if(SplitwiseCore.getInstance().getCurrentUser().getFriends().size() > 0) {
+			showSummaryPanel();
+		} else {
+			showDefaultPanel();
+		}
 	}
 
 	@Override
-	public void configureComponents() {
-		setLayout(null);
-		setOpaque(false);
-	}
+	public void configureComponents() {}
 
 	@Override
 	public void computeSize() {
@@ -107,6 +140,8 @@ public class DashboardPanel extends CJPanel {
 		
 		defaultPanelTitle.setSize(defaultTextPanel.getSize().width, defaultPanelTitle.getPreferredSize().height);
 		defaultPanelSubText.setSize(defaultTextPanel.getSize().width,defaultPanelSubText.getPreferredSize().height);
+		
+		summaryPanel.setSize(getSize().width, summaryPanel.getPreferredHeight());
 	}
 
 	@Override
@@ -121,6 +156,8 @@ public class DashboardPanel extends CJPanel {
 		defaultPanelTitle.setLocation(0,0);
 		defaultPanelSubText.setLocation(0
 				, defaultPanelTitle.getLocation().y + defaultPanelTitle.getSize().height + 20);
+		
+		summaryPanel.setLocation(0,pageHeader.getSize().height);
 	}
 
 }
