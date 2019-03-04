@@ -16,6 +16,7 @@ import com.splitwise.splitwisesdk.responses.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -172,6 +173,40 @@ public class SplitwiseCore {
 	public void setFilterByGroupId(long groupId) {
 		this.groupId = groupId;
 		
+	}
+
+	public void createSplitExpense(String cost, String description, long userIds[]) {
+		HashMap<String,String> expenseParams = new HashMap<String, String>();
+		expenseParams.put("cost",cost);
+		expenseParams.put("description",description);
+		float value = Float.parseFloat(cost);
+		float splitValue = value / userIds.length;
+		
+		// Users
+		for(int i=0;i<userIds.length;i++) {
+			long id = userIds[i];
+			float paid_share = 0;
+			float owed_share = splitValue;
+			if(id == this.currentUser.getId()) {
+				paid_share = value;
+			}
+			expenseParams.put("users__"+i+"__user_id",String.valueOf(id));
+			expenseParams.put("users__"+i+"__paid_share",String.valueOf(paid_share));
+			expenseParams.put("users__"+i+"__owed_share",String.valueOf(owed_share));
+		}
+		
+		for(String key : expenseParams.keySet()) {
+			LOGGER.info(key + " : " + expenseParams.get(key));
+		}
+		
+		try {
+			ExpenseResponse er = SplitwiseSDK.getInstance().createExpense(expenseParams);
+			LOGGER.info("Created expense " + er.id);
+			expenses.add(new Expense(er));
+		} catch (APIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	

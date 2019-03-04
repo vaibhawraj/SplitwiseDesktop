@@ -244,7 +244,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 		
 	}
 
-	public void showAddBill() {
+	public void showAddBill(AddBillModel.Callback saveCallback) {
 		backdrop = new JPanel();
 		backdrop.setLayout(null);
 		backdrop.setBackground(new Color(0,0,0,100));
@@ -252,9 +252,10 @@ public class MainFrame extends JFrame implements ComponentListener{
 		backdrop.setLocation(0,0);
 		
 		AddBillModel adb = new AddBillModel();
+		adb.setSaveCallback(saveCallback);
 		
 		backdrop.add(adb);
-		layeredPane.add(backdrop,JLayeredPane.POPUP_LAYER);
+		layeredPane.add(backdrop,10000);
 		
 		adb.setSize(adb.getPreferredSize());
 		adb.setLocation((getContentPane().getSize().width - adb.getSize().width)/2,

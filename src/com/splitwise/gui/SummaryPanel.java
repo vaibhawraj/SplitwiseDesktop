@@ -94,6 +94,7 @@ public class SummaryPanel extends CJPanel {
 		
 		youOwedList.computeSize();
 		youOwedList.computePlacement();
+		youOwedList.repaint();
 		computeSize();
 		computePlacement();
 		
@@ -136,7 +137,7 @@ public class SummaryPanel extends CJPanel {
 		
 		int summaryListWidth = (getSize().width)/2;
 		youOweList.setSize(summaryListWidth, youOweList.getPreferredHeight());
-		youOwedList.setSize(summaryListWidth, youOweList.getPreferredHeight());
+		youOwedList.setSize(summaryListWidth, youOwedList.getPreferredHeight());
 		
 	}
 
@@ -298,7 +299,9 @@ public class SummaryPanel extends CJPanel {
 				sil.setLocation(0, preferredHeight);
 				sil.computePlacement();
 				preferredHeight += sil.getHeight();
+				LOGGER.info(sil.toString());
 			}
+			LOGGER.info("List bounds " + headerText.getText() + " "  + getBounds().toString());
 		}
 		
 	}

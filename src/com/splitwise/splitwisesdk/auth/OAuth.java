@@ -135,10 +135,31 @@ public class OAuth {
 		req.setEndpoint(endpoint);
 		req.setMethod("GET");
 		req.setOauthBodyHash(body_hash);
-		req.setParameter("id","5092932");
+		//req.setParameter("id","5092932");
 		hmac_sha1_sign(req);
 		
 		response = Http.sendGetRequest(req.getEndpoint() + "?" + req.getRequestBody(), new HashMap<String,String>());
+		return response;
+	}
+	
+	public String requestPost(String endpoint, Map<String, String> params) {
+		String response = "";
+		
+		OAuthRequest req = new OAuthRequest();
+		req.setConsumerKey(consumerKey);
+		req.setOauthToken(oauth_token);
+		req.setOauthTokenSecret(oauth_token_secret);
+		req.setEndpoint(endpoint);
+		req.setMethod("POST");
+		for(String key : params.keySet()) {
+			req.setParameter(key, params.get(key).replace(" ","%20"));
+		}
+		hmac_sha1_sign(req);
+		
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Content-Type","application/x-www-form-urlencoded");
+		
+		response = Http.sendPostRequest(req.getEndpoint(), headers, req.getRequestBody());
 		return response;
 	}
 	
@@ -181,8 +202,9 @@ public class OAuth {
 		String hashedBody = req.getRequestHash();
 		String signature_base_string = method + "&" + hashedUrl + "&" + hashedBody;
 		String key = consumerSecret + "&" + oauth_token_secret;
-		//System.out.println(key);
+		System.out.println("Key: " + key);
 		//System.out.println(signature_base_string);
+		LOGGER.info(signature_base_string);
 		String signature = new String(
 				Base64.encodeBase64(
 						new HmacUtils(
@@ -191,6 +213,7 @@ public class OAuth {
 								).hmac(signature_base_string)
 						)
 				);
+		LOGGER.info("Signature" +" " + signature);
 		req.setSignature(signature);
 	}
 	

@@ -7,8 +7,10 @@ import java.awt.Insets;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -147,6 +149,11 @@ public class ExpensePanel extends CJPanel {
 	
 	public void showExpenseList() {
 		hideAll();
+		if(this.friendId == 0 && this.groupId == 0) {
+			this.addBillButton.setVisible(false);
+		} else {
+			this.addBillButton.setVisible(true);
+		}
 		if(SplitwiseCore.getInstance().getExpenses().size() == 0) {
 			showDefaultPanel();
 		} else {
@@ -191,7 +198,18 @@ public class ExpensePanel extends CJPanel {
 	
 	private void showAddBill() {
 		LOGGER.info("Add Bill Button on Dashboard Clicked");
-		SplitwiseGUI.getInstance().showAddBill();
+		SplitwiseGUI.getInstance().showAddBill((args)->saveExpense(args));
+	}
+	
+	private void saveExpense(Map<String,String> args) {
+		LOGGER.info("Save Expense for User 1 " + this.friendId);
+		LOGGER.info("Save Expense for User 2 " + SplitwiseCore.getInstance().getCurrentUser().getId());
+		LOGGER.info("Cost" + args.get("cost"));
+		LOGGER.info("Description" + args.get("description"));
+		long userIds[] = new long[] {this.friendId , SplitwiseCore.getInstance().getCurrentUser().getId()};
+		
+		SplitwiseCore.getInstance().createSplitExpense(args.get("cost"), args.get("description"), userIds);
+		this.showExpenseList();
 	}
 
 	@Override

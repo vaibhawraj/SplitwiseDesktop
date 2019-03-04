@@ -9,6 +9,9 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -16,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.JLayeredPane;
 
+import com.splitwise.SplitwiseCore;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomButton;
 import com.splitwise.gui.custom.FlexibleLabel;
@@ -51,6 +55,8 @@ public class AddBillModel extends CJPanel {
 	private JPanel buttonPanel;
 	private CustomButton cancelButton;
 	private CustomButton saveButton;
+	
+	private Callback saveCallback;
 	
 	public AddBillModel() {
 		init();
@@ -123,6 +129,7 @@ public class AddBillModel extends CJPanel {
 		saveButton = new CustomButton("Save");
 		saveButton.setTheme(CustomButton.GREENTHEME);
 		saveButton.hasBackdropBug = false;
+		saveButton.addCallback(()->saveAction());
 		cancelButton = new CustomButton("Cancel");
 		cancelButton.addCallback(()-> MainFrame.getInstance().hideBackdrop());
 		cancelButton.setTheme(CustomButton.GREYTHEME);
@@ -282,4 +289,24 @@ public class AddBillModel extends CJPanel {
         Date resultdate = new Date(millisecs);
         return date_format.format(resultdate);
     }
+	
+	public void saveAction() {
+		String cost = amount.getText();
+		String desc = description.getText();
+		LOGGER.info("Cost :" + cost);
+		LOGGER.info("desc :" + desc);
+		if(saveCallback != null) {
+			HashMap<String,String> args = new HashMap<String,String>();
+			args.put("cost",cost);
+			args.put("description",desc);
+			saveCallback.callback(args);
+		}
+		MainFrame.getInstance().hideBackdrop();
+	}
+	public void setSaveCallback(Callback callback) {
+		this.saveCallback = callback;
+	}
+	public static interface Callback {
+		public void callback(Map<String,String> arguments);
+	}
 }
