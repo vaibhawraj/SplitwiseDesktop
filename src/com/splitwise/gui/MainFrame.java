@@ -254,7 +254,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 		AddBillModel adb = new AddBillModel();
 		
 		backdrop.add(adb);
-		layeredPane.add(backdrop,10000);
+		layeredPane.add(backdrop,JLayeredPane.POPUP_LAYER);
 		
 		adb.setSize(adb.getPreferredSize());
 		adb.setLocation((getContentPane().getSize().width - adb.getSize().width)/2,

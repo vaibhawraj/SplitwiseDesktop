@@ -8,6 +8,7 @@ import com.splitwise.core.LedgerManager;
 import com.splitwise.core.People;
 import com.splitwise.splitwisesdk.APIException;
 import com.splitwise.splitwisesdk.SplitwiseSDK;
+import com.splitwise.splitwisesdk.responses.ActivityResponse;
 import com.splitwise.splitwisesdk.responses.ExpenseResponse;
 import com.splitwise.splitwisesdk.responses.Friend;
 import com.splitwise.splitwisesdk.responses.GroupResponse;
@@ -41,36 +42,16 @@ public class SplitwiseCore {
     	fetchFriends();
     	fetchGroups();
     	fetchExpenses();
+    	fetchActivities();
     	if(callback != null) {
     		callback.callback();
     	}
     }
-
-    public void addFriend(){
-
+    
+    public List<Activity> getActivities(){
+    	return this.activities;
     }
-
-    public void createGroup(){
-
-    }
-    public void removeGroup(){
-
-    }
-    public void removeFriend(){
-
-    }
-    public void updateUserInfo(){
-
-    }
-    public void getAllActivities(){
-
-    }
-    public void getAllGroups(){
-
-    }
-    public void getAllFriends(){
-
-    }
+   
     public People getCurrentUser() {
     	return this.currentUser;
     }
@@ -148,7 +129,21 @@ public class SplitwiseCore {
 				expenses.add(new Expense(expense));
 			}
 			Collections.sort(expenses, (f1,f2)->(f1.getCreatedDate().compareTo(f2.getCreatedDate()) > 0)?-1:1);
-			LOGGER.info("Fetched Groups " + expenses.size());
+			LOGGER.info("Fetched Expenses " + expenses.size());
+		} catch (APIException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+    }
+    
+    public void fetchActivities() {
+    	LOGGER.info("Fetching Activities");
+    	try {
+			for(ActivityResponse activity : SplitwiseSDK.getInstance().getActivities()) {
+				activities.add(new Activity(activity));
+			}
+			Collections.sort(activities, (f1,f2)->(f1.getCreatedDate().compareTo(f2.getCreatedDate()) > 0)?-1:1);
+			LOGGER.info("Fetched Activities " + activities.size());
 		} catch (APIException e) {
 			e.printStackTrace();
 			System.exit(0);

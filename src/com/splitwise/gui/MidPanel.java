@@ -68,6 +68,7 @@ public class MidPanel  extends CJPanel{
 	
 	public void showRecentActivityPanel() {
 		this.hideAll();
+		recentActivityPanel.showActivities();
 		recentActivityPanel.setVisible(true);
 	}
 	

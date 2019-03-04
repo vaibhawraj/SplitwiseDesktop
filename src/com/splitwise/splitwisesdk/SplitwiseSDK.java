@@ -191,7 +191,7 @@ public class SplitwiseSDK {
 	public List<Friend> getFriends() throws APIException {
 		String response = "";
 		response = oauth.request(this.GET_FRIENDS_URL);
-		LOGGER.info(response);
+		//LOGGER.info(response);
 		return Friend.parseFriendsList(response);
 	}
 	
@@ -202,18 +202,17 @@ public class SplitwiseSDK {
 		return GroupResponse.parseGroupList(response);
 	}
 	
-	public String getActivities() throws APIException {
+	public List<ActivityResponse> getActivities() throws APIException {
 		String response = "";
 		response = oauth.request(GET_ACTIVITY_URL);
-		
-		//return ActivityResponse.parseActivityList(response);
-		return null;
+		LOGGER.info("Activity " + response);
+		return ActivityResponse.parseActivityList(response);
 	}
 	
 	public List<ExpenseResponse> getExpenses() throws APIException {
 		String response = "";
 		response = oauth.request(GET_EXPENSES_URL);
-		LOGGER.info(response);
+		//LOGGER.info(response);
 		return ExpenseResponse.parseExpensesList(response);
 	}
 	
@@ -259,7 +258,7 @@ public class SplitwiseSDK {
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
 		
 		try {
-			System.out.println(sdk.getFriends());
+			System.out.println(sdk.getActivities());
 		} catch (APIException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

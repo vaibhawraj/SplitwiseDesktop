@@ -10,6 +10,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.splitwise.SplitwiseCore;
+import com.splitwise.core.Activity;
 import com.splitwise.gui.custom.ActivityListItem;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomButton;
@@ -31,9 +33,10 @@ public class RecentActivityPanel extends CJPanel {
 		activityList = new ArrayList<ActivityListItem>();
 		init();
 		
-		addItem(new ActivityListItem("<strong>Sandesh M.</strong> added <strong>“Vegetable oil”</strong> in <strong>“TL 513”</strong>.<br><font color=\"#ff652f\">You owe $0.92</font>"));
+		/*addItem(new ActivityListItem("<strong>Sandesh M.</strong> added <strong>“Vegetable oil”</strong> in <strong>“TL 513”</strong>.<br><font color=\"#ff652f\">You owe $0.92</font>"));
 		addItem(new ActivityListItem("<strong>Sandesh M.</strong> updated <strong>“Bounty ”</strong> in <strong>“TL 513”</strong>.<br><font color=\"#ff652f\">You owe $2.85</font>"));
-		addItem(new ActivityListItem("<strong>You</strong> updated <strong>“Toilet paper”</strong> in <strong>“TL 513”</strong>.<br><font color=\"#999999\">You do not owe anything</font>"));
+		addItem(new ActivityListItem("<strong>You</strong> updated <strong>“Toilet paper”</strong> in <strong>“TL 513”</strong>.<br><font color=\"#999999\">You do not owe anything</font>"));*/
+		
 		//showDefaultPanel();
 	}
 	@Override
@@ -66,6 +69,10 @@ public class RecentActivityPanel extends CJPanel {
 	
 	public void hideAll() {
 		defaultPanel.setVisible(false);
+		for(ActivityListItem ali : activityList) {
+			remove(ali);
+		}
+		activityList.clear();
 	}
 	
 	public void showDefaultPanel() {
@@ -73,6 +80,23 @@ public class RecentActivityPanel extends CJPanel {
 		defaultPanel.setVisible(true);
 	}
 	
+	public void showRecentActivity() {
+		hideAll();
+		for(Activity activity : SplitwiseCore.getInstance().getActivities()) {
+			addItem(new ActivityListItem(activity.getContent()));
+		}
+		computeSize();
+		computePlacement();
+ 	}
+	
+	public void showActivities() {
+		if(SplitwiseCore.getInstance().getActivities().size() > 0) {
+			showRecentActivity();
+		} else {
+			showDefaultPanel();
+		}
+		this.repaint();
+	}
 	@Override
 	public void configureComponents() {
 		setLayout(null);
@@ -107,7 +131,6 @@ public class RecentActivityPanel extends CJPanel {
 	public void addItem(ActivityListItem ali) {
 		activityList.add(ali);
 		add(ali);
-		this.repaint();
 	}
 
 }
