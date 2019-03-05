@@ -161,7 +161,7 @@ public class AddBillModel extends CJPanel {
 				} catch(Exception exp) {
 					val = 0;
 				}
-				details.setText("($" + (val/no_of_person) + "/person)");
+				details.setText("($" + (Math.round((val/no_of_person)*100.0f)/100.0f) + "/person)");
 				details.repaint();
 			}
 			
@@ -354,12 +354,19 @@ public class AddBillModel extends CJPanel {
 	public void saveAction() {
 		String cost = amount.getText();
 		String desc = description.getText();
-		LOGGER.info("Cost :" + cost);
+		LOGGER.info("cost :" + cost);
 		LOGGER.info("desc :" + desc);
 		if(saveCallback != null) {
 			HashMap<String,String> args = new HashMap<String,String>();
 			args.put("cost",cost);
 			args.put("description",desc);
+			if(this.friend != null) {
+				args.put("friendId",String.valueOf(friend.getId()));
+			} else if(this.group != null) {
+				args.put("groupId",String.valueOf(group.getId()));
+			} else {
+				LOGGER.severe("This feature is not implemented currently.");
+			}
 			saveCallback.callback(args);
 		}
 		MainFrame.getInstance().hideBackdrop();

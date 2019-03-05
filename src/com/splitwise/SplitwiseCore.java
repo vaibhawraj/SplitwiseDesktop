@@ -189,14 +189,21 @@ public class SplitwiseCore {
 	}
 
 	public void createSplitExpense(String cost, String description, long userIds[]) {
+		createSplitExpense( cost, description, userIds, -1); //-1 to indicate that group id parameter has not to be included
+	}
+	public void createSplitExpense(String cost, String description, long userIds[], long groupId) {
 		HashMap<String,String> expenseParams = new HashMap<String, String>();
 		expenseParams.put("cost",cost);
 		expenseParams.put("description",description);
+		if(groupId != -1) {
+			expenseParams.put("group_id",String.valueOf(groupId));
+		}
 		float value = Float.parseFloat(cost);
 		float splitValue = value / userIds.length;
-		
+		splitValue = Math.round(splitValue * 100.0f)/100.0f;
+		float remainingValue = value;
 		// Users
-		for(int i=0;i<userIds.length;i++) {
+		for(int i=0;i<userIds.length-1;i++) {
 			long id = userIds[i];
 			float paid_share = 0;
 			float owed_share = splitValue;
@@ -206,7 +213,17 @@ public class SplitwiseCore {
 			expenseParams.put("users__"+i+"__user_id",String.valueOf(id));
 			expenseParams.put("users__"+i+"__paid_share",String.valueOf(paid_share));
 			expenseParams.put("users__"+i+"__owed_share",String.valueOf(owed_share));
+			remainingValue -= splitValue;
 		}
+		// For last user
+		int i = userIds.length - 1;
+		float paid_share = 0;
+		if(userIds[i] == this.currentUser.getId()) {
+			paid_share = value;
+		}
+		expenseParams.put("users__"+i+"__user_id",String.valueOf(userIds[i]));
+		expenseParams.put("users__"+i+"__paid_share",String.valueOf(paid_share));
+		expenseParams.put("users__"+i+"__owed_share",String.valueOf(remainingValue));
 		
 		for(String key : expenseParams.keySet()) {
 			LOGGER.info(key + " : " + expenseParams.get(key));
@@ -221,6 +238,7 @@ public class SplitwiseCore {
 					fetchFriends();
 					fetchActivities();
 					fetchExpenses();
+					fetchGroups();
 					if(callback != null) {
 						callback.callback();
 					}
