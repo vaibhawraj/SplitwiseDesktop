@@ -77,6 +77,15 @@ public class People {
     	friends.add(people);
     }
     
+    public void clearFriends() {
+    	oweList.clear();
+    	owedList.clear();
+    	this.total_negative_balance = 0;
+    	this.total_positive_balance = 0;
+    	this.net_balance = 0;
+    	friends.clear();
+    }
+    
     public ArrayList<People> getFriends() {
         return friends;
     }

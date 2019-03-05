@@ -49,26 +49,31 @@ public class MainContentPanel extends CJPanel {
 	}
 	
 	public void showDashboard() {
+		rightPanel.hideGroupSummary();
 		midPanel.showDashboardPanel();
 		repaint();
 	}
 	
 	public void showAllExpenses() {
+		rightPanel.hideGroupSummary();
 		midPanel.showExpensePanel();
 		repaint();
 	}
 	
 	public void showFriendExpenses(long friendId) {
+		rightPanel.hideGroupSummary();
 		midPanel.showFriendExpensePanel(friendId);
 		repaint();
 	}
 	
 	public void showGroupExpenses(long groupId) {
+		rightPanel.showGroupSummary();
 		midPanel.showGroupExpensePanel(groupId);
 		repaint();
 	}
 	
 	public void showRecentActivity() {
+		rightPanel.hideGroupSummary();
 		midPanel.showRecentActivityPanel();
 		repaint();
 	}
@@ -79,6 +84,13 @@ public class MainContentPanel extends CJPanel {
 		leftPanel.setLocation(midPanel.getLocation().x - leftPanel.getSize().width,0);
 		leftPanel.computePlacement();
 		rightPanel.setLocation(midPanel.getLocation().x + midPanel.getSize().width,0);
+		
+	}
+	public void reInitLeftPanel() {
+		leftPanel.initComponents();
+		leftPanel.computeSize();
+		leftPanel.computePlacement();
+		leftPanel.repaint();
 		
 	}
 	

@@ -17,10 +17,12 @@ public class GroupResponse extends Response {
 	public long id;
 	public String name;
 	public Date updated_at;
+	public List<GroupMemberResponse> groupMembers;
 	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	public GroupResponse(String jsonText) throws APIException {
 		super(jsonText);
+		jsonObj = (JSONObject) jsonObj.get("group");
 		fetchValues();
 	}
 	
@@ -33,6 +35,13 @@ public class GroupResponse extends Response {
 		this.name = (String) jsonObj.get("name");
 		
 		this.id = (long) jsonObj.get("id");
+		
+		groupMembers = new ArrayList<GroupMemberResponse>();
+		JSONArray members = (JSONArray) jsonObj.get("members");
+		for(int i=0;i<members.size();i++) {
+			groupMembers.add(new GroupMemberResponse((JSONObject)members.get(i)));
+		}
+		
 		//2019-03-03T23:28:15Z
 		DateFormat m_ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		
@@ -59,5 +68,31 @@ public class GroupResponse extends Response {
 		}
 		System.out.println(groupsList.size());
 		return groupsList;
+	}
+	
+	public static class GroupMemberResponse {
+		public long id;
+		public String name;
+		public String email;
+		public float balance_amount;
+		public GroupMemberResponse(JSONObject jsonObj) {
+			this.id = (long) jsonObj.get("id");
+			this.name = (String) jsonObj.get("name");
+			this.email = (String) jsonObj.get("email");
+			
+			JSONArray balances = (JSONArray) jsonObj.get("balance");
+			for(int i=0;i<balances.size();i++) {
+				JSONObject entry = (JSONObject) balances.get(i);
+				if (entry.get("amount") instanceof Float) {
+					this.balance_amount = (Float)entry.get("amount");;
+				} else if (entry.get("amount") instanceof Long) {
+					Long value = (Long)entry.get("amount");
+					this.balance_amount = value.floatValue();
+				} else if (entry.get("amount") instanceof String) {
+					this.balance_amount = Float.parseFloat((String)entry.get("amount"));
+				}
+			}
+			
+		}
 	}
 }

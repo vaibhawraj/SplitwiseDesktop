@@ -1,9 +1,12 @@
 package com.splitwise.gui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
@@ -16,6 +19,7 @@ import com.splitwise.SplitwiseCore;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomImage;
 import com.splitwise.gui.theme.DefaultTheme;
+import com.splitwise.splitwisesdk.SplitwiseSDK;
 
 public class HeaderPanel extends CJPanel {
 
@@ -32,6 +36,7 @@ public class HeaderPanel extends CJPanel {
 	// Components
 	private JLabel headerText;
 	private JLabel usernameLabel;
+	private JLabel logoutButton;
 	private CustomImage image;
 	
 	HeaderPanel() {
@@ -47,11 +52,18 @@ public class HeaderPanel extends CJPanel {
 		
 		usernameLabel.setForeground(DefaultTheme.getColor("headerPanelForeground"));
 		usernameLabel.setFont(headerFont);
+		
+		logoutButton = new JLabel("Logout");
+		logoutButton.setForeground(DefaultTheme.getColor("headerPanelForeground"));
+		logoutButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		logoutButton.setFont(headerFont);
+		
 		computeSize();
 		computePlacement();
 		
 		add(headerText);
 		add(usernameLabel);
+		add(logoutButton);
 	}
 
 	@Override
@@ -66,7 +78,33 @@ public class HeaderPanel extends CJPanel {
 		Border matteBorder = BorderFactory.createMatteBorder(0,0,bottomBorderPixel,1,DefaultTheme.getColor("headerPanelBorderColor"));
 		setBorder(matteBorder);
 		
-		
+		logoutButton.addMouseListener(new MouseListener() {
+				@Override public void mouseClicked(MouseEvent e) {
+					LOGGER.info("Add clicked on Logout");
+					SplitwiseSDK.getInstance().revokeOauth();
+					System.exit(1);
+				}
+				@Override public void mousePressed(MouseEvent e) {}
+				@Override public void mouseReleased(MouseEvent e) {}
+				@Override public void mouseEntered(MouseEvent e) {
+					LOGGER.info("Mouse Entered");
+					String fontName = logoutButton.getFont().getFontName();
+					int fontSize = logoutButton.getFont().getSize();
+					logoutButton.setForeground(logoutButton.getForeground().darker());
+					//logoutButton.setFont(new Font(fontName, Font.BOLD, fontSize));
+					
+					logoutButton.repaint();
+				}
+				@Override public void mouseExited(MouseEvent e) {
+					String fontName = logoutButton.getFont().getFontName();
+					int fontSize = logoutButton.getFont().getSize();
+					logoutButton.setForeground(DefaultTheme.getColor("headerPanelForeground"));
+					//logoutButton.setFont(new Font(fontName, Font.PLAIN, fontSize));
+					
+					logoutButton.repaint();
+				}
+				
+			});
 	}
 
 	@Override
@@ -76,6 +114,7 @@ public class HeaderPanel extends CJPanel {
 		headerText.setIcon(image.setSize(headerText.getSize()).getImageIcon());
 		
 		usernameLabel.setSize(usernameLabel.getPreferredSize());
+		logoutButton.setSize(logoutButton.getPreferredSize());
 	}
 
 	@Override
@@ -89,7 +128,13 @@ public class HeaderPanel extends CJPanel {
 		
 		relativeX = leftX + contentWidth - usernameLabel.getSize().width;
 		relativeY = (getSize().height - usernameLabel.getSize().height)/2;
+		logoutButton.setLocation(relativeX, relativeY);
+		
+		relativeX = logoutButton.getX() - usernameLabel.getSize().width - 10;
+		relativeY = (getSize().height - usernameLabel.getSize().height)/2;
 		usernameLabel.setLocation(relativeX, relativeY);
+		
+		
 		
 	}
 

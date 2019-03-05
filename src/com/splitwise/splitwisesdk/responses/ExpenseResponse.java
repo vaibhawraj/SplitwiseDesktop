@@ -24,6 +24,7 @@ public class ExpenseResponse extends Response {
 	public float cost;
 	public List<ExpenseUser> expenseUsers;
 	public Date created_date;
+	public boolean isDeleted;
 	
 	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -45,6 +46,7 @@ public class ExpenseResponse extends Response {
 		JSONObject temp = (JSONObject)jsonObj.get("created_by");
 		this.created_by_id = (long)temp.get("id");
 		this.cost = Float.parseFloat((String)jsonObj.get("cost"));
+		this.isDeleted = (jsonObj.get("deleted_by") != null);
 		
 		expenseUsers = new ArrayList<ExpenseUser>();
 		JSONArray users = (JSONArray) jsonObj.get("users");

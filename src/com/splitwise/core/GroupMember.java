@@ -1,28 +1,30 @@
 package com.splitwise.core;
 
+import com.splitwise.splitwisesdk.responses.GroupResponse;
+
 public class GroupMember {
-    private People member;
-    private double balance;
+    private long memberId;
+    private float balance;
     private String groupId;
 
-    GroupMember(People people, String groupId) {
-        this.member = people;
-        this.groupId = groupId;
+    GroupMember(GroupResponse.GroupMemberResponse gmr) {
+        this.memberId = gmr.id;
+        this.balance = gmr.balance_amount;
     }
 
-    public People getMember() {
-        return member;
+    public long getMemberId() {
+        return memberId;
     }
 
     public String getGroupId() {
         return groupId;
     }
 
-    public double getBalance() {
+    public float getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(float balance) {
         this.balance = balance;
     }
 }

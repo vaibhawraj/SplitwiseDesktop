@@ -26,7 +26,6 @@ public class CustomButton extends JPanel {
 	private String theme = "Orange";
 	public static String GREYTHEME = "Grey";
 	public static String GREENTHEME = "Green";
-	public boolean hasBackdropBug = true;
 	
 	final public static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -103,7 +102,7 @@ public class CustomButton extends JPanel {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				if( e.getSource() instanceof CustomButton ) {
+				if( e.getSource() instanceof CustomButton && !isHighlighted) {
 					CustomButton cb = (CustomButton)e.getSource();
 					cb.isHighlighted = true;
 					cb.repaint();
@@ -112,13 +111,11 @@ public class CustomButton extends JPanel {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				if(MainFrame.getInstance().backdrop == null || !hasBackdropBug) {
-					if( e.getSource() instanceof CustomButton ) {
+					if( e.getSource() instanceof CustomButton && isHighlighted) {
 						CustomButton cb = (CustomButton)e.getSource();
 						cb.isHighlighted = false;
 						cb.repaint();
 					}
-				}
 			}
 			
 		});

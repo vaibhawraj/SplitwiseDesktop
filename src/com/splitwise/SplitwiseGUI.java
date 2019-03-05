@@ -91,9 +91,18 @@ public class SplitwiseGUI{
 		return instance;
 	}
 	
-	public void showAddBill(AddBillModel.Callback saveCallback) {
-		mainFrame.showAddBill(saveCallback);
+	public void showAddBill(long peopleId, long groupId, AddBillModel.Callback saveCallback) {
+		mainFrame.showAddBill(peopleId, groupId, saveCallback);
 	}
+	
+	public void showFriendModel() {
+		mainFrame.showFriendModel();
+	}
+	
+	public void showGroupModel() {
+		mainFrame.showGroupModel();
+	}
+	
 	public void showExpenses(long friendId) {
 		SplitwiseCore.getInstance().setFilterByGroupId(0);
 		SplitwiseCore.getInstance().setFilterByFriendId(friendId);

@@ -21,7 +21,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import com.splitwise.splitwisesdk.auth.OAuth;
 import com.splitwise.splitwisesdk.responses.*;
-
+import com.splitwise.core.Group;
 import com.splitwise.logger.SplitwiseLogger;
 
 public class SplitwiseSDK {
@@ -62,6 +62,7 @@ public class SplitwiseSDK {
 	
 	final private String CREATE_EXPENSE_URL  = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_expense";
 	final private String CREATE_GROUP_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_group";
+	final private String CREATE_FRIEND_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_friend";
 	
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -202,7 +203,7 @@ public class SplitwiseSDK {
 	public List<GroupResponse> getGroups() throws APIException {
 		String response = "";
 		response = oauth.request(this.GET_GROUPS_URL);
-		//LOGGER.info(response);
+		LOGGER.info(response);
 		return GroupResponse.parseGroupList(response);
 	}
 	
@@ -251,6 +252,25 @@ public class SplitwiseSDK {
 		return ExpenseResponse.parseExpensesList(response).get(0);
 	}
 	
+	public Friend createFriend(Map<String,String> parameters) throws APIException {
+		/*
+		req.setParameter("user_email","vraj@scu.edu");
+		 */
+		String response = "";
+		response = oauth.requestPost(this.CREATE_FRIEND_URL, parameters);
+		LOGGER.info(response);
+		return new Friend(response);
+	}
+	
+	public GroupResponse createGroup(Map<String, String> parameters) throws APIException {
+		// req.put("name","Test Group");
+		
+		String response = "";
+		response = oauth.requestPost(this.CREATE_GROUP_URL, parameters);
+		LOGGER.info(response);
+		return new GroupResponse(response);
+	}
+	
 	public static void main(String args[]) {
 		SplitwiseSDK sdk = SplitwiseSDK.getInstance();
 		// Step 1: Execute and set oauth_token, oauth_token_secret from output.Get authorization url
@@ -273,11 +293,16 @@ public class SplitwiseSDK {
 		
 		//Step 3: Set access token and access token secret
 		/**/
-		//String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
-		String oauth_access_token = "CmXVaOyOsG5h9IToAUoVN2whq7uTfpquKb9ANwEe";
-		//String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
-		String oauth_access_token_secret = "OtbQ6gUYGCafnMzSKVft8gszYxq6VmTYNO4qovsJ";
+		String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
+		//String oauth_access_token = "CmXVaOyOsG5h9IToAUoVN2whq7uTfpquKb9ANwEe";
+		String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
+		//String oauth_access_token_secret = "OtbQ6gUYGCafnMzSKVft8gszYxq6VmTYNO4qovsJ";
 		
+		
+		//Z5mWLHzTlpc6MQ4ZmfXUukZuyZilMsRwQI1P5thh
+		oauth_access_token = "Z5mWLHzTlpc6MQ4ZmfXUukZuyZilMsRwQI1P5thh";
+		//PmoDuL2hCLcBxLZWRaer42VvlNRXJZysxL6zeuuY
+		oauth_access_token_secret = "PmoDuL2hCLcBxLZWRaer42VvlNRXJZysxL6zeuuY";
 		sdk.setOauthToken(oauth_access_token);
 		sdk.setOauthTokenSecret(oauth_access_token_secret);
 		
@@ -292,7 +317,19 @@ public class SplitwiseSDK {
 			req.put("users__1__owed_share","8.00");
 			req.put("users__1__paid_share","0.00");
 			req.put("users__1__user_id","21694899");
+			req.put("group_id","11803610");
 			System.out.println(sdk.createExpense(req));
+			
+			//fgXlRJ1b1kBecevvkCQeA6fDHfdaYzVnDh5t40a;WR9z7ShWOk4n4vgrpLxmionp21W6Iud2iHQ37z2f
+			/*Map<String,String> req = new HashMap<String,String>();
+			req.put("user_email","vraj@scu.edu");
+			System.out.println(sdk.createFriend(req));*/
+			
+			
+			/*Map<String,String> req = new HashMap<String,String>();
+			req.put("name","Test Group");
+			//System.out.println(sdk.oauth.requestPost(sdk.CREATE_GROUP_URL, req));*/
+			System.out.println(sdk.getGroups());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -302,5 +339,7 @@ public class SplitwiseSDK {
 		
 		/**/
 	}
+
+	
 
 }

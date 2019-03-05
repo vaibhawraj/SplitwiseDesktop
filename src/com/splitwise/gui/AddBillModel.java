@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +22,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JLayeredPane;
 
 import com.splitwise.SplitwiseCore;
+import com.splitwise.core.Group;
+import com.splitwise.core.People;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomButton;
 import com.splitwise.gui.custom.FlexibleLabel;
@@ -57,8 +61,34 @@ public class AddBillModel extends CJPanel {
 	private CustomButton saveButton;
 	
 	private Callback saveCallback;
+	private People friend;
+	private Group group;
+	private String name;
+	private int no_of_person;
 	
 	public AddBillModel() {
+		no_of_person = 1;
+		init();
+	}
+	
+	public AddBillModel(People people) {
+		no_of_person = 1;
+		if(people != null) {
+			this.name = people.getFirstName();
+			this.friend = people;
+			no_of_person = 2;
+		}
+		init();
+	}
+	
+	public AddBillModel(Group group) {
+		no_of_person = 1;
+		if(group != null) {
+			this.name = group.getName();
+			this.group = group;
+			no_of_person = group.getMembers().size();
+			if(no_of_person == 0) no_of_person = 1;
+		}
 		init();
 	}
 	
@@ -87,6 +117,16 @@ public class AddBillModel extends CJPanel {
 		inputFieldPanel.add(inputFieldLabel);
 		inputFieldPanel.add(inputArea);
 		
+		if(this.friend != null) {
+			inputArea.setText(this.friend.getName());
+			inputArea.setEditable(false);
+			inputArea.showBadge(true);
+		} else if(this.group != null) {
+			inputArea.setText(this.group.getName());
+			inputArea.setEditable(false);
+			inputArea.showBadge(true);
+		}
+		
 		body = new JLayeredPane();
 		body.setLayout(null);
 		body.setOpaque(false);
@@ -105,6 +145,27 @@ public class AddBillModel extends CJPanel {
 		amount.setEditable(true);
 		amount.setRows(1);
 		amount.setFont(new Font("Helvetica Neue",Font.PLAIN, 36));
+		amount.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {}
+
+			@Override
+			public void keyPressed(KeyEvent e) {}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				float val = 0;
+				try {
+					val = Float.parseFloat(amount.getText());
+				} catch(Exception exp) {
+					val = 0;
+				}
+				details.setText("($" + (Math.round((val/no_of_person)*100.0f)/100.0f) + "/person)");
+				details.repaint();
+			}
+			
+		});
 		
 		humanSummary = new JLabel("<html>Paid by <font color=\"#5cc5a7\">You</font> and split <font color=\"#5cc5a7\">equally</font>.</html>");
 		details = new JLabel("($0.00/person)");
@@ -128,12 +189,12 @@ public class AddBillModel extends CJPanel {
 		
 		saveButton = new CustomButton("Save");
 		saveButton.setTheme(CustomButton.GREENTHEME);
-		saveButton.hasBackdropBug = false;
+
 		saveButton.addCallback(()->saveAction());
 		cancelButton = new CustomButton("Cancel");
 		cancelButton.addCallback(()-> MainFrame.getInstance().hideBackdrop());
 		cancelButton.setTheme(CustomButton.GREYTHEME);
-		cancelButton.hasBackdropBug = false;
+
 		
 		buttonPanel.add(saveButton);
 		buttonPanel.add(cancelButton);
@@ -293,12 +354,19 @@ public class AddBillModel extends CJPanel {
 	public void saveAction() {
 		String cost = amount.getText();
 		String desc = description.getText();
-		LOGGER.info("Cost :" + cost);
+		LOGGER.info("cost :" + cost);
 		LOGGER.info("desc :" + desc);
 		if(saveCallback != null) {
 			HashMap<String,String> args = new HashMap<String,String>();
 			args.put("cost",cost);
 			args.put("description",desc);
+			if(this.friend != null) {
+				args.put("friendId",String.valueOf(friend.getId()));
+			} else if(this.group != null) {
+				args.put("groupId",String.valueOf(group.getId()));
+			} else {
+				LOGGER.severe("This feature is not implemented currently.");
+			}
 			saveCallback.callback(args);
 		}
 		MainFrame.getInstance().hideBackdrop();

@@ -20,6 +20,7 @@ public class SummaryListItem extends CJPanel {
 	
 	public static int OWE = 0;
 	public static int OWED = 1;
+	public static int GROUP_SUMMARY = 3;
 	private int whoOwe;
 	private boolean isHighlighted;
 	
@@ -30,8 +31,36 @@ public class SummaryListItem extends CJPanel {
 		personNameText.setText(friendName);
 		if(whoOwe == 0) {
 			amountText.setText("<html>you owe <strong>" + amount + "</strong></html>");
-		} else {
+		} else if(whoOwe == 1){
 			amountText.setText("<html>owes you <strong>" + amount + "</strong></html>");
+		} else {
+			amountText.setText("<html>owes <strong>" + amount + "</strong></html>");
+		}
+		
+		addListener();
+	}
+	
+	public SummaryListItem(String friendName, float amount, int whoOwe) {
+		this.whoOwe = whoOwe;
+		
+		init();
+		personNameText.setText(friendName);
+		if(whoOwe == 0) {
+			amountText.setText("<html>you owe <strong>" + amount + "</strong></html>");
+		} else if(whoOwe == 1){
+			amountText.setText("<html>owes you <strong>" + amount + "</strong></html>");
+		} else {
+			if(amount == 0) {
+				amountText.setText("<html>settled up</html>");
+				amountText.setForeground(DefaultTheme.getColor("SecondaryForeground"));
+			} else if(amount < 0) {
+				amountText.setText("<html>owes <strong>$ " + Math.abs(amount)+ "</strong></html>");
+				amountText.setForeground(DefaultTheme.getColor("NegativeForeground"));
+			} else {
+				amountText.setText("<html>gets back <strong>$ " + Math.abs(amount)+ "</strong></html>");
+				amountText.setForeground(DefaultTheme.getColor("PositiveForeground"));
+			}
+			
 		}
 		
 		addListener();

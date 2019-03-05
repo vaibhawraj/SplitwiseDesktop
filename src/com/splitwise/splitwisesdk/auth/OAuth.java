@@ -3,6 +3,7 @@
  */
 package com.splitwise.splitwisesdk.auth;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class OAuth {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.oauth_token_secret = "";
-		LOGGER.setLevel(Level.FINEST);
+		LOGGER.setLevel(Level.INFO);
 	}
 	
 	/*
@@ -81,7 +82,7 @@ public class OAuth {
 			//System.out.println("Response: " + response);
 		}
 		authorizationURL = this.authorizeUrl + "?oauth_token=" + this.oauth_token;
-		LOGGER.fine("Authorization Url : " + authorizationURL);
+		LOGGER.info("Authorization Url : " + authorizationURL);
 		return authorizationURL;
 	}
 	
@@ -152,7 +153,7 @@ public class OAuth {
 		req.setEndpoint(endpoint);
 		req.setMethod("POST");
 		for(String key : params.keySet()) {
-			req.setParameter(key, params.get(key).replace(" ","%20"));
+				req.setParameter(key, percentEncode(params.get(key)) );
 		}
 		hmac_sha1_sign(req);
 		
@@ -202,9 +203,9 @@ public class OAuth {
 		String hashedBody = req.getRequestHash();
 		String signature_base_string = method + "&" + hashedUrl + "&" + hashedBody;
 		String key = consumerSecret + "&" + oauth_token_secret;
-		System.out.println("Key: " + key);
+		LOGGER.finer("Key: " + key);
 		//System.out.println(signature_base_string);
-		LOGGER.info(signature_base_string);
+		LOGGER.finer(signature_base_string);
 		String signature = new String(
 				Base64.encodeBase64(
 						new HmacUtils(
@@ -213,9 +214,37 @@ public class OAuth {
 								).hmac(signature_base_string)
 						)
 				);
-		LOGGER.info("Signature" +" " + signature);
+		LOGGER.finer("Signature" +" " + signature);
 		req.setSignature(signature);
 	}
+	
+	public static String percentEncode(String encodeMe) {
+	    if (encodeMe == null) {
+	        return "";
+	    }
+	    String encoded = encodeMe.replace("%", "%25");
+	    encoded = encoded.replace(" ", "%20");
+	    encoded = encoded.replace("!", "%21");
+	    encoded = encoded.replace("#", "%23");
+	    encoded = encoded.replace("$", "%24");
+	    encoded = encoded.replace("&", "%26");
+	    encoded = encoded.replace("'", "%27");
+	    encoded = encoded.replace("(", "%28");
+	    encoded = encoded.replace(")", "%29");
+	    encoded = encoded.replace("*", "%2A");
+	    encoded = encoded.replace("+", "%2B");
+	    encoded = encoded.replace(",", "%2C");
+	    encoded = encoded.replace("/", "%2F");
+	    encoded = encoded.replace(":", "%3A");
+	    encoded = encoded.replace(";", "%3B");
+	    encoded = encoded.replace("=", "%3D");
+	    encoded = encoded.replace("?", "%3F");
+	    encoded = encoded.replace("@", "%40");
+	    encoded = encoded.replace("[", "%5B");
+	    encoded = encoded.replace("]", "%5D");
+	    return encoded;
+	}
+
 	
 }
 

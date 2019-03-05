@@ -198,20 +198,39 @@ public class ExpensePanel extends CJPanel {
 	
 	private void showAddBill() {
 		LOGGER.info("Add Bill Button on Dashboard Clicked");
-		SplitwiseGUI.getInstance().showAddBill((args)->saveExpense(args));
+		SplitwiseGUI.getInstance().showAddBill(friendId, groupId, (args)->saveExpense(args));
 	}
 	
 	private void saveExpense(Map<String,String> args) {
-		LOGGER.info("Save Expense for User 1 " + this.friendId);
+		//LOGGER.info("Save Expense for User 1 " + this.friendId);
 		LOGGER.info("Save Expense for User 2 " + SplitwiseCore.getInstance().getCurrentUser().getId());
+		LOGGER.info("Friend ID" + args.get("friendId"));
+		LOGGER.info("Group ID" + args.get("groupId"));
 		LOGGER.info("Cost" + args.get("cost"));
 		LOGGER.info("Description" + args.get("description"));
-		long userIds[] = new long[] {this.friendId , SplitwiseCore.getInstance().getCurrentUser().getId()};
-		
-		SplitwiseCore.getInstance().createSplitExpense(args.get("cost"), args.get("description"), userIds);
-		this.showExpenseList();
+		if(args.containsKey("friendId")) {
+			long friendId = Long.parseLong(args.get("friendId"));
+			long userIds[] = new long[] {friendId , SplitwiseCore.getInstance().getCurrentUser().getId()};
+			
+			SplitwiseCore.getInstance().setCallback(() -> this.showExpenseList());
+			SplitwiseCore.getInstance().createSplitExpense(args.get("cost"), args.get("description"), userIds);
+		} else if(args.containsKey("groupId")){
+			long groupId = Long.parseLong(args.get("groupId"));
+			Group group = SplitwiseCore.getInstance().getCurrentUser().getGroup(groupId);
+			if(group == null) {
+				LOGGER.warning("Group not found to add bill" + groupId);
+				return;
+			}
+			long userIds[] = new long[group.getMembers().size()];
+			for(int i=0;i<group.getMembers().size();i++) {
+				userIds[i] = group.getMembers().get(i).getMemberId();
+			}
+			
+			SplitwiseCore.getInstance().setCallback(() -> MainFrame.getInstance().showGroupExpenses(groupId));
+			SplitwiseCore.getInstance().createSplitExpense(args.get("cost"), args.get("description"), userIds, groupId);
+		}
 	}
-
+	
 	@Override
 	public void configureComponents() {
 		setLayout(null);
