@@ -2,6 +2,7 @@ package com.splitwise.gui.custom;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -35,15 +36,19 @@ public class OptionItem extends CJPanel{
 	// Components
 	private JLabel textLabel;
 	private JLabel icon;
+	private JLabel addLabel;
 	private Font font;
 	
 	// Callback
 	private Callback callback;
+	private Callback addButtonCallback;
 	public static String MESSAGE = "MESSAGE";
 	public static String HEADER = "HEADER";
 	public static String OPTION = "OPTION";
 	
 	private long id; //Id for friend or group
+
+	private boolean showAddButton;
 	
 	public OptionItem(String text, String type) {
 		this.text = text;
@@ -74,6 +79,14 @@ public class OptionItem extends CJPanel{
 		this.callback = callback;
 	}
 	
+	public void showAddButton(Callback callback) {
+		this.addButtonCallback = callback;
+		this.showAddButton = true;
+		this.addLabel.setVisible(true);
+		addListener();
+		this.repaint();
+	}
+	
 	public void setCallback(Callback callback) {
 		this.callback = callback;
 	}
@@ -100,11 +113,16 @@ public class OptionItem extends CJPanel{
 	@Override
 	public void initComponents() {
 		textLabel = new JLabel(text);
+		addLabel = new JLabel("+ add");
 		
 		textLabel.setForeground(DefaultTheme.getColor("OptionForeground"));
 		if(isSeparator) {
 			textLabel.setText(textLabel.getText().toUpperCase());
 			textLabel.setForeground(DefaultTheme.getColor("OptionSeparatorForeground"));
+			addLabel.setForeground(DefaultTheme.getColor("OptionSeparatorForeground"));
+			addLabel.setVisible(false);
+			addLabel.setFont(font);
+			add(addLabel);
 		}
 		if(isMessage) {
 			textLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -118,16 +136,23 @@ public class OptionItem extends CJPanel{
 		setLayout(null);
 		setBackground(Color.WHITE);
 		setSize(getSize().width, height);
+		if(!isSeparator && !isMessage) {
+			this.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		} else if(isSeparator) {
+			addLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		}
 	}
 
 	@Override
 	public void computeSize() {
 		textLabel.setSize(getSize().width - paddingLeft - paddingRight - highlighterLeft, getSize().height - paddingTop - paddingBottom);
+		addLabel.setSize(addLabel.getPreferredSize().width, getSize().height - paddingTop - paddingBottom);
 	}
 
 	@Override
 	public void computePlacement() {
 		textLabel.setLocation(paddingLeft + highlighterLeft,paddingTop);
+		addLabel.setLocation(this.getWidth() - paddingRight - addLabel.getSize().width, paddingTop);
 	}
 	
 	public void setSelected(boolean value) {
@@ -157,48 +182,67 @@ public class OptionItem extends CJPanel{
 	
 	public void addListener() {
 		OptionItem that = this;
-		this.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(that.getParent() instanceof LeftPanel) {
-					LeftPanel lp = (LeftPanel)that.getParent();
-					OptionItem oi = lp.getSelectedItem();
-					if (oi != null){
-						LOGGER.info(oi.text + " -> " + that.text);
-						if(oi != that) {
-							oi.setSelected(false);
-							lp.setSelectedItem(that);
-							if(callback != null) {
-								callback.callback(that);
+		if(!isSeparator) {
+			this.addMouseListener(new MouseListener() {
+				@Override public void mouseClicked(MouseEvent e) {
+					if(that.getParent() instanceof LeftPanel) {
+						LeftPanel lp = (LeftPanel)that.getParent();
+						OptionItem oi = lp.getSelectedItem();
+						if (oi != null){
+							LOGGER.info(oi.text + " -> " + that.text);
+							if(oi != that) {
+								oi.setSelected(false);
+								lp.setSelectedItem(that);
+								if(callback != null) {
+									callback.callback(that);
+								}
 							}
+						} else {
+							LOGGER.info("null" + " -> " + that.text);
+							lp.setSelectedItem(that);
 						}
-					} else {
-						LOGGER.info("null" + " -> " + that.text);
-						lp.setSelectedItem(that);
+						that.setSelected(true);
 					}
-					that.setSelected(true);
+					LOGGER.info("Clicked");
 				}
-				LOGGER.info("Clicked");
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				that.setHighlight(true);
-			}			
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				that.setHighlight(false);
-			}
-			
-		});
+				@Override public void mousePressed(MouseEvent e) {}
+				@Override public void mouseReleased(MouseEvent e) {}
+				@Override public void mouseEntered(MouseEvent e) {
+					that.setHighlight(true);
+				}
+				@Override public void mouseExited(MouseEvent e) {
+					that.setHighlight(false);
+				}
+			});
+		} else {
+			addLabel.addMouseListener(new MouseListener() {
+				@Override public void mouseClicked(MouseEvent e) {
+					LOGGER.info("Add clicked on " + that.textLabel.getText());
+					if(that.addButtonCallback != null) {
+						LOGGER.info("Callback called");
+						that.addButtonCallback.callback(that);
+					}
+				}
+				@Override public void mousePressed(MouseEvent e) {}
+				@Override public void mouseReleased(MouseEvent e) {}
+				@Override public void mouseEntered(MouseEvent e) {
+					LOGGER.info("Mouse Entered");
+					String fontName = addLabel.getFont().getFontName();
+					int fontSize = addLabel.getFont().getSize();
+					addLabel.setForeground(addLabel.getForeground().darker());
+					addLabel.setFont(new Font(fontName, Font.BOLD, fontSize));
+					addLabel.repaint();
+				}
+				@Override public void mouseExited(MouseEvent e) {
+					String fontName = addLabel.getFont().getFontName();
+					int fontSize = addLabel.getFont().getSize();
+					addLabel.setForeground(DefaultTheme.getColor("OptionSeparatorForeground"));
+					addLabel.setFont(new Font(fontName, Font.PLAIN, fontSize));
+					addLabel.repaint();
+				}
+				
+			});
+		}
 	}
 	
 	public void paint(Graphics g) {

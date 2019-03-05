@@ -26,6 +26,7 @@ public class Friend extends Response {
 	
 	public Friend(String jsonText) throws APIException {
 		super(jsonText);
+		jsonObj = (JSONObject)jsonObj.get("friend");
 		fetchValues();
 	}
 	

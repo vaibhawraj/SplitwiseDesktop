@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import com.splitwise.SplitwiseCore;
 import com.splitwise.gui.custom.CustomImage;
 import com.splitwise.gui.theme.DefaultTheme;
 import com.splitwise.splitwisesdk.SplitwiseSDK;
@@ -243,24 +244,15 @@ public class MainFrame extends JFrame implements ComponentListener{
 		// TODO Auto-generated method stub
 		
 	}
-
-	public void showAddBill(AddBillModel.Callback saveCallback) {
+	
+	public void createBackdrop() {
 		backdrop = new JPanel();
 		backdrop.setLayout(null);
 		backdrop.setBackground(new Color(0,0,0,100));
 		backdrop.setSize(getContentPane().getSize());
 		backdrop.setLocation(0,0);
 		
-		AddBillModel adb = new AddBillModel();
-		adb.setSaveCallback(saveCallback);
-		
-		backdrop.add(adb);
 		layeredPane.add(backdrop,10000);
-		
-		adb.setSize(adb.getPreferredSize());
-		adb.setLocation((getContentPane().getSize().width - adb.getSize().width)/2,
-				(getContentPane().getSize().height - adb.getSize().height)/2);
-		
 		layeredPane.moveToFront(backdrop);
 		
 		backdrop.addMouseListener(new MouseListener() {
@@ -297,6 +289,27 @@ public class MainFrame extends JFrame implements ComponentListener{
 			}
 			
 		});
+	}
+
+	public void showAddBill(long peopleId, long groupId, AddBillModel.Callback saveCallback) {
+		createBackdrop();
+		
+		AddBillModel adb = null;
+		if(peopleId != 0) {
+			adb = new AddBillModel(SplitwiseCore.getInstance().getCurrentUser().getFriend(peopleId));
+		} else if(groupId != 0) {
+			adb = new AddBillModel(SplitwiseCore.getInstance().getCurrentUser().getGroup(groupId));
+		} else {
+			adb = new AddBillModel();
+		}
+		adb.setSaveCallback(saveCallback);
+		
+		backdrop.add(adb);
+		
+		
+		adb.setSize(adb.getPreferredSize());
+		adb.setLocation((getContentPane().getSize().width - adb.getSize().width)/2,
+				(getContentPane().getSize().height - adb.getSize().height)/2);
 
 		repaint();
 		
@@ -306,6 +319,27 @@ public class MainFrame extends JFrame implements ComponentListener{
 		layeredPane.remove(backdrop);
 		backdrop = null;
 		layeredPane.repaint();
+	}
+
+	public void showFriendModel() {
+		createBackdrop();
+		
+		AddFriendModel afm = new AddFriendModel();
+		afm.setInviteCallback((args)->SplitwiseCore.getInstance().createFriend(args));
+		
+		backdrop.add(afm);
+		
+		
+		afm.setSize(afm.getPreferredSize());
+		afm.setLocation((getContentPane().getSize().width - afm.getSize().width)/2,
+				(getContentPane().getSize().height - afm.getSize().height)/2);
+
+		repaint();
+		
+	}
+	
+	public void reInitLeftPanel() {
+		mainContentPanel.reInitLeftPanel();
 	}
 
 	

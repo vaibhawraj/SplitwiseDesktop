@@ -62,6 +62,7 @@ public class SplitwiseSDK {
 	
 	final private String CREATE_EXPENSE_URL  = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_expense";
 	final private String CREATE_GROUP_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_group";
+	final private String CREATE_FRIEND_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_friend";
 	
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -251,6 +252,16 @@ public class SplitwiseSDK {
 		return ExpenseResponse.parseExpensesList(response).get(0);
 	}
 	
+	public Friend createFriend(Map<String,String> parameters) throws APIException {
+		/*
+		req.setParameter("user_email","vraj@scu.edu");
+		 */
+		String response = "";
+		response = oauth.requestPost(this.CREATE_FRIEND_URL, parameters);
+		LOGGER.info(response);
+		return new Friend(response);
+	}
+	
 	public static void main(String args[]) {
 		SplitwiseSDK sdk = SplitwiseSDK.getInstance();
 		// Step 1: Execute and set oauth_token, oauth_token_secret from output.Get authorization url
@@ -283,7 +294,7 @@ public class SplitwiseSDK {
 		
 		try {
 			//System.out.println(sdk.getCurrentUser());
-			Map<String,String> req = new HashMap<String,String>();
+			/*Map<String,String> req = new HashMap<String,String>();
 			req.put("cost","10");
 			req.put("description","Testing Bill");
 			req.put("users__0__owed_share","2.00");
@@ -292,7 +303,17 @@ public class SplitwiseSDK {
 			req.put("users__1__owed_share","8.00");
 			req.put("users__1__paid_share","0.00");
 			req.put("users__1__user_id","21694899");
-			System.out.println(sdk.createExpense(req));
+			System.out.println(sdk.createExpense(req));*/
+			
+			//fgXlRJ1b1kBecevvkCQeA6fDHfdaYzVnDh5t40a;WR9z7ShWOk4n4vgrpLxmionp21W6Iud2iHQ37z2f
+			/*Map<String,String> req = new HashMap<String,String>();
+			req.put("user_email","vraj@scu.edu");
+			System.out.println(sdk.createFriend(req));*/
+			
+			
+			Map<String,String> req = new HashMap<String,String>();
+			req.put("name","Test Group");
+			System.out.println(sdk.oauth.requestPost(sdk.CREATE_GROUP_URL, req));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

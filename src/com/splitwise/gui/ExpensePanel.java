@@ -198,7 +198,7 @@ public class ExpensePanel extends CJPanel {
 	
 	private void showAddBill() {
 		LOGGER.info("Add Bill Button on Dashboard Clicked");
-		SplitwiseGUI.getInstance().showAddBill((args)->saveExpense(args));
+		SplitwiseGUI.getInstance().showAddBill(friendId, groupId, (args)->saveExpense(args));
 	}
 	
 	private void saveExpense(Map<String,String> args) {
@@ -208,8 +208,9 @@ public class ExpensePanel extends CJPanel {
 		LOGGER.info("Description" + args.get("description"));
 		long userIds[] = new long[] {this.friendId , SplitwiseCore.getInstance().getCurrentUser().getId()};
 		
+		SplitwiseCore.getInstance().setCallback(() -> this.showExpenseList());
 		SplitwiseCore.getInstance().createSplitExpense(args.get("cost"), args.get("description"), userIds);
-		this.showExpenseList();
+		
 	}
 
 	@Override

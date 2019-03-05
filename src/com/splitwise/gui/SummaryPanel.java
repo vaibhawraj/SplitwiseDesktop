@@ -19,6 +19,7 @@ import com.splitwise.SplitwiseCore;
 import com.splitwise.core.People;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.OptionItem;
+import com.splitwise.gui.custom.SummaryList;
 import com.splitwise.gui.custom.SummaryListItem;
 import com.splitwise.gui.theme.DefaultTheme;
 
@@ -75,7 +76,7 @@ public class SummaryPanel extends CJPanel {
 		totalBalance.setSecondayText(((balance<0)?"-$":"$") + Math.abs(balance));
 		totalBalance.setPositive(balance >= 0);
 		
-		youOwe.setSecondayText("-$" + currentUser.getTotalNegativeBalance());
+		youOwe.setSecondayText("$" + currentUser.getTotalNegativeBalance());
 		youOwed.setSecondayText("$" + currentUser.getTotalPositiveBalance());
 		
 		youOweList.removeAll();
@@ -91,7 +92,7 @@ public class SummaryPanel extends CJPanel {
 		}
 		youOweList.computeSize();
 		youOweList.computePlacement();
-		
+		youOweList.repaint();
 		youOwedList.computeSize();
 		youOwedList.computePlacement();
 		youOwedList.repaint();
@@ -155,7 +156,7 @@ public class SummaryPanel extends CJPanel {
 		youOweList.setLocation(0,headerPanel.getSize().height);
 		youOwedList.setLocation(getSize().width - youOweList.getSize().width,headerPanel.getSize().height);
 		
-		preferredHeight += youOwedList.getSize().height;
+		preferredHeight += Math.max(youOwedList.getSize().height, youOweList.getSize().height);
 	}
 	
 	public int getPreferredHeight() {
@@ -225,85 +226,4 @@ public class SummaryPanel extends CJPanel {
 		}
 	}
 	
-	static class SummaryList extends CJPanel {
-		private JLabel headerText;
-		
-		private int headerTextHeight = 46;
-		private int preferredHeight = 0;
-		private Insets contentPadding = new Insets(0,15,0,15);
-		
-		private List<SummaryListItem> itemList;
-		
-		SummaryList() {
-			itemList = new ArrayList<SummaryListItem>();
-			
-			init();
-		}
-		@Override
-		public void initComponents() {
-			headerText = new JLabel("");
-			headerText.setForeground(DefaultTheme.getColor("SecondaryForeground"));
-			headerText.setFont(new Font("Helvetica Neue",Font.BOLD,14));
-			headerText.setVerticalAlignment(SwingConstants.CENTER);
-			add(headerText);
-		}
-
-		public void setHeaderText(String text) {
-			headerText.setText(text.toUpperCase());
-		}
-		
-		public void setHeaderTextAlignement(int alignment) {
-			headerText.setHorizontalAlignment(alignment);
-		}
-		
-		public int getPreferredHeight() {
-			return this.preferredHeight;
-		}
-		
-		public void removeAll() {
-			for(SummaryListItem sil : itemList) {
-				super.remove(sil);
-			}
-			itemList.clear();
-			computeSize();
-			computePlacement();
-		}
-		public void addItem(SummaryListItem item) {
-			itemList.add(item);
-			add(item);
-			this.repaint();
-		}
-		
-		@Override
-		public void configureComponents() {
-			// TODO Auto-generated method stub
-		}
-
-		@Override
-		public void computeSize() {
-			headerText.setSize(getSize().width - contentPadding.left - contentPadding.right, headerTextHeight);
-			
-			for(SummaryListItem sil : itemList) {
-				sil.setSize(getSize().width, sil.getPreferredHeight());
-				sil.computeSize();
-			}
-		}
-
-		@Override
-		public void computePlacement() {
-			preferredHeight = 0;
-			headerText.setLocation(contentPadding.left, 0);
-			preferredHeight += headerText.getHeight();
-			
-			for(SummaryListItem sil : itemList) {
-				sil.setLocation(0, preferredHeight);
-				sil.computePlacement();
-				preferredHeight += sil.getHeight();
-				LOGGER.info(sil.toString());
-			}
-			LOGGER.info("List bounds " + headerText.getText() + " "  + getBounds().toString());
-		}
-		
-	}
-
 }

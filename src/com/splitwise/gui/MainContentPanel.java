@@ -81,6 +81,13 @@ public class MainContentPanel extends CJPanel {
 		rightPanel.setLocation(midPanel.getLocation().x + midPanel.getSize().width,0);
 		
 	}
+	public void reInitLeftPanel() {
+		leftPanel.initComponents();
+		leftPanel.computeSize();
+		leftPanel.computePlacement();
+		leftPanel.repaint();
+		
+	}
 	
 
 }

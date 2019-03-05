@@ -6,6 +6,7 @@ import com.splitwise.core.ExpenseRatio;
 import com.splitwise.core.Group;
 import com.splitwise.core.LedgerManager;
 import com.splitwise.core.People;
+import com.splitwise.gui.MainFrame;
 import com.splitwise.splitwisesdk.APIException;
 import com.splitwise.splitwisesdk.SplitwiseSDK;
 import com.splitwise.splitwisesdk.responses.ActivityResponse;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class SplitwiseCore {
@@ -46,6 +48,7 @@ public class SplitwiseCore {
     	fetchActivities();
     	if(callback != null) {
     		callback.callback();
+    		callback = null;
     	}
     }
     
@@ -96,11 +99,12 @@ public class SplitwiseCore {
     public void fetchFriends() {
     	LOGGER.info("Fetching Friends");
     	try {
+    		currentUser.clearFriends();
 			for(Friend friend : SplitwiseSDK.getInstance().getFriends()) {
 				currentUser.addFriend(new People(friend));
 				//LOGGER.info("Fetched Friend " + friend.id);
 			}
-			Collections.sort(currentUser.getFriends(), (f1,f2)->f1.getName().compareTo(f2.getName()));
+			Collections.sort(currentUser.getFriends(), (f1,f2)->f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase()));
 			LOGGER.info("Fetched Friend " + currentUser.getFriends().size());
 		} catch (APIException e) {
 			e.printStackTrace();
@@ -126,10 +130,13 @@ public class SplitwiseCore {
     public void fetchExpenses() {
     	LOGGER.info("Fetching Expenses");
     	try {
+    		expenses.clear();
 			for(ExpenseResponse expense : SplitwiseSDK.getInstance().getExpenses()) {
-				expenses.add(new Expense(expense));
+				if(!expense.isDeleted)
+					expenses.add(new Expense(expense));
 			}
 			Collections.sort(expenses, (f1,f2)->(f1.getCreatedDate().compareTo(f2.getCreatedDate()) > 0)?-1:1);
+			
 			LOGGER.info("Fetched Expenses " + expenses.size());
 		} catch (APIException e) {
 			e.printStackTrace();
@@ -140,6 +147,7 @@ public class SplitwiseCore {
     public void fetchActivities() {
     	LOGGER.info("Fetching Activities");
     	try {
+    		activities.clear();
 			for(ActivityResponse activity : SplitwiseSDK.getInstance().getActivities()) {
 				activities.add(new Activity(activity));
 			}
@@ -162,7 +170,7 @@ public class SplitwiseCore {
     	return instance;
     }
     
-    static interface Callback {
+    public static interface Callback {
     	public void callback();
     }
 
@@ -199,14 +207,50 @@ public class SplitwiseCore {
 			LOGGER.info(key + " : " + expenseParams.get(key));
 		}
 		
-		try {
-			ExpenseResponse er = SplitwiseSDK.getInstance().createExpense(expenseParams);
-			LOGGER.info("Created expense " + er.id);
-			expenses.add(new Expense(er));
-		} catch (APIException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		new Thread(){
+			public void run() {
+				try {
+					ExpenseResponse er = SplitwiseSDK.getInstance().createExpense(expenseParams);
+					LOGGER.info("Created expense " + er.id);
+					expenses.add(new Expense(er));
+					fetchFriends();
+					fetchActivities();
+					fetchExpenses();
+					if(callback != null) {
+						callback.callback();
+					}
+				} catch (APIException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	}
+
+	public void createFriend(Map<String, String> args) {
+		for(String key : args.keySet()) {
+			LOGGER.info(key + " : " + args.get(key));
 		}
+		
+		
+			new Thread(){
+				public void run() {
+					try {
+						Friend friend = SplitwiseSDK.getInstance().createFriend(args);
+						LOGGER.info("Created friend " + friend.id + " " + friend.first_name);
+						SplitwiseCore.getInstance().getCurrentUser().addFriend(new People(friend));
+						//Update Entire list of friends
+						fetchFriends();
+						fetchActivities();
+						MainFrame.getInstance().reInitLeftPanel();
+						MainFrame.getInstance().repaint();
+					} catch (APIException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+		
 	}
 
 	

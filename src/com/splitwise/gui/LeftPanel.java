@@ -68,6 +68,7 @@ public class LeftPanel extends CJPanel{
 		
 		
 		friendsHeader = new OptionItem("Friends", OptionItem.HEADER);
+		friendsHeader.showAddButton((arg)-> showFriendModel());
 		
 		friends = new ArrayList<OptionItem>();
 		for(People friend : SplitwiseCore.getInstance().getCurrentUser().getFriends()) {
@@ -96,6 +97,11 @@ public class LeftPanel extends CJPanel{
 		LOGGER.info("Option Item Selected for " + oi.getText() + " with id " + oi.getGroupId());
 		SplitwiseGUI.getInstance().showGroupExpenses(oi.getGroupId());
 		
+	}
+	
+	private void showFriendModel() {
+		LOGGER.info("Add Bill Button on Dashboard Clicked");
+		SplitwiseGUI.getInstance().showFriendModel();
 	}
 
 	public void packComponents() {

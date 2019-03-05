@@ -9,7 +9,7 @@ import com.splitwise.gui.custom.CJPanel;
 public class RightPanel  extends CJPanel{
 
 	private int width = 200;
-	
+	private SummaryPanel summary;
 	RightPanel() {
 		init();
 	}
@@ -17,6 +17,7 @@ public class RightPanel  extends CJPanel{
 	@Override
 	public void initComponents() {
 		// TODO Auto-generated method stub
+		summary = new SummaryPanel();
 		
 	}
 
@@ -26,6 +27,10 @@ public class RightPanel  extends CJPanel{
 		setSize(width,getSize().height);
 		setLayout(null);
 		setOpaque(false);
+	}
+	
+	public void showGroupSummary() {
+		
 	}
 
 	@Override
