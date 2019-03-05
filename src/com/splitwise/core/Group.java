@@ -2,6 +2,7 @@ package com.splitwise.core;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.splitwise.splitwisesdk.responses.GroupResponse;
 
@@ -17,11 +18,15 @@ public class Group {
 			this.id = group.id;
 			this.name = group.name;
 			this.updated_at = group.updated_at;
+			
+			for(GroupResponse.GroupMemberResponse gmr : group.groupMembers) {
+				members.add(new GroupMember(gmr));
+			}
 		}
 
 		//doubt - won't the parameter passed for addGroupMember will be (People people)?
         public boolean addGroupMember(GroupMember groupMember) {
-           // members.add(groupMember);
+           /*// members.add(groupMember);
             for (int i = 0; i < members.size(); i++) {
                 if ((members.get(i).getMember().equals(groupMember.getMember())) && (members.get(i).getGroupId()
                         .equals(groupMember.getGroupId())
@@ -30,7 +35,7 @@ public class Group {
                 } else {
                     members.add(groupMember);
                 }
-            }
+            }*/
             return true;
 
             // Verify that groupMember is not already in members
@@ -49,14 +54,14 @@ public class Group {
 
         public boolean removeGroupMember(GroupMember groupMember) {
 
-            for (int i = 0; i < members.size(); i++) {
+            /*for (int i = 0; i < members.size(); i++) {
                 if ((members.get(i).getMember().equals(groupMember.getMember())) && (members.get(i).getGroupId()
                         .equals(groupMember.getGroupId())
                 )) {
                     members.remove(i);
                     return true;
                 }
-            }
+            }*/
             return false;
 
 
@@ -83,6 +88,11 @@ public class Group {
 	
 	public Date getUpdatedAt() {
 		return this.updated_at;
+	}
+
+	public List<GroupMember> getMembers() {
+		// TODO Auto-generated method stub
+		return this.members;
 	}
 
 }

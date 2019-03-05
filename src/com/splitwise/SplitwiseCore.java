@@ -82,6 +82,10 @@ public class SplitwiseCore {
     	return retList;
     }
     
+    public Group getGroup() {
+    	return currentUser.getGroup(groupId);
+    }
+    
     public void fetchUser() {
     	LOGGER.info("Fetching User");
     	try {
@@ -115,6 +119,7 @@ public class SplitwiseCore {
     public void fetchGroups() {
     	LOGGER.info("Fetching Groups");
     	try {
+    		currentUser.getGroups().clear();
 			for(GroupResponse group : SplitwiseSDK.getInstance().getGroups()) {
 				currentUser.getGroups().add(new Group(group));
 				//LOGGER.info("Fetched Friend " + friend.id);
@@ -241,6 +246,33 @@ public class SplitwiseCore {
 						SplitwiseCore.getInstance().getCurrentUser().addFriend(new People(friend));
 						//Update Entire list of friends
 						fetchFriends();
+						fetchActivities();
+						MainFrame.getInstance().reInitLeftPanel();
+						MainFrame.getInstance().repaint();
+					} catch (APIException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+		
+	}
+	
+	public void createGroup(Map<String, String> args) {
+		args.put("simplify_by_default","true");
+		for(String key : args.keySet()) {
+			LOGGER.info(key + " : " + args.get(key));
+		}
+		
+		
+			new Thread(){
+				public void run() {
+					try {
+						GroupResponse groupResponse = SplitwiseSDK.getInstance().createGroup(args);
+						LOGGER.info("Created Group " + groupResponse.id + " " + groupResponse.name);
+						
+						//Update Entire list of Groups
+						fetchGroups();
 						fetchActivities();
 						MainFrame.getInstance().reInitLeftPanel();
 						MainFrame.getInstance().repaint();

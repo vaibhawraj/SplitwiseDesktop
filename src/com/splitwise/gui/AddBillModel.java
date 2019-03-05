@@ -64,23 +64,30 @@ public class AddBillModel extends CJPanel {
 	private People friend;
 	private Group group;
 	private String name;
+	private int no_of_person;
 	
 	public AddBillModel() {
+		no_of_person = 1;
 		init();
 	}
 	
 	public AddBillModel(People people) {
+		no_of_person = 1;
 		if(people != null) {
 			this.name = people.getFirstName();
 			this.friend = people;
+			no_of_person = 2;
 		}
 		init();
 	}
 	
 	public AddBillModel(Group group) {
+		no_of_person = 1;
 		if(group != null) {
 			this.name = group.getName();
 			this.group = group;
+			no_of_person = group.getMembers().size();
+			if(no_of_person == 0) no_of_person = 1;
 		}
 		init();
 	}
@@ -154,7 +161,7 @@ public class AddBillModel extends CJPanel {
 				} catch(Exception exp) {
 					val = 0;
 				}
-				details.setText("($" + (val/2) + "/person)");
+				details.setText("($" + (val/no_of_person) + "/person)");
 				details.repaint();
 			}
 			

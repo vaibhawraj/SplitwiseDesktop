@@ -49,26 +49,31 @@ public class MainContentPanel extends CJPanel {
 	}
 	
 	public void showDashboard() {
+		rightPanel.hideGroupSummary();
 		midPanel.showDashboardPanel();
 		repaint();
 	}
 	
 	public void showAllExpenses() {
+		rightPanel.hideGroupSummary();
 		midPanel.showExpensePanel();
 		repaint();
 	}
 	
 	public void showFriendExpenses(long friendId) {
+		rightPanel.hideGroupSummary();
 		midPanel.showFriendExpensePanel(friendId);
 		repaint();
 	}
 	
 	public void showGroupExpenses(long groupId) {
+		rightPanel.showGroupSummary();
 		midPanel.showGroupExpensePanel(groupId);
 		repaint();
 	}
 	
 	public void showRecentActivity() {
+		rightPanel.hideGroupSummary();
 		midPanel.showRecentActivityPanel();
 		repaint();
 	}

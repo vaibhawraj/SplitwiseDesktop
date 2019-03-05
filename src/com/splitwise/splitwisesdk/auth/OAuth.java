@@ -203,9 +203,9 @@ public class OAuth {
 		String hashedBody = req.getRequestHash();
 		String signature_base_string = method + "&" + hashedUrl + "&" + hashedBody;
 		String key = consumerSecret + "&" + oauth_token_secret;
-		System.out.println("Key: " + key);
+		LOGGER.finer("Key: " + key);
 		//System.out.println(signature_base_string);
-		LOGGER.info(signature_base_string);
+		LOGGER.finer(signature_base_string);
 		String signature = new String(
 				Base64.encodeBase64(
 						new HmacUtils(

@@ -338,6 +338,22 @@ public class MainFrame extends JFrame implements ComponentListener{
 		
 	}
 	
+	public void showGroupModel() {
+		createBackdrop();
+		
+		AddGroupModel afm = new AddGroupModel();
+		afm.setSaveCallback((args)->SplitwiseCore.getInstance().createGroup(args));
+		
+		backdrop.add(afm);
+		
+		
+		afm.setSize(afm.getPreferredSize());
+		afm.setLocation((getContentPane().getSize().width - afm.getSize().width)/2,
+				(getContentPane().getSize().height - afm.getSize().height)/2);
+
+		repaint();
+	}
+	
 	public void reInitLeftPanel() {
 		mainContentPanel.reInitLeftPanel();
 	}

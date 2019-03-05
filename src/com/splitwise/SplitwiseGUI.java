@@ -98,6 +98,11 @@ public class SplitwiseGUI{
 	public void showFriendModel() {
 		mainFrame.showFriendModel();
 	}
+	
+	public void showGroupModel() {
+		mainFrame.showGroupModel();
+	}
+	
 	public void showExpenses(long friendId) {
 		SplitwiseCore.getInstance().setFilterByGroupId(0);
 		SplitwiseCore.getInstance().setFilterByFriendId(friendId);

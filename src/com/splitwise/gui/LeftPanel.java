@@ -53,6 +53,7 @@ public class LeftPanel extends CJPanel{
 		links.add(new OptionItem("All expenses", (OptionItem oi) -> SplitwiseGUI.getInstance().showAllExpenses()));
 		
 		groupsHeader = new OptionItem("Groups", OptionItem.HEADER);
+		groupsHeader.showAddButton((arg)-> showGroupModel());
 		
 		groups = new ArrayList<OptionItem>();
 		for(Group group : SplitwiseCore.getInstance().getCurrentUser().getGroups()) {
@@ -102,6 +103,11 @@ public class LeftPanel extends CJPanel{
 	private void showFriendModel() {
 		LOGGER.info("Add Bill Button on Dashboard Clicked");
 		SplitwiseGUI.getInstance().showFriendModel();
+	}
+	
+	private void showGroupModel() {
+		LOGGER.info("Add Bill Button on Dashboard Clicked");
+		SplitwiseGUI.getInstance().showGroupModel();
 	}
 
 	public void packComponents() {
