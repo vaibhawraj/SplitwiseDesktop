@@ -66,6 +66,10 @@ public class SplitwiseSDK {
 	final private String CREATE_GROUP_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_group";
 	final private String CREATE_FRIEND_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/create_friend";
 	
+	final private String ADD_USER_TO_GROUP_URL    = SPLITWISE_BASE_URL+"api/"+SPLITWISE_VERSION+"/add_user_to_group";
+	
+	
+	
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	private SplitwiseSDK() {
@@ -223,7 +227,9 @@ public class SplitwiseSDK {
 	
 	public List<ExpenseResponse> getExpenses() throws APIException {
 		String response = "";
-		response = oauth.request(GET_EXPENSES_URL);
+		HashMap<String,String> req = new HashMap<String,String>();
+		req.put("limit","50");
+		response = oauth.request(GET_EXPENSES_URL,req);
 		LOGGER.info(response);
 		return ExpenseResponse.parseExpensesList(response);
 	}
@@ -276,6 +282,15 @@ public class SplitwiseSDK {
 		response = oauth.requestPost(this.CREATE_GROUP_URL, parameters);
 		LOGGER.info(response);
 		return new GroupResponse(response);
+	}
+	
+	public Response createGroupMember(Map<String, String> parameters) throws APIException{
+		// req.put("user_id","Test Group");
+		// req.put("group_id","Test Group");
+		String response = "";
+		response = oauth.requestPost(this.ADD_USER_TO_GROUP_URL, parameters);
+		LOGGER.info(response);
+		return new Response(response);
 	}
 	
 	public static void main(String args[]) {
@@ -353,6 +368,8 @@ public class SplitwiseSDK {
 		
 		/**/
 	}
+
+	
 
 	
 

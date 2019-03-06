@@ -50,7 +50,7 @@ public class LeftPanel extends CJPanel{
 		// TODO Auto-generated method stub
 		links = new ArrayList<OptionItem>();
 		
-		recentActivity = new OptionItem("Recent activity", (OptionItem oi) -> showRecentActivity(oi));
+		recentActivity = new OptionItem("Recent Activity", (OptionItem oi) -> showRecentActivity(oi));
 		links.add(new OptionItem("Dashboard",(OptionItem oi) -> SplitwiseGUI.getInstance().showDashboard()));
 		links.add(recentActivity);
 		links.add(new OptionItem("All expenses", (OptionItem oi) -> SplitwiseGUI.getInstance().showAllExpenses()));
@@ -59,7 +59,7 @@ public class LeftPanel extends CJPanel{
 		groupsHeader.showAddButton((arg)-> showGroupModel());
 		
 		groups = new ArrayList<OptionItem>();
-		for(Group group : SplitwiseCore.getInstance().getCurrentUser().getGroups()) {
+		for(Group group : SplitwiseCore.getInstance().getGroups()) {
 			Date today = new Date(System.currentTimeMillis());
 			today.setMonth(today.getMonth() - 1);
 			if(group.getId() != 0 && group.getUpdatedAt().after(today)) {
@@ -75,7 +75,7 @@ public class LeftPanel extends CJPanel{
 		friendsHeader.showAddButton((arg)-> showFriendModel());
 		
 		friends = new ArrayList<OptionItem>();
-		for(People friend : SplitwiseCore.getInstance().getCurrentUser().getFriends()) {
+		for(People friend : SplitwiseCore.getInstance().getFriends()) {
 			Date today = new Date(System.currentTimeMillis());
 			today.setMonth(today.getMonth() - 1);
 			if(friend.getUpdatedAt().after(today)) {

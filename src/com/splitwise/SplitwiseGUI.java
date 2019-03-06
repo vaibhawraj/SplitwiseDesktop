@@ -30,7 +30,7 @@ public class SplitwiseGUI{
 		mainFrame.setVisible(true);
 		
 		// Default action is to first login
-		login();
+		//login();
 	}
 	
 	public void login() {
@@ -64,6 +64,7 @@ public class SplitwiseGUI{
 				LOGGER.info("Initializing Core");
 				core = SplitwiseCore.getInstance();
 				core.setCallback(()->mainFrame.showMainPane());
+				//core.setCallback(()->mainFrame.showGroupMemberModel());
 				core.initialize();
 			}
 		}.start();
@@ -103,6 +104,10 @@ public class SplitwiseGUI{
 		mainFrame.showGroupModel();
 	}
 	
+	public void showGroupMemberModel() {
+		mainFrame.showGroupMemberModel();
+	}
+	
 	public void showExpenses(long friendId) {
 		SplitwiseCore.getInstance().setFilterByGroupId(0);
 		SplitwiseCore.getInstance().setFilterByFriendId(friendId);
@@ -114,4 +119,5 @@ public class SplitwiseGUI{
 		SplitwiseCore.getInstance().setFilterByGroupId(groupId);
 		mainFrame.showGroupExpenses(groupId);
 	}
+	
 }

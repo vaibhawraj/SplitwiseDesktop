@@ -33,4 +33,8 @@ public class Response {
 			LOGGER.severe("Unable to parse json" + e.getMessage());
 		}
 	}
+	
+	public String toString() {
+		return jsonText;
+	}
 }

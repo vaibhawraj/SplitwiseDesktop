@@ -52,8 +52,9 @@ public class RightPanel  extends CJPanel{
 	}
 	public void showGroupSummary() {
 
-		Group group = SplitwiseCore.getInstance().getGroup();
+		Group group = SplitwiseCore.getInstance().getCurrentGroup();
 		People user = SplitwiseCore.getInstance().getCurrentUser();
+		
 		if(group == null) {
 			return;
 		}
@@ -61,8 +62,8 @@ public class RightPanel  extends CJPanel{
 		
 		LOGGER.info("Showing Group Summary");
 		for(GroupMember gm : group.getMembers()) {
-			LOGGER.info(user.getFriend(gm.getMemberId()).getName() + " : " + gm.getBalance());
-			summary.addItem(new SummaryListItem(user.getFriend(gm.getMemberId()).getName(), gm.getBalance(), SummaryListItem.GROUP_SUMMARY));
+			LOGGER.info(SplitwiseCore.getInstance().getFriend(gm.getMemberId()).getName() + " : " + gm.getBalance());
+			summary.addItem(new SummaryListItem(SplitwiseCore.getInstance().getFriend(gm.getMemberId()).getName(), gm.getBalance(), SummaryListItem.GROUP_SUMMARY));
 		}
 		summary.computeSize();
 		summary.computePlacement();

@@ -4,7 +4,7 @@ import com.splitwise.splitwisesdk.responses.ExpenseResponse;
 
 public class ExpenseRatio {
 
-	private long id;
+	private long id; //People
 	private float paid_share;
 	private float owed_share;
 	private float net_balance;

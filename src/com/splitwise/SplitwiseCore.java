@@ -13,6 +13,7 @@ import com.splitwise.splitwisesdk.responses.ActivityResponse;
 import com.splitwise.splitwisesdk.responses.ExpenseResponse;
 import com.splitwise.splitwisesdk.responses.Friend;
 import com.splitwise.splitwisesdk.responses.GroupResponse;
+import com.splitwise.splitwisesdk.responses.Response;
 import com.splitwise.splitwisesdk.responses.User;
 
 import java.text.DateFormat;
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +34,6 @@ public class SplitwiseCore {
 	private People currentUser;
     private ArrayList<Activity> activities = new ArrayList<>();
     private ArrayList<Expense> expenses = new ArrayList<>();
-    //private Date lastFetchedActivity;
     private String lastFetchedActivity;
     private DateFormat m_ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     
@@ -43,6 +44,9 @@ public class SplitwiseCore {
     private long userId;
     
     private int checkAfterEvery = 3000;
+    
+    private ReentrantLock lock = new ReentrantLock();
+    
     
     public void login(){}
 
@@ -105,7 +109,11 @@ public class SplitwiseCore {
     }
     
     public List<Activity> getActivities(){
-    	return this.activities;
+    	List<Activity> temp = new ArrayList<Activity>();
+    	acquireLock();
+    	temp.addAll(this.activities);
+    	releaseLock();
+    	return temp;
     }
    
     public People getCurrentUser() {
@@ -114,8 +122,9 @@ public class SplitwiseCore {
     
     public List<Expense> getExpenses() {
     	List<Expense> retList = new ArrayList<Expense>();
+    	acquireLock();
     	if(this.userId == 0 && this.groupId == 0) {
-    		return expenses;
+    		retList.addAll(expenses);
     	} else if(this.userId != 0){
     		LOGGER.info("Filter by User Id " + this.userId);
     		for(Expense expense : expenses) {
@@ -131,11 +140,44 @@ public class SplitwiseCore {
     			}
     		}
     	}
+    	releaseLock();
     	return retList;
     }
     
-    public Group getGroup() {
-    	return currentUser.getGroup(groupId);
+    public List<Group> getGroups() {
+    	List<Group> temp = new ArrayList<Group>();
+    	acquireLock();
+    	temp.addAll(currentUser.getGroups());
+    	releaseLock();
+    	return temp;
+    }
+    
+    public List<People> getFriends() {
+    	List<People> temp = new ArrayList<People>();
+    	acquireLock();
+    	temp.addAll(currentUser.getFriends());
+    	releaseLock();
+    	return temp;
+    }
+    
+    public People getFriend(long id) {
+    	People temp;
+    	acquireLock();
+    	temp = currentUser.getFriend(id);
+    	releaseLock();
+    	return temp;
+    }
+    
+    public Group getCurrentGroup() {
+    	// Currently selected group
+    	return getGroup(this.groupId);
+    }
+    public Group getGroup(long groupId) {
+    	Group temp;
+    	acquireLock();
+    	temp = currentUser.getGroup(groupId);
+    	releaseLock();
+    	return temp;
     }
     
     public void fetchUser() {
@@ -155,12 +197,15 @@ public class SplitwiseCore {
     public void fetchFriends() {
     	LOGGER.info("Fetching Friends");
     	try {
+    		List<Friend> friendList = SplitwiseSDK.getInstance().getFriends();
+    		acquireLock();
     		currentUser.clearFriends();
-			for(Friend friend : SplitwiseSDK.getInstance().getFriends()) {
+			for(Friend friend : friendList) {
 				currentUser.addFriend(new People(friend));
 				//LOGGER.info("Fetched Friend " + friend.id);
 			}
 			Collections.sort(currentUser.getFriends(), (f1,f2)->f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase()));
+			releaseLock();
 			LOGGER.info("Fetched Friend " + currentUser.getFriends().size());
 		} catch (APIException e) {
 			e.printStackTrace();
@@ -171,12 +216,15 @@ public class SplitwiseCore {
     public void fetchGroups() {
     	LOGGER.info("Fetching Groups");
     	try {
+    		List<GroupResponse> groupResponseList = SplitwiseSDK.getInstance().getGroups();
+    		acquireLock();
     		currentUser.getGroups().clear();
-			for(GroupResponse group : SplitwiseSDK.getInstance().getGroups()) {
+			for(GroupResponse group : groupResponseList) {
 				currentUser.getGroups().add(new Group(group));
 				//LOGGER.info("Fetched Friend " + friend.id);
 			}
 			Collections.sort(currentUser.getGroups(), (f1,f2)->f1.getName().compareTo(f2.getName()));
+			releaseLock();
 			LOGGER.info("Fetched Groups " + currentUser.getGroups().size());
 		} catch (APIException e) {
 			e.printStackTrace();
@@ -187,13 +235,15 @@ public class SplitwiseCore {
     public void fetchExpenses() {
     	LOGGER.info("Fetching Expenses");
     	try {
+    		List<ExpenseResponse> expenseResponseList = SplitwiseSDK.getInstance().getExpenses();
+    		acquireLock();
     		expenses.clear();
-			for(ExpenseResponse expense : SplitwiseSDK.getInstance().getExpenses()) {
+			for(ExpenseResponse expense : expenseResponseList) {
 				if(!expense.isDeleted)
 					expenses.add(new Expense(expense));
 			}
 			Collections.sort(expenses, (f1,f2)->(f1.getCreatedDate().compareTo(f2.getCreatedDate()) > 0)?-1:1);
-			
+			releaseLock();
 			LOGGER.info("Fetched Expenses " + expenses.size());
 		} catch (APIException e) {
 			e.printStackTrace();
@@ -213,7 +263,9 @@ public class SplitwiseCore {
     		//activities.clear();
     		int activityCount = 0;
     		boolean isFirst = true;
-			for(ActivityResponse activity : SplitwiseSDK.getInstance().getActivities(params)) {
+    		List<ActivityResponse> arList = SplitwiseSDK.getInstance().getActivities(params);
+    		acquireLock();
+			for(ActivityResponse activity : arList) {
 				if(isFirst) {
 					lastFetchedActivity = activity.created_date_str;
 					isFirst = false;
@@ -222,6 +274,7 @@ public class SplitwiseCore {
 				activityCount++;
 			}
 			Collections.sort(activities, (f1,f2)->(f1.getCreatedDate().compareTo(f2.getCreatedDate()) > 0)?-1:1);
+			releaseLock();
 			LOGGER.info("Fetched Activities " + activityCount);
 		} catch (APIException e) {
 			e.printStackTrace();
@@ -253,6 +306,50 @@ public class SplitwiseCore {
 		
 	}
 
+	public void settleUpWith(long friendId) {
+		People friend = getFriend(friendId);
+		if(friend.getNetAmount() < 0) {
+			String cost = String.valueOf(Math.round(Math.abs(friend.getNetAmount()) * 100.0f)/100.0f);
+			String description = "Payment";
+			HashMap<String,String> expenseParams = new HashMap<String, String>();
+			expenseParams.put("cost",cost);
+			expenseParams.put("description",description);
+			expenseParams.put("payment","true");
+			expenseParams.put("creation_method","payment");
+			expenseParams.put("users__0__user_id",String.valueOf(currentUser.getId()));
+			expenseParams.put("users__0__paid_share",cost);
+			expenseParams.put("users__0__owed_share","0.0");
+			expenseParams.put("users__1__user_id",String.valueOf(friendId));
+			expenseParams.put("users__1__paid_share","0.0");
+			expenseParams.put("users__1__owed_share",cost);
+			
+			for(String key : expenseParams.keySet()) {
+				LOGGER.info(key + " : " + expenseParams.get(key));
+			}
+			
+			new Thread(){
+				public void run() {
+					try {
+						ExpenseResponse er = SplitwiseSDK.getInstance().createExpense(expenseParams);
+						LOGGER.info("Created expense " + er.id);
+						expenses.add(new Expense(er));
+						fetchFriends();
+						//fetchActivities();
+						fetchExpenses();
+						fetchGroups();
+						if(callback != null) {
+							callback.callback();
+							callback=null;
+						}
+					} catch (APIException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+		}
+	}
+	
 	public void createSplitExpense(String cost, String description, long userIds[]) {
 		createSplitExpense( cost, description, userIds, -1); //-1 to indicate that group id parameter has not to be included
 	}
@@ -301,11 +398,12 @@ public class SplitwiseCore {
 					LOGGER.info("Created expense " + er.id);
 					expenses.add(new Expense(er));
 					fetchFriends();
-					fetchActivities();
+					//fetchActivities();
 					fetchExpenses();
 					fetchGroups();
 					if(callback != null) {
 						callback.callback();
+						callback=null;
 					}
 				} catch (APIException e) {
 					// TODO Auto-generated catch block
@@ -329,7 +427,7 @@ public class SplitwiseCore {
 						SplitwiseCore.getInstance().getCurrentUser().addFriend(new People(friend));
 						//Update Entire list of friends
 						fetchFriends();
-						fetchActivities();
+						//fetchActivities();
 						MainFrame.getInstance().reInitLeftPanel();
 						MainFrame.getInstance().repaint();
 					} catch (APIException e) {
@@ -356,7 +454,7 @@ public class SplitwiseCore {
 						
 						//Update Entire list of Groups
 						fetchGroups();
-						fetchActivities();
+						//fetchActivities();
 						MainFrame.getInstance().reInitLeftPanel();
 						MainFrame.getInstance().repaint();
 					} catch (APIException e) {
@@ -367,6 +465,52 @@ public class SplitwiseCore {
 			}.start();
 		
 	}
+	
+	public void createGroupMember(Map<String, String> args) {
+		if(this.groupId == 0) {
+			LOGGER.warning("Group Id is missing");
+			return;
+		}
+		args.put("group_id",String.valueOf(this.groupId));
+		for(String key : args.keySet()) {
+			LOGGER.info(key + " : " + args.get(key));
+		}
+		
+		long thatGroupId = this.groupId;
+			new Thread(){
+				public void run() {
+					try {
+						Response response = SplitwiseSDK.getInstance().createGroupMember(args);
+						LOGGER.info("Created Group Member");
+						
+						//Update Entire list of Groups
+						fetchGroups();
+						//fetchActivities();
+						MainFrame.getInstance().showGroupExpenses(thatGroupId);;
+						MainFrame.getInstance().repaint();
+					} catch (APIException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+	}
+
+	public void acquireLock() {
+		if(lock.isLocked()) {
+			LOGGER.info(Thread.currentThread().getName() + " Unable to acquire the lock");
+			lock.lock();
+			LOGGER.info(Thread.currentThread().getName() + " Acquired the lock");
+			return;
+		} else {
+			lock.lock();
+		}
+	}
+	public void releaseLock() {
+		lock.unlock();
+	}
+
+	
 
 	
 }

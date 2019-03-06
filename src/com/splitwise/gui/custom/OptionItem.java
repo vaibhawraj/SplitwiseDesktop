@@ -206,6 +206,10 @@ public class OptionItem extends CJPanel{
 							lp.setSelectedItem(that);
 						}
 						that.setSelected(true);
+					} else {
+						if(callback != null) {
+							callback.callback(that);
+						}
 					}
 					LOGGER.info("Clicked");
 				}

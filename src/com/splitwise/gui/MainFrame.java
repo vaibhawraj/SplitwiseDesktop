@@ -279,7 +279,6 @@ public class MainFrame extends JFrame implements ComponentListener{
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
@@ -296,9 +295,9 @@ public class MainFrame extends JFrame implements ComponentListener{
 		
 		AddBillModel adb = null;
 		if(peopleId != 0) {
-			adb = new AddBillModel(SplitwiseCore.getInstance().getCurrentUser().getFriend(peopleId));
+			adb = new AddBillModel(SplitwiseCore.getInstance().getFriend(peopleId));
 		} else if(groupId != 0) {
-			adb = new AddBillModel(SplitwiseCore.getInstance().getCurrentUser().getGroup(groupId));
+			adb = new AddBillModel(SplitwiseCore.getInstance().getGroup(groupId));
 		} else {
 			adb = new AddBillModel();
 		}
@@ -354,6 +353,22 @@ public class MainFrame extends JFrame implements ComponentListener{
 		repaint();
 	}
 	
+	public void showGroupMemberModel() {
+		createBackdrop();
+		
+		AddGroupMemberModel agmm = new AddGroupMemberModel();
+		agmm.setInviteCallback((args)->SplitwiseCore.getInstance().createGroupMember(args));
+		
+		backdrop.add(agmm);
+		
+		
+		agmm.setSize(agmm.getPreferredSize());
+		agmm.setLocation((getContentPane().getSize().width - agmm.getSize().width)/2,
+				(getContentPane().getSize().height - agmm.getSize().height)/2);
+		
+		repaint();
+	}
+	
 	public void reInitLeftPanel() {
 		mainContentPanel.reInitLeftPanel();
 	}
@@ -362,6 +377,8 @@ public class MainFrame extends JFrame implements ComponentListener{
 		mainContentPanel.gotNewNotification(count);
 		
 	}
+
+	
 
 	
 }

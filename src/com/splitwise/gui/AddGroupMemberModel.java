@@ -10,6 +10,7 @@ import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,39 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.JLayeredPane;
+
+import com.splitwise.SplitwiseCore;
+import com.splitwise.core.Group;
+import com.splitwise.core.People;
+import com.splitwise.gui.custom.CJPanel;
+import com.splitwise.gui.custom.CustomButton;
+import com.splitwise.gui.custom.CustomScrollBarUI;
+import com.splitwise.gui.custom.FlexibleLabel;
+import com.splitwise.gui.custom.OptionItem;
+import com.splitwise.gui.theme.DefaultTheme;
+import com.splitwise.splitwisesdk.SplitwiseSDK;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.JLayeredPane;
 
@@ -33,9 +67,7 @@ import com.splitwise.gui.theme.DefaultTheme;
 public class AddGroupMemberModel extends CJPanel {
 
 	private int preferredHeight = 100;
-	private int preferredWidth = 350;
-	
-	private int maxBodyHeight = 150; //Use to introduce scrollPane
+	private int preferredWidth = 300;
 	
 	private int headerPanelHeight = 39;
 	private int paddingLeft = 10;
@@ -49,15 +81,20 @@ public class AddGroupMemberModel extends CJPanel {
 	
 	// For Body
 	private JLayeredPane body;
-	private JScrollPane scrollPane;
-	
 	private FlexibleLabel description;
+	private List<OptionItem> friendList;
+	//private JLabel humanSummary;
+	//private JLabel details;
+	//private String splitAmount;
+	//private JLabel date;
+	//private String dateStr;
+	//private JLabel dollarSymbol;
 	
 	private JPanel buttonPanel;
 	private CustomButton cancelButton;
-	private CustomButton saveButton;
+	private CustomButton inviteButton;
 	
-	private Callback saveCallback;
+	private Callback inviteCallback;
 	
 	public AddGroupMemberModel() {
 		init();
@@ -70,7 +107,7 @@ public class AddGroupMemberModel extends CJPanel {
 		headerPanel.setOpaque(false);
 		//headerPanel.setBackground(DefaultTheme.getColor("ModelHeaderBackground"));
 		
-		headerText = new JLabel("Add Group Member");
+		headerText = new JLabel("Choose a friend");
 		
 		headerPanel.add(headerText);
 		
@@ -78,28 +115,34 @@ public class AddGroupMemberModel extends CJPanel {
 		body.setLayout(null);
 		body.setOpaque(false);
 		
-		scrollPane = new JScrollPane(body);
-		//TODO Initialize Scroll Pane
+		addFriendOptions();
+		
+		/*description = new FlexibleLabel();
+		description.setPlaceholder("Enter your friends email id");
+		description.setEditable(true);
+		description.setRows(1);
+		description.setFont(new Font("Helvetica Neue",Font.PLAIN, 18));*/
 		
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(null);
 		buttonPanel.setOpaque(false);
 		
-		saveButton = new CustomButton("Save");
-		saveButton.setTheme(CustomButton.GREENTHEME);
+		//inviteButton = new CustomButton("Send/Invite");
+		//inviteButton.setTheme(CustomButton.GREENTHEME);
 
-		saveButton.addCallback(()->saveAction());
+		//inviteButton.addCallback(()->saveAction());
 		cancelButton = new CustomButton("Cancel");
 		cancelButton.addCallback(()-> MainFrame.getInstance().hideBackdrop());
 		cancelButton.setTheme(CustomButton.GREYTHEME);
 
 		
-		buttonPanel.add(saveButton);
+		//buttonPanel.add(inviteButton);
 		buttonPanel.add(cancelButton);
 		
+		//body.add(description,JLayeredPane.DEFAULT_LAYER);
 		body.add(buttonPanel, JLayeredPane.DEFAULT_LAYER);
 		
-		add(scrollPane);
+		add(body);
 		add(headerPanel);
 	}
 
@@ -114,6 +157,20 @@ public class AddGroupMemberModel extends CJPanel {
 		headerText.setForeground(DefaultTheme.getColor("ModelHeaderForeground"));
 		
 	}
+	
+	private void addFriendOptions() {
+		List<People> friends = SplitwiseCore.getInstance().getFriends();
+		friendList = new ArrayList<OptionItem>();
+		for(People friend : friends) {
+			LOGGER.info("Adding gm to agm " + friend.getName() );
+			OptionItem oi = new OptionItem(friend.getName());
+			oi.setFriendId(friend.getId());
+			oi.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, DefaultTheme.getColor("PageHeaderBorder")));
+			oi.setCallback((arg)->saveAction(arg));
+			friendList.add(oi);
+			body.add(oi);
+		}
+	}
 
 	@Override
 	public void computeSize() {
@@ -123,9 +180,14 @@ public class AddGroupMemberModel extends CJPanel {
 		// Input
 		
 		// Body Width & Height
-		description.setSize(250, 31);
-		buttonPanel.setSize(getSize().width, 55);
-		body.setSize(getSize().width, description.getHeight() + buttonPanel.getHeight()+5);
+		//description.setSize(250, 31);
+		buttonPanel.setSize(getSize().width, 60);
+		int height = 0;
+		for(OptionItem oi : friendList) {
+			oi.setSize(getSize().width, oi.getHeight());
+			height += oi.getHeight();
+		}
+		body.setSize(getSize().width, height + buttonPanel.getHeight());
 	}
 
 	@Override
@@ -133,18 +195,23 @@ public class AddGroupMemberModel extends CJPanel {
 		headerPanel.setLocation(0,0);
 		headerText.setLocation(paddingLeft, (headerPanel.getSize().height - headerText.getSize().height)/2);
 		
-		body.setLocation(0, headerPanel.getSize().height + paddingTop);
+		body.setLocation(0, headerPanel.getSize().height);
+		
 		
 		int paddingBetween = 10;
-		int relative_x = (body.getSize().width - description.getSize().width)/2;
+		int relative_x = 0;
 		int relative_y = 0;
-		description.setLocation(relative_x, relative_y);
 		
-		relative_y = relative_y + description.getSize().height + paddingBetween;
-		buttonPanel.setLocation(0,relative_y);
+		for(OptionItem oi : friendList) {
+			oi.setLocation(0, relative_y);
+			relative_y += oi.getHeight();
+		}
 		
-		saveButton.setLocation(getSize().width - paddingLeft - saveButton.getWidth(), (buttonPanel.getSize().height - saveButton.getSize().height)/2);
-		cancelButton.setLocation(saveButton.getX() - paddingLeft - cancelButton.getWidth(), (buttonPanel.getSize().height - cancelButton.getSize().height)/2);
+		relative_y = relative_y;
+		buttonPanel.setLocation(0,relative_y+5);
+		
+		//inviteButton.setLocation(getSize().width - paddingLeft - inviteButton.getWidth(), (buttonPanel.getSize().height - inviteButton.getSize().height)/2);
+		cancelButton.setLocation(getSize().width - paddingLeft - cancelButton.getWidth(), (buttonPanel.getSize().height - cancelButton.getSize().height)/2);
 		preferredHeight = body.getY() + body.getSize().height + 10;
 	}
 	
@@ -168,15 +235,15 @@ public class AddGroupMemberModel extends CJPanel {
 		// Border for description
 		g.translate(body.getX(), body.getY());
 		g.setColor(DefaultTheme.getColor("PageHeaderBorder"));
-		int x1 = description.getX();
-		int x2 = description.getX() + description.getSize().width;
-		int y = description.getY() + description.getSize().height;
-		g.drawLine(x1, y, x2, y);
+		//int x1 = description.getX();
+		//int x2 = description.getX() + description.getSize().width;
+		//int y = description.getY() + description.getSize().height;
+		//g.drawLine(x1, y, x2, y);
 		
-		x1 = 0;
-		x2 = getSize().width;
-		y = description.getY() + description.getSize().height + 10;
-		g.drawLine(x1, y, x2, y);
+		//x1 = 0;
+		//x2 = getSize().width;
+		//y = description.getY() + description.getSize().height + 10;
+		//g.drawLine(x1, y, x2, y);
 		
 		g.translate(-body.getX(), -body.getY());
 		
@@ -199,20 +266,21 @@ public class AddGroupMemberModel extends CJPanel {
         return date_format.format(resultdate);
     }
 	
-	public void saveAction() {
-		String name = description.getText();
-		LOGGER.info("Name :" + name);
-		if(this.saveCallback != null) {
+	public void saveAction(OptionItem oi) {
+		long friendId = oi.getFriendId();
+		LOGGER.info("Friend Choosed :" + SplitwiseCore.getInstance().getFriend(friendId).getName());
+		if(this.inviteCallback != null) {
 			HashMap<String,String> args = new HashMap<String,String>();
-			args.put("name",name);
-			saveCallback.callback(args);
+			args.put("user_id",String.valueOf(friendId));
+			inviteCallback.callback(args);
 		}
 		MainFrame.getInstance().hideBackdrop();
 	}
-	public void setSaveCallback(Callback callback) {
-		this.saveCallback = callback;
+	public void setInviteCallback(Callback callback) {
+		this.inviteCallback = callback;
 	}
 	public static interface Callback {
 		public void callback(Map<String,String> arguments);
 	}
 }
+
