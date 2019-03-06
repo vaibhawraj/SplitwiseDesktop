@@ -23,6 +23,7 @@ public class ActivityResponse extends Response {
 	public long source_id;
 	public String source_type;
 	public Date created_date;
+	public String created_date_str;
 	
 	final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -48,6 +49,7 @@ public class ActivityResponse extends Response {
 		this.source_type = (String)source.get("type");
 		
 		DateFormat m_ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		this.created_date_str = (String) jsonObj.get("created_at");
 		
 		try {
 			this.created_date = m_ISO8601Local.parse((String) jsonObj.get("created_at"));

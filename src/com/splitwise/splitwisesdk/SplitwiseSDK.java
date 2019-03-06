@@ -11,6 +11,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -208,8 +210,13 @@ public class SplitwiseSDK {
 	}
 	
 	public List<ActivityResponse> getActivities() throws APIException {
+		return getActivities(new HashMap<String,String>());
+	}
+	
+	public List<ActivityResponse> getActivities(Map<String,String> params) throws APIException {
 		String response = "";
-		response = oauth.request(GET_ACTIVITY_URL);
+		//req.put("updated_after",dStr);
+		response = oauth.request(GET_ACTIVITY_URL,params);
 		LOGGER.info("Activity " + response);
 		return ActivityResponse.parseActivityList(response);
 	}
@@ -217,7 +224,7 @@ public class SplitwiseSDK {
 	public List<ExpenseResponse> getExpenses() throws APIException {
 		String response = "";
 		response = oauth.request(GET_EXPENSES_URL);
-		//LOGGER.info(response);
+		LOGGER.info(response);
 		return ExpenseResponse.parseExpensesList(response);
 	}
 	
@@ -293,10 +300,10 @@ public class SplitwiseSDK {
 		
 		//Step 3: Set access token and access token secret
 		/**/
-		String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
-		//String oauth_access_token = "CmXVaOyOsG5h9IToAUoVN2whq7uTfpquKb9ANwEe";
-		String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
-		//String oauth_access_token_secret = "OtbQ6gUYGCafnMzSKVft8gszYxq6VmTYNO4qovsJ";
+		//String oauth_access_token = "DuRUarYgjBpOpjDDIyV7Oj1NQVpiDp0WL9Yc6CAg";
+		String oauth_access_token = "CmXVaOyOsG5h9IToAUoVN2whq7uTfpquKb9ANwEe";
+		//String oauth_access_token_secret = "AcagAm8Xcizwbp5wWoCkFL5Ns0SaxNWDmi1yh7O3";
+		String oauth_access_token_secret = "OtbQ6gUYGCafnMzSKVft8gszYxq6VmTYNO4qovsJ";
 		
 		
 		//Z5mWLHzTlpc6MQ4ZmfXUukZuyZilMsRwQI1P5thh
@@ -309,7 +316,7 @@ public class SplitwiseSDK {
 		try {
 			//System.out.println(sdk.getCurrentUser());
 			Map<String,String> req = new HashMap<String,String>();
-			req.put("cost","10");
+			/*req.put("cost","10");
 			req.put("description","Testing Bill");
 			req.put("users__0__owed_share","2.00");
 			req.put("users__0__paid_share","10.00");
@@ -317,8 +324,14 @@ public class SplitwiseSDK {
 			req.put("users__1__owed_share","8.00");
 			req.put("users__1__paid_share","0.00");
 			req.put("users__1__user_id","21694899");
-			req.put("group_id","11803610");
-			System.out.println(sdk.createExpense(req));
+			req.put("group_id","11803610");*/
+			java.util.Date d = new java.util.Date(System.currentTimeMillis());
+			//d.setDate(1);
+			DateFormat m_ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+			String dStr = m_ISO8601Local.format(d);
+			System.out.println(dStr);
+			req.put("updated_after",dStr);
+			//System.out.println(sdk.createExpense(req));
 			
 			//fgXlRJ1b1kBecevvkCQeA6fDHfdaYzVnDh5t40a;WR9z7ShWOk4n4vgrpLxmionp21W6Iud2iHQ37z2f
 			/*Map<String,String> req = new HashMap<String,String>();
@@ -329,7 +342,8 @@ public class SplitwiseSDK {
 			/*Map<String,String> req = new HashMap<String,String>();
 			req.put("name","Test Group");
 			//System.out.println(sdk.oauth.requestPost(sdk.CREATE_GROUP_URL, req));*/
-			System.out.println(sdk.getGroups());
+			//System.out.println(sdk.getExpenses() != null);
+			System.out.println(sdk.getActivities(req));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

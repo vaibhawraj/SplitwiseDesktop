@@ -15,28 +15,34 @@ import com.splitwise.splitwisesdk.responses.Friend;
 import com.splitwise.splitwisesdk.responses.GroupResponse;
 import com.splitwise.splitwisesdk.responses.User;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SplitwiseCore {
 	private static SplitwiseCore instance;
 	
-    private LedgerManager ledger = new LedgerManager();
-    private People currentUser;
-    private ArrayList<People> friends = new ArrayList<>(); // list of friends
-    private ArrayList<Group> groups = new ArrayList<>(); //list of groups
+	private People currentUser;
     private ArrayList<Activity> activities = new ArrayList<>();
     private ArrayList<Expense> expenses = new ArrayList<>();
+    //private Date lastFetchedActivity;
+    private String lastFetchedActivity;
+    private DateFormat m_ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     
     private Callback callback;
     final private static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     
     private long groupId;
     private long userId;
+    
+    private int checkAfterEvery = 3000;
     
     public void login(){}
 
@@ -46,10 +52,56 @@ public class SplitwiseCore {
     	fetchGroups();
     	fetchExpenses();
     	fetchActivities();
+    	
+    	startContinuousTimer();
+    	
     	if(callback != null) {
     		callback.callback();
     		callback = null;
     	}
+    }
+    
+    public void startContinuousTimer() {
+    	new Thread() {
+    		public void run() {
+    			while(true) { //Runs forever
+	    			try {
+						Thread.sleep(checkAfterEvery);
+						int previousCount = activities.size();
+						LOGGER.setLevel(Level.OFF);
+	    				fetchActivities();
+	    				LOGGER.setLevel(Level.INFO);
+	    				int newCount = activities.size();
+	    				if(newCount - previousCount > 0) {
+	    					LOGGER.info("GOT NEW NOTIFICATION " + (newCount - previousCount));
+	    					MainFrame.getInstance().gotNewNotification(newCount - previousCount);
+	    				}
+	    				LOGGER.setLevel(Level.OFF);
+	    				previousCount = currentUser.getFriends().size();
+	    				fetchFriends();
+	    				newCount = currentUser.getFriends().size();
+	    				
+	    				int previousGCount = currentUser.getGroups().size();
+	    				fetchGroups();
+	    				int newGCount = currentUser.getGroups().size();
+	    				
+	    				int previousECount = expenses.size();
+	    				fetchExpenses();
+	    				int newECount = expenses.size();
+	    				
+	    				if(newCount != previousCount || newGCount != previousGCount) {
+	    					MainFrame.getInstance().reInitLeftPanel();
+	    					MainFrame.getInstance().repaint();
+	    				}
+	    				
+	    				LOGGER.setLevel(Level.INFO);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+    			}
+    		}
+    	}.start();
     }
     
     public List<Activity> getActivities(){
@@ -152,12 +204,25 @@ public class SplitwiseCore {
     public void fetchActivities() {
     	LOGGER.info("Fetching Activities");
     	try {
-    		activities.clear();
-			for(ActivityResponse activity : SplitwiseSDK.getInstance().getActivities()) {
+    		HashMap<String,String> params = new HashMap<String,String>();
+    		params.put("limit","50");
+    		if(lastFetchedActivity != null) {
+    			params.put("updated_after",lastFetchedActivity);
+    			LOGGER.info("Last Updated At " + lastFetchedActivity);
+    		}
+    		//activities.clear();
+    		int activityCount = 0;
+    		boolean isFirst = true;
+			for(ActivityResponse activity : SplitwiseSDK.getInstance().getActivities(params)) {
+				if(isFirst) {
+					lastFetchedActivity = activity.created_date_str;
+					isFirst = false;
+				}
 				activities.add(new Activity(activity));
+				activityCount++;
 			}
 			Collections.sort(activities, (f1,f2)->(f1.getCreatedDate().compareTo(f2.getCreatedDate()) > 0)?-1:1);
-			LOGGER.info("Fetched Activities " + activities.size());
+			LOGGER.info("Fetched Activities " + activityCount);
 		} catch (APIException e) {
 			e.printStackTrace();
 			System.exit(0);

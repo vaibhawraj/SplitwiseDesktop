@@ -66,7 +66,7 @@ public class GroupResponse extends Response {
 			JSONObject groupObj = (JSONObject) groups.get(i);
 			groupsList.add(new GroupResponse(groupObj));
 		}
-		System.out.println(groupsList.size());
+		//System.out.println(groupsList.size());
 		return groupsList;
 	}
 	

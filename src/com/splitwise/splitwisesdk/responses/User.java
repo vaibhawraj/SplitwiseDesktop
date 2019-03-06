@@ -20,7 +20,7 @@ public class User extends Response {
 	public String date_format;
 	public String default_currency;
 	public long default_group_id;
-	public String notification_read;
+	public String notifications_read;
 	public int notification_count;
 	public NotificationSetting notification;
 	
@@ -37,6 +37,7 @@ public class User extends Response {
 		this.last_name = (String) userJObj.get("last_name");
 		this.email = (String) userJObj.get("email");
 		this.id = (long) userJObj.get("id");
+		this.notifications_read = (String) userJObj.get("notifications_read");
 	}
 	
 	public String toString() {

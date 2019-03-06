@@ -358,5 +358,10 @@ public class MainFrame extends JFrame implements ComponentListener{
 		mainContentPanel.reInitLeftPanel();
 	}
 
+	public void gotNewNotification(int count) {
+		mainContentPanel.gotNewNotification(count);
+		
+	}
+
 	
 }
