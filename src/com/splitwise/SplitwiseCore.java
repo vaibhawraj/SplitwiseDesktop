@@ -13,6 +13,7 @@ import com.splitwise.splitwisesdk.responses.ActivityResponse;
 import com.splitwise.splitwisesdk.responses.ExpenseResponse;
 import com.splitwise.splitwisesdk.responses.Friend;
 import com.splitwise.splitwisesdk.responses.GroupResponse;
+import com.splitwise.splitwisesdk.responses.Response;
 import com.splitwise.splitwisesdk.responses.User;
 
 import java.text.DateFormat;
@@ -305,6 +306,50 @@ public class SplitwiseCore {
 		
 	}
 
+	public void settleUpWith(long friendId) {
+		People friend = getFriend(friendId);
+		if(friend.getNetAmount() < 0) {
+			String cost = String.valueOf(Math.round(Math.abs(friend.getNetAmount()) * 100.0f)/100.0f);
+			String description = "Payment";
+			HashMap<String,String> expenseParams = new HashMap<String, String>();
+			expenseParams.put("cost",cost);
+			expenseParams.put("description",description);
+			expenseParams.put("payment","true");
+			expenseParams.put("creation_method","payment");
+			expenseParams.put("users__0__user_id",String.valueOf(currentUser.getId()));
+			expenseParams.put("users__0__paid_share",cost);
+			expenseParams.put("users__0__owed_share","0.0");
+			expenseParams.put("users__1__user_id",String.valueOf(friendId));
+			expenseParams.put("users__1__paid_share","0.0");
+			expenseParams.put("users__1__owed_share",cost);
+			
+			for(String key : expenseParams.keySet()) {
+				LOGGER.info(key + " : " + expenseParams.get(key));
+			}
+			
+			new Thread(){
+				public void run() {
+					try {
+						ExpenseResponse er = SplitwiseSDK.getInstance().createExpense(expenseParams);
+						LOGGER.info("Created expense " + er.id);
+						expenses.add(new Expense(er));
+						fetchFriends();
+						//fetchActivities();
+						fetchExpenses();
+						fetchGroups();
+						if(callback != null) {
+							callback.callback();
+							callback=null;
+						}
+					} catch (APIException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+		}
+	}
+	
 	public void createSplitExpense(String cost, String description, long userIds[]) {
 		createSplitExpense( cost, description, userIds, -1); //-1 to indicate that group id parameter has not to be included
 	}
@@ -353,11 +398,12 @@ public class SplitwiseCore {
 					LOGGER.info("Created expense " + er.id);
 					expenses.add(new Expense(er));
 					fetchFriends();
-					fetchActivities();
+					//fetchActivities();
 					fetchExpenses();
 					fetchGroups();
 					if(callback != null) {
 						callback.callback();
+						callback=null;
 					}
 				} catch (APIException e) {
 					// TODO Auto-generated catch block
@@ -381,7 +427,7 @@ public class SplitwiseCore {
 						SplitwiseCore.getInstance().getCurrentUser().addFriend(new People(friend));
 						//Update Entire list of friends
 						fetchFriends();
-						fetchActivities();
+						//fetchActivities();
 						MainFrame.getInstance().reInitLeftPanel();
 						MainFrame.getInstance().repaint();
 					} catch (APIException e) {
@@ -408,7 +454,7 @@ public class SplitwiseCore {
 						
 						//Update Entire list of Groups
 						fetchGroups();
-						fetchActivities();
+						//fetchActivities();
 						MainFrame.getInstance().reInitLeftPanel();
 						MainFrame.getInstance().repaint();
 					} catch (APIException e) {
@@ -418,6 +464,36 @@ public class SplitwiseCore {
 				}
 			}.start();
 		
+	}
+	
+	public void createGroupMember(Map<String, String> args) {
+		if(this.groupId == 0) {
+			LOGGER.warning("Group Id is missing");
+			return;
+		}
+		args.put("group_id",String.valueOf(this.groupId));
+		for(String key : args.keySet()) {
+			LOGGER.info(key + " : " + args.get(key));
+		}
+		
+		long thatGroupId = this.groupId;
+			new Thread(){
+				public void run() {
+					try {
+						Response response = SplitwiseSDK.getInstance().createGroupMember(args);
+						LOGGER.info("Created Group Member");
+						
+						//Update Entire list of Groups
+						fetchGroups();
+						//fetchActivities();
+						MainFrame.getInstance().showGroupExpenses(thatGroupId);;
+						MainFrame.getInstance().repaint();
+					} catch (APIException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
 	}
 
 	public void acquireLock() {
@@ -433,4 +509,8 @@ public class SplitwiseCore {
 	public void releaseLock() {
 		lock.unlock();
 	}
+
+	
+
+	
 }

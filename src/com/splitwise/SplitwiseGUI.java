@@ -63,8 +63,8 @@ public class SplitwiseGUI{
 			public void run() {
 				LOGGER.info("Initializing Core");
 				core = SplitwiseCore.getInstance();
-				//core.setCallback(()->mainFrame.showMainPane());
-				core.setCallback(()->mainFrame.showGroupMemberModel());
+				core.setCallback(()->mainFrame.showMainPane());
+				//core.setCallback(()->mainFrame.showGroupMemberModel());
 				core.initialize();
 			}
 		}.start();

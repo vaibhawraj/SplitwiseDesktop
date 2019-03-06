@@ -42,6 +42,7 @@ public class ExpensePanel extends CJPanel {
 	private FlexibleLabel defaultPanelSubText;
 	private CustomButton addBillButton;
 	private CustomButton addMemberButton;
+	private CustomButton settleUpButton;
 	private List<ExpenseItem> expenseList;
 	private JScrollPane scrollPane;
 	private JPanel listPanel;
@@ -70,15 +71,32 @@ public class ExpensePanel extends CJPanel {
 		addBillButton = new CustomButton("Add a Bill");
 		addBillButton.addCallback(()-> showAddBill());
 		addMemberButton = new CustomButton("Add Member");
+		addMemberButton.addCallback(()-> showAddGroupMember());
 		addMemberButton.setVisible(false);
+		settleUpButton = new CustomButton("Settle Up");
+		settleUpButton.addCallback(()-> settleUpWith(this.friendId));
+		settleUpButton.setVisible(false);
+		settleUpButton.setTheme(CustomButton.GREENTHEME);
 		
 		pageHeader.add(addBillButton);
 		pageHeader.add(addMemberButton);
+		pageHeader.add(settleUpButton);
 		add(defaultPanel);
 		add(scrollPane);
 		add(pageHeader);
 	}
 	
+	private void settleUpWith(long friendId) {
+		if(friendId == 0) return;
+		
+		People friend = SplitwiseCore.getInstance().getFriend(friendId);
+		
+		LOGGER.info("Settling with " + friend.getName() + " of balance " + friend.getNetAmount());
+		SplitwiseCore.getInstance().setCallback(()->showExpenseList());
+		SplitwiseCore.getInstance().settleUpWith(friendId);
+		return;
+	}
+
 	public void initDefaultPanel() {
 		defaultPanel.setLayout(null);
 		defaultPanel.setOpaque(false);
@@ -157,12 +175,19 @@ public class ExpensePanel extends CJPanel {
 		if(this.friendId == 0 && this.groupId == 0) {
 			addBillButton.setVisible(false);
 			addMemberButton.setVisible(false);
+			settleUpButton.setVisible(false);
 		} else {
 			addBillButton.setVisible(true);
 			if(this.groupId != 0) {
 				addMemberButton.setVisible(true);
 			} else {
 				addMemberButton.setVisible(false);
+			}
+			People friend = SplitwiseCore.getInstance().getFriend(this.friendId);
+			if(this.friendId != 0 && friend != null && friend.getNetAmount() < 0) {
+				settleUpButton.setVisible(true);
+			} else {
+				settleUpButton.setVisible(false);
 			}
 		}
 		if(SplitwiseCore.getInstance().getExpenses().size() == 0) {
@@ -223,8 +248,13 @@ public class ExpensePanel extends CJPanel {
 	}
 	
 	private void showAddBill() {
-		LOGGER.info("Add Bill Button on Dashboard Clicked");
+		LOGGER.info("Add Bill Button on Expense Panel Clicked");
 		SplitwiseGUI.getInstance().showAddBill(friendId, groupId, (args)->saveExpense(args));
+	}
+	
+	private void showAddGroupMember() {
+		LOGGER.info("Add Bill Button on Expense Panel Clicked");
+		SplitwiseGUI.getInstance().showGroupMemberModel();
 	}
 	
 	private void saveExpense(Map<String,String> args) {
@@ -295,6 +325,8 @@ public class ExpensePanel extends CJPanel {
 				(pageHeader.getSize().height - addBillButton.getHeight())/2);
 		addMemberButton.setLocation(addBillButton.getX() - addMemberButton.getSize().width - pageHeader.getPaddingRight(),
 				(pageHeader.getSize().height - addMemberButton.getHeight())/2);
+		settleUpButton.setLocation(addBillButton.getX() - settleUpButton.getSize().width - pageHeader.getPaddingRight(),
+				(pageHeader.getSize().height - settleUpButton.getHeight())/2);
 		defaultPanel.setLocation(0,pageHeader.getSize().height);
 		personLabel.setLocation(defaultPanelPadding.left, defaultPanelPadding.top);
 		defaultTextPanel.setLocation(2*defaultPanelPadding.left + personLabel.getSize().width

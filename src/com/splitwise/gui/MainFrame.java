@@ -357,7 +357,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 		createBackdrop();
 		
 		AddGroupMemberModel agmm = new AddGroupMemberModel();
-		//agmm.setSaveCallback((args)->SplitwiseCore.getInstance().createGroup(args));
+		agmm.setInviteCallback((args)->SplitwiseCore.getInstance().createGroupMember(args));
 		
 		backdrop.add(agmm);
 		
@@ -365,7 +365,7 @@ public class MainFrame extends JFrame implements ComponentListener{
 		agmm.setSize(agmm.getPreferredSize());
 		agmm.setLocation((getContentPane().getSize().width - agmm.getSize().width)/2,
 				(getContentPane().getSize().height - agmm.getSize().height)/2);
-
+		
 		repaint();
 	}
 	
