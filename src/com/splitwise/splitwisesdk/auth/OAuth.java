@@ -126,6 +126,9 @@ public class OAuth {
 	}
 	
 	public String request(String endpoint) {
+		return request(endpoint, new HashMap<String,String>());
+	}
+	public String request(String endpoint, Map<String,String> params) {
 		String response = "";
 		String body_hash = "2jmj7l5rSw0yVb%2FvlWAYkK%2FYBwk%3D";
 		
@@ -136,7 +139,9 @@ public class OAuth {
 		req.setEndpoint(endpoint);
 		req.setMethod("GET");
 		req.setOauthBodyHash(body_hash);
-		//req.setParameter("id","5092932");
+		for(String key : params.keySet()) {
+			req.setParameter(key, percentEncode(params.get(key)) );
+		}
 		hmac_sha1_sign(req);
 		
 		response = Http.sendGetRequest(req.getEndpoint() + "?" + req.getRequestBody(), new HashMap<String,String>());

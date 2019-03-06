@@ -40,6 +40,7 @@ public class ExpensePanel extends CJPanel {
 	private FlexibleLabel defaultPanelTitle;
 	private FlexibleLabel defaultPanelSubText;
 	private CustomButton addBillButton;
+	private CustomButton addMemberButton;
 	private List<ExpenseItem> expenseList;
 	private JScrollPane scrollPane;
 	private JPanel listPanel;
@@ -67,8 +68,11 @@ public class ExpensePanel extends CJPanel {
 		
 		addBillButton = new CustomButton("Add a Bill");
 		addBillButton.addCallback(()-> showAddBill());
+		addMemberButton = new CustomButton("Add Member");
+		addMemberButton.setVisible(false);
 		
 		pageHeader.add(addBillButton);
+		pageHeader.add(addMemberButton);
 		add(defaultPanel);
 		add(scrollPane);
 		add(pageHeader);
@@ -150,9 +154,15 @@ public class ExpensePanel extends CJPanel {
 	public void showExpenseList() {
 		hideAll();
 		if(this.friendId == 0 && this.groupId == 0) {
-			this.addBillButton.setVisible(false);
+			addBillButton.setVisible(false);
+			addMemberButton.setVisible(false);
 		} else {
-			this.addBillButton.setVisible(true);
+			addBillButton.setVisible(true);
+			if(this.groupId != 0) {
+				addMemberButton.setVisible(true);
+			} else {
+				addMemberButton.setVisible(false);
+			}
 		}
 		if(SplitwiseCore.getInstance().getExpenses().size() == 0) {
 			showDefaultPanel();
@@ -162,6 +172,7 @@ public class ExpensePanel extends CJPanel {
 			expenseList.clear();
 			listPanel.removeAll();
 			for(Expense expense : core.getExpenses()) {
+				try {
 				String _date = ((expense.getUpdatedAt().getDate()>9)?"":"0") + expense.getUpdatedAt().getDate();
 				String _month = Month.of(expense.getUpdatedAt().getMonth() + 1).getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
 				People createdBy = core.getCurrentUser().getFriend(expense.getCreatedById());
@@ -178,6 +189,10 @@ public class ExpensePanel extends CJPanel {
 							your_share > 0?String.valueOf(your_share):"",
 							expense.getDescription(),
 							(group!=null)?group.getName():""));
+				} catch(Exception e) {
+					LOGGER.info("Known issue");
+					e.printStackTrace();
+				}
 			}
 		}
 		this.repaint();
@@ -267,6 +282,8 @@ public class ExpensePanel extends CJPanel {
 		pageHeader.setLocation(0,0);
 		addBillButton.setLocation(pageHeader.getSize().width - addBillButton.getSize().width - pageHeader.getPaddingRight(),
 				(pageHeader.getSize().height - addBillButton.getHeight())/2);
+		addMemberButton.setLocation(addBillButton.getX() - addMemberButton.getSize().width - pageHeader.getPaddingRight(),
+				(pageHeader.getSize().height - addMemberButton.getHeight())/2);
 		defaultPanel.setLocation(0,pageHeader.getSize().height);
 		personLabel.setLocation(defaultPanelPadding.left, defaultPanelPadding.top);
 		defaultTextPanel.setLocation(2*defaultPanelPadding.left + personLabel.getSize().width
@@ -285,6 +302,7 @@ public class ExpensePanel extends CJPanel {
 	}
 
 	public void setFriendId(long friendId) {
+		this.groupId = 0;
 		this.friendId = friendId;
 		pageHeader.setHeader(SplitwiseCore.getInstance().getCurrentUser().getFriend(friendId).getName());
 		pageHeader.computeSize();
@@ -293,6 +311,7 @@ public class ExpensePanel extends CJPanel {
 	
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;
+		this.friendId = 0;
 		pageHeader.setHeader(SplitwiseCore.getInstance().getCurrentUser().getGroup(groupId).getName());
 		pageHeader.computeSize();
 		pageHeader.computePlacement();

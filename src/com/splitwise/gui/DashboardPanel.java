@@ -113,8 +113,8 @@ public class DashboardPanel extends CJPanel {
 		hideAll();
 		summaryPanel.showSummary();
 		summaryPanel.setVisible(true);
-		//computeSize();
-		//computePlacement();
+		computeSize();
+		computePlacement();
 		this.repaint();
 	}
 	

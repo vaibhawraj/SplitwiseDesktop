@@ -93,6 +93,9 @@ public class MainContentPanel extends CJPanel {
 		leftPanel.repaint();
 		
 	}
+	public void gotNewNotification(int count) {
+		leftPanel.gotNewNotification(count);
+	}
 	
 
 }

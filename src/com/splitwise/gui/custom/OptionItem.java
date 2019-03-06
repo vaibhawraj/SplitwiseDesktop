@@ -109,6 +109,10 @@ public class OptionItem extends CJPanel{
 	public String getText() {
 		return this.text;
 	}
+	public void setText(String text) {
+		this.text = text;
+		textLabel.setText(text);
+	}
 
 	@Override
 	public void initComponents() {

@@ -29,6 +29,8 @@ public class LeftPanel extends CJPanel{
 	private OptionItem groupsHeader;
 	private OptionItem friendsHeader;
 	private OptionItem selectedItem = null;
+	private OptionItem recentActivity;
+	private int newNotificationCount = 0;
 	
 	
 	private int paddingTop = 10;
@@ -48,8 +50,9 @@ public class LeftPanel extends CJPanel{
 		// TODO Auto-generated method stub
 		links = new ArrayList<OptionItem>();
 		
+		recentActivity = new OptionItem("Recent activity", (OptionItem oi) -> showRecentActivity(oi));
 		links.add(new OptionItem("Dashboard",(OptionItem oi) -> SplitwiseGUI.getInstance().showDashboard()));
-		links.add(new OptionItem("Recent activity", (OptionItem oi) -> SplitwiseGUI.getInstance().showRecentActivity()));
+		links.add(recentActivity);
 		links.add(new OptionItem("All expenses", (OptionItem oi) -> SplitwiseGUI.getInstance().showAllExpenses()));
 		
 		groupsHeader = new OptionItem("Groups", OptionItem.HEADER);
@@ -86,6 +89,13 @@ public class LeftPanel extends CJPanel{
 		packComponents();
 	}
 	
+	private void showRecentActivity(OptionItem oi) {
+		oi.setText("Recent Activity");
+		oi.repaint();
+		newNotificationCount = 0;
+		SplitwiseGUI.getInstance().showRecentActivity();
+	}
+
 	private void showFriendsExpense(OptionItem o) {
 		long id = o.getFriendId();
 		LOGGER.info("Option Item Selected for " + o.getText() + " with id " + o.getFriendId());
@@ -176,6 +186,12 @@ public class LeftPanel extends CJPanel{
 		if(oi != this.selectedItem) { // To avoid multiple click on same options
 			this.selectedItem = oi;
 		}
+	}
+	
+	public void gotNewNotification(int count) {
+		newNotificationCount += count;
+		recentActivity.setText("Recent Activity (" + newNotificationCount + ")");
+		recentActivity.repaint();
 	}
 
 }
