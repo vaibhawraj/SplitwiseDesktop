@@ -119,7 +119,7 @@ public class DashboardPanel extends CJPanel {
 	}
 	
 	public void showPanel() {
-		if(SplitwiseCore.getInstance().getCurrentUser().getFriends().size() > 0) {
+		if(SplitwiseCore.getInstance().getFriends().size() > 0) {
 			showSummaryPanel();
 		} else {
 			showDefaultPanel();

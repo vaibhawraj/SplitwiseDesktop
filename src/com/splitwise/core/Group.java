@@ -24,27 +24,6 @@ public class Group {
 			}
 		}
 
-		//doubt - won't the parameter passed for addGroupMember will be (People people)?
-        public boolean addGroupMember(GroupMember groupMember) {
-           /*// members.add(groupMember);
-            for (int i = 0; i < members.size(); i++) {
-                if ((members.get(i).getMember().equals(groupMember.getMember())) && (members.get(i).getGroupId()
-                        .equals(groupMember.getGroupId())
-                )) {
-                    return false;
-                } else {
-                    members.add(groupMember);
-                }
-            }*/
-            return true;
-
-            // Verify that groupMember is not already in members
-            // If not then add it to members and return true
-            // else do nothing and return false
-        }
-
-        // sameGroup.addGroupMember(new GroupMember(p));
-        // sameGroup.addPeople(p);
 
 
         public boolean addPeople(People people) {

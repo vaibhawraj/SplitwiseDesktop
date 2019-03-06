@@ -68,6 +68,9 @@ public class ExpenseResponse extends Response {
 		}
 	}
 	
+	public String getJson() {
+		return super.toString();
+	}
 	public String toString() {
 		return String.valueOf(id);
 	}

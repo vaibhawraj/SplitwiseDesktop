@@ -22,6 +22,7 @@ import javax.swing.SwingConstants;
 import com.splitwise.SplitwiseCore;
 import com.splitwise.SplitwiseGUI;
 import com.splitwise.core.Expense;
+import com.splitwise.core.ExpenseRatio;
 import com.splitwise.core.Group;
 import com.splitwise.core.People;
 import com.splitwise.gui.custom.CJPanel;
@@ -175,18 +176,28 @@ public class ExpensePanel extends CJPanel {
 				try {
 				String _date = ((expense.getUpdatedAt().getDate()>9)?"":"0") + expense.getUpdatedAt().getDate();
 				String _month = Month.of(expense.getUpdatedAt().getMonth() + 1).getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-				People createdBy = core.getCurrentUser().getFriend(expense.getCreatedById());
-				String name = (createdBy.getId() == core.getCurrentUser().getId())? "You":createdBy.getFirstName();
-				Group group = expense.getGroupId() == 0?null:core.getCurrentUser().getGroup(expense.getGroupId());
+				People paidBy = null;
+				for(ExpenseRatio er : expense.expenseRatio) {
+					if(er.getPaidShare() > 0) {
+						paidBy = core.getFriend(er.getId());
+					}
+				}
+				if(paidBy == null) {
+					LOGGER.info("Could not determine who paid " + expense.toString());
+				}
 				
-				float your_share = expense.getOwedShare(core.getCurrentUser().getId());
+				People createdBy = core.getFriend(expense.getCreatedById());
+				String name = (paidBy.getId() == core.getCurrentUser().getId())? "You":paidBy.getName();
+				Group group = expense.getGroupId() == 0?null:core.getGroup(expense.getGroupId());
+				
+				float your_share = expense.getNetBalance(core.getCurrentUser().getId());
 				
 				addItem(new ExpenseItem(
 							_date,
 							_month,
 							name,
 							String.valueOf(expense.getCost()), 
-							your_share > 0?String.valueOf(your_share):"",
+							your_share,
 							expense.getDescription(),
 							(group!=null)?group.getName():""));
 				} catch(Exception e) {
@@ -231,7 +242,7 @@ public class ExpensePanel extends CJPanel {
 			SplitwiseCore.getInstance().createSplitExpense(args.get("cost"), args.get("description"), userIds);
 		} else if(args.containsKey("groupId")){
 			long groupId = Long.parseLong(args.get("groupId"));
-			Group group = SplitwiseCore.getInstance().getCurrentUser().getGroup(groupId);
+			Group group = SplitwiseCore.getInstance().getGroup(groupId);
 			if(group == null) {
 				LOGGER.warning("Group not found to add bill" + groupId);
 				return;
@@ -304,7 +315,7 @@ public class ExpensePanel extends CJPanel {
 	public void setFriendId(long friendId) {
 		this.groupId = 0;
 		this.friendId = friendId;
-		pageHeader.setHeader(SplitwiseCore.getInstance().getCurrentUser().getFriend(friendId).getName());
+		pageHeader.setHeader(SplitwiseCore.getInstance().getFriend(friendId).getName());
 		pageHeader.computeSize();
 		pageHeader.computePlacement();
 	}
@@ -312,7 +323,7 @@ public class ExpensePanel extends CJPanel {
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 		this.friendId = 0;
-		pageHeader.setHeader(SplitwiseCore.getInstance().getCurrentUser().getGroup(groupId).getName());
+		pageHeader.setHeader(SplitwiseCore.getInstance().getGroup(groupId).getName());
 		pageHeader.computeSize();
 		pageHeader.computePlacement();
 	}

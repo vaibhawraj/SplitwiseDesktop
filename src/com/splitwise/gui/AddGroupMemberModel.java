@@ -10,6 +10,7 @@ import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import com.splitwise.core.People;
 import com.splitwise.gui.custom.CJPanel;
 import com.splitwise.gui.custom.CustomButton;
 import com.splitwise.gui.custom.FlexibleLabel;
+import com.splitwise.gui.custom.OptionItem;
 import com.splitwise.gui.theme.DefaultTheme;
 
 public class AddGroupMemberModel extends CJPanel {
@@ -40,6 +42,7 @@ public class AddGroupMemberModel extends CJPanel {
 	private int headerPanelHeight = 39;
 	private int paddingLeft = 10;
 	private int paddingTop = 20;
+	private int paddingRight = 10;
 	
 	private JPanel headerPanel;
 	private JLabel headerText;
@@ -50,8 +53,9 @@ public class AddGroupMemberModel extends CJPanel {
 	// For Body
 	private JLayeredPane body;
 	private JScrollPane scrollPane;
+	private List<OptionItem> friendList;
 	
-	private FlexibleLabel description;
+	//private FlexibleLabel description;
 	
 	private JPanel buttonPanel;
 	private CustomButton cancelButton;
@@ -78,7 +82,10 @@ public class AddGroupMemberModel extends CJPanel {
 		body.setLayout(null);
 		body.setOpaque(false);
 		
+		addFriendOptions();
+		
 		scrollPane = new JScrollPane(body);
+		scrollPane.setBackground(Color.BLUE);
 		//TODO Initialize Scroll Pane
 		
 		buttonPanel = new JPanel();
@@ -97,8 +104,8 @@ public class AddGroupMemberModel extends CJPanel {
 		buttonPanel.add(saveButton);
 		buttonPanel.add(cancelButton);
 		
-		body.add(buttonPanel, JLayeredPane.DEFAULT_LAYER);
 		
+		add(buttonPanel, JLayeredPane.DEFAULT_LAYER);
 		add(scrollPane);
 		add(headerPanel);
 	}
@@ -112,7 +119,17 @@ public class AddGroupMemberModel extends CJPanel {
 		
 		headerText.setFont(new Font("Helvetica Neue",Font.BOLD,18));
 		headerText.setForeground(DefaultTheme.getColor("ModelHeaderForeground"));
-		
+	}
+	
+	private void addFriendOptions() {
+		List<People> friends = SplitwiseCore.getInstance().getFriends();
+		friendList = new ArrayList<OptionItem>();
+		for(People friend : friends) {
+			OptionItem oi = new OptionItem(friend.getName());
+			oi.setFriendId(friend.getId());
+			friendList.add(oi);
+			body.add(oi);
+		}
 	}
 
 	@Override
@@ -123,9 +140,17 @@ public class AddGroupMemberModel extends CJPanel {
 		// Input
 		
 		// Body Width & Height
-		description.setSize(250, 31);
+		//description.setSize(250, 31);
 		buttonPanel.setSize(getSize().width, 55);
-		body.setSize(getSize().width, description.getHeight() + buttonPanel.getHeight()+5);
+		int bodyHeight = 0;
+		for(OptionItem oi : friendList) {
+			((OptionItem)oi).setSize(getSize().width - paddingRight,oi.getHeight());
+			bodyHeight += oi.getHeight();
+		}
+		
+		body.setSize(getSize().width, bodyHeight);
+		body.setPreferredSize(new Dimension(getSize().width, bodyHeight));
+		scrollPane.setSize(getSize().width, Math.min(maxBodyHeight, bodyHeight));
 	}
 
 	@Override
@@ -133,19 +158,16 @@ public class AddGroupMemberModel extends CJPanel {
 		headerPanel.setLocation(0,0);
 		headerText.setLocation(paddingLeft, (headerPanel.getSize().height - headerText.getSize().height)/2);
 		
-		body.setLocation(0, headerPanel.getSize().height + paddingTop);
+		//body.setLocation(0, );
 		
+		scrollPane.setLocation(0, headerPanel.getSize().height + paddingTop);
 		int paddingBetween = 10;
-		int relative_x = (body.getSize().width - description.getSize().width)/2;
-		int relative_y = 0;
-		description.setLocation(relative_x, relative_y);
-		
-		relative_y = relative_y + description.getSize().height + paddingBetween;
+		int relative_y = scrollPane.getY() + scrollPane.getSize().height + paddingBetween;
 		buttonPanel.setLocation(0,relative_y);
 		
-		saveButton.setLocation(getSize().width - paddingLeft - saveButton.getWidth(), (buttonPanel.getSize().height - saveButton.getSize().height)/2);
-		cancelButton.setLocation(saveButton.getX() - paddingLeft - cancelButton.getWidth(), (buttonPanel.getSize().height - cancelButton.getSize().height)/2);
-		preferredHeight = body.getY() + body.getSize().height + 10;
+		saveButton.setLocation(buttonPanel.getSize().width - paddingLeft - saveButton.getWidth(), 0);
+		cancelButton.setLocation(saveButton.getX() - paddingLeft - cancelButton.getWidth(), 0);
+		preferredHeight = scrollPane.getSize().height + headerPanel.getSize().height + paddingBetween + buttonPanel.getSize().height + paddingBetween;
 	}
 	
 	public int getPreferredHeight() {
@@ -165,17 +187,10 @@ public class AddGroupMemberModel extends CJPanel {
 		g.fillRect(10, 0, getSize().width - 20, 10);
 		g.fillRect(0, 10, getSize().width, headerPanel.getSize().height - 10);
 		
-		// Border for description
-		g.translate(body.getX(), body.getY());
-		g.setColor(DefaultTheme.getColor("PageHeaderBorder"));
-		int x1 = description.getX();
-		int x2 = description.getX() + description.getSize().width;
-		int y = description.getY() + description.getSize().height;
-		g.drawLine(x1, y, x2, y);
 		
-		x1 = 0;
-		x2 = getSize().width;
-		y = description.getY() + description.getSize().height + 10;
+		int x1 = 0;
+		int x2 = getSize().width;
+		int y = buttonPanel.getY();
 		g.drawLine(x1, y, x2, y);
 		
 		g.translate(-body.getX(), -body.getY());
@@ -200,13 +215,13 @@ public class AddGroupMemberModel extends CJPanel {
     }
 	
 	public void saveAction() {
-		String name = description.getText();
+		/*String name = description.getText();
 		LOGGER.info("Name :" + name);
 		if(this.saveCallback != null) {
 			HashMap<String,String> args = new HashMap<String,String>();
 			args.put("name",name);
 			saveCallback.callback(args);
-		}
+		}*/
 		MainFrame.getInstance().hideBackdrop();
 	}
 	public void setSaveCallback(Callback callback) {

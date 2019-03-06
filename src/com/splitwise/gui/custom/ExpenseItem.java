@@ -1,5 +1,6 @@
 package com.splitwise.gui.custom;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -16,7 +17,7 @@ public class ExpenseItem extends CJPanel {
 	
 	private String whoPaid;
 	private String howMuchPaid;
-	private String yourShare;
+	private float yourShare;
 	private String description;
 	private String month;
 	private String date;
@@ -47,7 +48,7 @@ public class ExpenseItem extends CJPanel {
 	public ExpenseItem() {
 		this.whoPaid = "Sandesh M.";
 		this.howMuchPaid = "$25.20";
-		this.yourShare = "";
+		this.yourShare = 0;
 		this.description = "Lyft for De Anza";
 		this.groupName = "TL 513";
 		this.month = "MAR";
@@ -57,7 +58,7 @@ public class ExpenseItem extends CJPanel {
 		
 		addListener();
 	}
-	public ExpenseItem(String date, String month, String whoPaid, String howMuchPaid, String yourShare, String description, String groupName) {
+	public ExpenseItem(String date, String month, String whoPaid, String howMuchPaid, float yourShare, String description, String groupName) {
 		this.whoPaid = whoPaid;
 		this.howMuchPaid = howMuchPaid;
 		this.yourShare = yourShare;
@@ -108,8 +109,8 @@ public class ExpenseItem extends CJPanel {
 		whoLentPanel.setOpaque(false);
 		
 		whoLentLabel = new JLabel(this.whoPaid + " lent");
-		lentAmountLabel = new JLabel(this.yourShare);
-		if(this.yourShare == "") {
+		lentAmountLabel = new JLabel("$" + Math.abs(this.yourShare));
+		if(this.yourShare == 0) {
 			whoLentLabel = new JLabel("<html>not<br/>involved</html>");	
 		}
 		
@@ -156,10 +157,13 @@ public class ExpenseItem extends CJPanel {
 		groupLabel.setForeground(DefaultTheme.getColor("SecondaryForeground"));
 		whoPaidLabel.setForeground(DefaultTheme.getColor("SecondaryForeground"));
 		whoLentLabel.setForeground(DefaultTheme.getColor("SecondaryForeground"));
-		if(this.whoPaid.equalsIgnoreCase("You")) {
+		if(this.yourShare > 0) {
 			lentAmountLabel.setForeground(DefaultTheme.getColor("PositiveForeground"));
-		} else {
+		} else if (this.yourShare < 0){
 			lentAmountLabel.setForeground(DefaultTheme.getColor("NegativeForeground"));
+		} else {
+			lentAmountLabel.setPreferredSize(new Dimension(0,0));
+			lentAmountLabel.setVisible(false);
 		}
 	}
 

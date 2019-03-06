@@ -31,5 +31,6 @@ public class Splitwise {
 		LOGGER.setLevel(Level.FINEST);
 		gui = new SplitwiseGUI();
 		gui.init();
+		gui.login();
 	}
 }

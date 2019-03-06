@@ -20,6 +20,7 @@ public class Expense {
 	public float cost;
 	public List<ExpenseRatio> expenseRatio;
 	public Set<String> users;
+	private String jsonText;
 	
 	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -37,6 +38,7 @@ public class Expense {
     		expenseRatio.add(new ExpenseRatio(eu));
     		users.add(eu.id + "");
     	}
+    	this.jsonText = expense.getJson();
     }
     
     public long getGroupId() {
@@ -81,5 +83,18 @@ public class Expense {
 
 	public Date getCreatedDate() {
 		return this.created_date;
+	}
+	
+	public String toString() {
+		return this.jsonText;
+	}
+
+	public float getNetBalance(long id) {
+		for(ExpenseRatio er : expenseRatio) {
+			if(id == er.getId()) {
+				return er.getNetBalance();
+			}
+		}
+		return 0;
 	}
 }
