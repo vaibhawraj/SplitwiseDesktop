@@ -42,7 +42,8 @@ public class ActivityResponse extends Response {
 		this.content = (String) jsonObj.get("content");
 		this.type = (long) jsonObj.get("type");
 		
-		this.created_by_id = (long)jsonObj.get("created_by");
+		if(jsonObj.get("created_by") != null)
+			this.created_by_id = (long)jsonObj.get("created_by");
 		
 		JSONObject source = (JSONObject)jsonObj.get("source");
 		this.source_id = (long)source.get("id");
